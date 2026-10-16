@@ -72,17 +72,18 @@
     else if (v.f === "sobre") s += `<rect x="-2" y="-4" width="${LW - 2}" height="46" rx="6" fill="none" stroke="#f59e0b" stroke-width="2" class="fr-alarma"/>`;
     else if (v.f === "fuga") s += `<rect x="-2" y="-4" width="${LW - 2}" height="46" rx="6" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="3 2" class="fr-alarma"/><path d="M22 36 v6 m-3 0 h6 m-4.5 3 h3" stroke="#2563eb" stroke-width="1.2" fill="none"/>`;
     if (v.sim && !v.on && !v.f) s += `<rect x="-2" y="-4" width="${LW - 2}" height="46" rx="6" fill="rgba(255,255,255,.55)"/>`;
+    if (v.motivo) s += t(LW / 2 - 2, 22, 5.6, v.motivo, 'fill="#c23b2c" font-weight="700"');
     s += t(LW / 2 - 2, 49, 5.2, d.n, 'fill="#1f201d" font-weight="700"') + t(LW / 2 - 2, 55, 4.6, (v.i != null && v.sim ? v.i.toFixed(v.i >= 100 ? 0 : 1) + " A · " : "") + w + " W", 'fill="#55574f"');
     return s;
   };
   const dibujarAcom = (o, v) => {
     const tri = o.p.tipo === "tri", cut = v.sim && !v.on;
-    return `<g opacity="${cut ? ".45" : 1}"><rect x="27" y="2" width="5" height="40" fill="#8a6a43"/><rect x="14" y="8" width="32" height="3.4" rx="1" fill="#8a6a43"/>` + [16, 30, 44].map(x => `<circle cx="${x}" cy="7" r="1.8" fill="#b7d3e8" stroke="#6b8aa5" stroke-width=".5"/>`).join("") +
-      `<path d="M16 7 q-9 6 -15 6 M44 7 q9 6 15 6" fill="none" stroke="#333" stroke-width=".9"/><rect x="18" y="30" width="24" height="14" rx="2" fill="#dfe0db" stroke="#7d7f78" stroke-width=".8"/></g>` +
-      t(30, 40, 6.2, tri ? "380 V" : "220 V", `fill="${cut ? "#c23b2c" : "#1f201d"}" font-weight="700"`) + t(30, 52, 5, cut ? "SIN RED" : "Bajada de línea", `fill="${cut ? "#c23b2c" : "#55574f"}" font-weight="700"`);
+    return `<g opacity="${cut ? ".45" : 1}"><rect x="32" y="2" width="5" height="22" fill="#8a6a43"/><rect x="17" y="8" width="35" height="3.4" rx="1" fill="#8a6a43"/>` + [20, 34.5, 49].map(x => `<circle cx="${x}" cy="7" r="1.8" fill="#b7d3e8" stroke="#6b8aa5" stroke-width=".5"/>`).join("") +
+      `<path d="M20 7 q-10 6 -19 6 M49 7 q10 6 19 6" fill="none" stroke="#333" stroke-width=".9"/></g>` +
+      t(35, 36, 5.4, tri ? "380 V trifásica" : "220 V monofásica", `fill="${cut ? "#c23b2c" : "#1f201d"}" font-weight="700"`) + t(35, 43, 4.2, cut ? "SIN RED" : "Bajada de línea", `fill="${cut ? "#c23b2c" : "#55574f"}" font-weight="700"`);
   };
 
-  /* ---------- Catálogo ---------- */
+    /* ---------- Catálogo ---------- */
   const AMP_T = ["2", "4", "6", "10", "16", "20", "25", "32", "40", "50", "63"], AMP_G = ["25", "32", "40", "63", "80", "100", "125"], AMP_C = ["16", "25", "40", "63"];
   const POL = [1, 2, 3, 4];
   const K = {
@@ -121,7 +122,7 @@
   /* ---------- Estado del tablero ---------- */
   function iniciar(tb) {
     if (!tb.frente) tb.frente = { preset: "24", filas: 2, mpf: 12, ancho: "", alto: "", prof: "110", items: [], cables: [] };
-    const f = tb.frente; f.items = f.items || []; f.cables = f.cables || []; return f;
+    const f = tb.frente; f.items = f.items || []; f.cables = (f.cables || []).filter(c => tipoDe(c.a) && tipoDe(c.b)); return f;
   }
   const libre = (f, fila, x, mod, ignorar) => {
     if (fila < 0 || fila >= f.filas || x < 0 || x + mod > f.mpf) return false;
@@ -134,26 +135,50 @@
 
   /* Geometría y terminales */
   function G(f) {
-    const nC = f.items.filter(o => o.z === "c").length, cajaW = f.mpf * M + 2 * MX, W = Math.max(cajaW, nC * LW + 2 * MX, 190), OX = (W - cajaW) / 2, cajaH = f.filas * PASO + 2 * MY, LY = TOP + cajaH + GAP;
+    const nC = f.items.filter(o => o.z === "c").length, cajaW = f.mpf * M + 2 * MX, W = Math.max(cajaW, nC * LW + 2 * MX, 220), OX = (W - cajaW) / 2, cajaH = f.filas * PASO + 2 * MY, LY = TOP + cajaH + GAP;
     return { nC, cajaW, W, OX, cajaH, LY, Hh: LY + LH + 14 };
   }
   function pos(o, g, f) {
     if (o.z === "c") { const i = f.items.filter(q => q.z === "c").indexOf(o); return { x: (g.W - g.nC * LW) / 2 + i * LW, y: g.LY }; }
-    if (o.z === "a") return { x: g.W / 2 - 30, y: 4 };
+    if (o.z === "a") return { x: g.W / 2 - 35, y: 4 };
     return { x: g.OX + MX + o.x * M, y: TOP + MY + o.f * PASO + PASO / 2 - H / 2 };
   }
+  /* ---------- Conductores: fases, neutro y tierra (AEA 90364, esquema TT) ---------- */
+  const POLOS_T = { 1: ["L1"], 2: ["L1", "N"], 3: ["L1", "L2", "L3"], 4: ["L1", "L2", "L3", "N"] };
+  const COLOR_AUTO = { L1: "marron", L2: "negro", L3: "rojo", N: "celeste", PE: "verdeamarillo", X: "gris" };
+  const COLORES = { marron: ["Marrón", "#7a4a21"], negro: ["Negro", "#1c1c1c"], rojo: ["Rojo", "#c9302c"], celeste: ["Celeste", "#5bb8e8"], verdeamarillo: ["Verde-amarillo", "bi"], blanco: ["Blanco", "#f2f2f2"], gris: ["Gris", "#8d8f88"], azul: ["Azul", "#2b4fb3"] };
+  const PUNTO = { L1: "#7a4a21", L2: "#1c1c1c", L3: "#c9302c", N: "#5bb8e8", PE: "#2f8a4c", X: "#f9a01b" };
+  const tipoDe = id => { const m = /:[tb](L1|L2|L3|N|PE|X)/.exec(id || ""); return m ? m[1] : null; };
+  function polosDe(o) {
+    switch (o.k) {
+      case "termo": case "difer": case "general": case "dps": case "fusible": case "contactor": return POLOS_T[o.p.polos] || ["L1"];
+      case "guardamotor": return ["L1", "L2", "L3"];
+      case "medidor1": return ["L1", "N"];
+      case "medidor3": case "monitor": return ["L1", "L2", "L3", "N"];
+      case "amperimetro": case "rele": case "temporizador": case "horario": case "relewifi": return ["L1"];
+      case "voltimetro": case "piloto": case "fuente": return ["L1", "N"];
+      case "acometida": return o.p.tipo === "tri" ? ["L1", "L2", "L3", "N", "PE"] : ["L1", "N", "PE"];
+      default: return CLS[o.k] === "load" ? (LOAD[o.k].tri ? ["L1", "L2", "L3", "PE"] : ["L1", "N", "PE"]) : [];
+    }
+  }
   function terminales(o, g, f) {
-    const p = pos(o, g, f), c = CLS[o.k];
-    if (c === "src") return [{ id: o.id + ":b0", x: p.x + 30, y: TOP - 8 }];
-    if (c === "load") return [{ id: o.id + ":t0", x: p.x + LW / 2 - 2, y: p.y - 8 }];
-    const w = enRiel(o) ? modOf(o) * M : 0, cx = p.x + w / 2, top = p.y - 5, bot = p.y + H + 17;
-    if (c === "prot" || c === "sw" || c === "med") return [{ id: o.id + ":t0", x: cx, y: top }, { id: o.id + ":b0", x: cx, y: bot }];
-    if (c === "junc") { const r = []; for (let i = 0; i < modOf(o); i++) { r.push({ id: o.id + ":t" + i, x: p.x + (i + .5) * M, y: top }); r.push({ id: o.id + ":b" + i, x: p.x + (i + .5) * M, y: bot }); } return r; }
-    if (c === "tap" || c === "carga") return [{ id: o.id + ":t0", x: cx, y: top }];
-    return [];
+    const p = pos(o, g, f), c = CLS[o.k], r = [], T = (lado, tipo, x, y, id) => ({ id: id || `${o.id}:${lado}${tipo}`, x, y, tipo, lado });
+    if (c === "src") { const pl = polosDe(o); return pl.map((tp, i) => T("b", tp, p.x + 5 + i * (60 / (pl.length - 1)), TOP - 8)); }
+    if (c === "load") { const pl = polosDe(o); return pl.map((tp, i) => T("t", tp, p.x + 6 + i * (34 / (pl.length - 1)), p.y - 8)); }
+    const w = enRiel(o) ? modOf(o) * M : 0, top = p.y - 5, bot = p.y + H + 17;
+    if (c === "prot" || c === "sw" || c === "med") { const pl = polosDe(o); pl.forEach((tp, i) => { const x = p.x + w * (i + .5) / pl.length; r.push(T("t", tp, x, top)); r.push(T("b", tp, x, bot)); }); return r; }
+    if (c === "tap" || c === "carga") { const pl = polosDe(o); pl.forEach((tp, i) => r.push(T("t", tp, p.x + w * (i + .5) / pl.length, top))); return r; }
+    if (c === "junc") {
+      const n = modOf(o);
+      if (o.k === "bornera") { for (let i = 0; i < n * 2; i++) { const x = p.x + w * (i + .5) / (n * 2); r.push(T("t", "X", x, top, `${o.id}:tX${i}`)); r.push(T("b", "X", x, bot, `${o.id}:bX${i}`)); } return r; }
+      const tp = o.k === "barraN" ? "N" : "PE";
+      for (let i = 0; i < n; i++) { const x = p.x + (i + .5) * M; r.push(T("t", tp, x, top, `${o.id}:t${tp}${i}`)); r.push(T("b", tp, x, bot, `${o.id}:b${tp}${i}`)); }
+      return r;
+    }
+    return r;
   }
 
-  /* ---------- Simulación ---------- */
+    /* ---------- Simulación ---------- */
   const mk = () => ({ on: false, t: 0, red: true, cerrado: {}, disparo: {}, heat: {}, falla: {}, extra: {}, fuga: {}, kwh: {}, log: [], flash: null });
   const nominal = o => { const p = o.p; if (o.k === "guardamotor") { const r = String(p.rango || "4-6.3").split("-"); return parseFloat(r[r.length - 1]) || 6.3; } return parseFloat(p.amp) || 16; };
   const magMult = o => (o.k === "guardamotor" ? 12 : o.k === "fusible" ? 6 : ({ B: 5, C: 10, D: 20 })[o.p.curva] || 10);
@@ -171,41 +196,67 @@
     const conduce = o => { const c = CLS[o.k]; if (c === "prot") return sim.cerrado[o.id] !== false && !sim.disparo[o.id]; if (c === "sw") return sim.cerrado[o.id] !== false; return true; };
     items.forEach(o => {
       const c = CLS[o.k];
-      if ((c === "prot" || c === "sw" || c === "med") && conduce(o)) add(o.id + ":t0", o.id + ":b0");
-      if (c === "junc") { const n = modOf(o); for (let i = 0; i < n; i++) { add(o.id + ":t" + i, o.id + ":t0"); add(o.id + ":b" + i, o.id + ":t0"); } }
+      if ((c === "prot" || c === "sw" || c === "med") && conduce(o)) polosDe(o).forEach(tp => add(`${o.id}:t${tp}`, `${o.id}:b${tp}`));
+      if (c === "junc") { const n = modOf(o); if (o.k === "bornera") { for (let i = 0; i < n * 2; i++) add(`${o.id}:tX${i}`, `${o.id}:bX${i}`); } else { const tp = o.k === "barraN" ? "N" : "PE"; for (let i = 0; i < n; i++) { add(`${o.id}:t${tp}${i}`, `${o.id}:t${tp}0`); add(`${o.id}:b${tp}${i}`, `${o.id}:t${tp}0`); } } }
     });
-    const src = items.find(o => CLS[o.k] === "src"), V = src && src.p.tipo === "tri" ? 380 : 220;
-    const vis = new Set(), parent = new Map(), depth = new Map(), order = [];
-    if (src && sim.red) { const s = src.id + ":b0"; vis.add(s); depth.set(s, 0); order.push(s); for (let i = 0; i < order.length; i++) { const n = order[i]; (adj.get(n) || []).forEach(m => { if (!vis.has(m)) { vis.add(m); parent.set(m, n); depth.set(m, depth.get(n) + 1); order.push(m); } }); } }
-    const own = new Map(), leak = new Map();
-    items.filter(o => CLS[o.k] === "load").forEach(o => { const id = o.id + ":t0"; if (vis.has(id)) { own.set(id, corrienteCarga(o, sim)); if (sim.falla[o.id] === "fuga") leak.set(id, (sim.fuga[o.id] || 100) / 1000); } });
-    items.filter(o => ["piloto", "fuente", "monitor"].includes(o.k)).forEach(o => { const id = o.id + ":t0"; if (vis.has(id)) own.set(id, o.k === "fuente" ? .4 : .02); });
-    const acc = new Map(), accL = new Map();
-    for (let i = order.length - 1; i >= 0; i--) { const n = order[i]; acc.set(n, (acc.get(n) || 0) + (own.get(n) || 0)); accL.set(n, (accL.get(n) || 0) + (leak.get(n) || 0)); const p = parent.get(n); if (p) { acc.set(p, (acc.get(p) || 0) + acc.get(n)); accL.set(p, (accL.get(p) || 0) + accL.get(n)); } }
+    const src = items.find(o => CLS[o.k] === "src"), V = 220, runs = {};
+    if (src && sim.red) polosDe(src).forEach(tp => {
+      const s0 = `${src.id}:b${tp}`, vis = new Set([s0]), parent = new Map(), depth = new Map([[s0, 0]]), order = [s0];
+      for (let i = 0; i < order.length; i++) { const n = order[i]; (adj.get(n) || []).forEach(m => { if (!vis.has(m)) { vis.add(m); parent.set(m, n); depth.set(m, depth.get(n) + 1); order.push(m); } }); }
+      runs[tp] = { vis, parent, depth, order, acc: new Map(), accL: new Map(), own: new Map(), leak: new Map() };
+    });
+    const has = (tp, id) => !!(runs[tp] && runs[tp].vis.has(id));
+    /* cables mal conectados: fase con neutro, fase con fase o fase con tierra */
+    const cortos = [];
+    Object.keys(runs).forEach(T => { if (T === "PE") return; runs[T].order.forEach(id => { const U = tipoDe(id); if (!U || U === "X" || U === T) return; if (U === "PE") { runs[T].leak.set(id, 5); cortos.push({ k: "tierra", id, T }); } else { runs[T].own.set(id, ISC); cortos.push({ k: U === "N" ? "fn" : "ff", id, T, U }); } }); });
+    /* cargas: necesitan fase y neutro (o las tres fases) para funcionar */
+    const estados = {};
+    items.filter(o => CLS[o.k] === "load").forEach(o => {
+      const d = LOAD[o.k], ph = d.tri ? ["L1", "L2", "L3"] : ["L1"];
+      const okF = ph.every(tp => has(tp, `${o.id}:t${tp}`)), okN = d.tri || has("N", `${o.id}:tN`), enc = sim.cerrado[o.id] !== false, okT = has("PE", `${o.id}:tPE`);
+      const I = okF && okN && enc ? corrienteCarga(o, sim) : 0;
+      estados[o.id] = { okF, okN, okT, I };
+      if (I > 0) {
+        ph.forEach(tp => runs[tp].own.set(`${o.id}:t${tp}`, (runs[tp].own.get(`${o.id}:t${tp}`) || 0) + I));
+        if (!d.tri) runs.N.own.set(`${o.id}:tN`, (runs.N.own.get(`${o.id}:tN`) || 0) + I);
+        if (sim.falla[o.id] === "fuga" && okT) ph.forEach(tp => runs[tp].leak.set(`${o.id}:t${tp}`, (sim.fuga[o.id] || 100) / 1000));
+      }
+    });
+    items.filter(o => o.k === "piloto" || o.k === "fuente").forEach(o => { if (has("L1", `${o.id}:tL1`) && has("N", `${o.id}:tN`)) { const I = o.k === "fuente" ? .4 : .02; runs.L1.own.set(`${o.id}:tL1`, I); runs.N.own.set(`${o.id}:tN`, I); } });
+    Object.keys(runs).forEach(T => { const Rn = runs[T]; for (let i = Rn.order.length - 1; i >= 0; i--) { const n = Rn.order[i]; Rn.acc.set(n, (Rn.acc.get(n) || 0) + (Rn.own.get(n) || 0)); Rn.accL.set(n, (Rn.accL.get(n) || 0) + (Rn.leak.get(n) || 0)); const p = Rn.parent.get(n); if (p) { Rn.acc.set(p, (Rn.acc.get(p) || 0) + Rn.acc.get(n)); Rn.accL.set(p, (Rn.accL.get(p) || 0) + Rn.accL.get(n)); } } });
     const dev = new Map();
     items.forEach(o => {
-      const c = CLS[o.k], t0 = o.id + ":t0", b0 = o.id + ":b0";
-      if (c === "prot" || c === "sw" || c === "med") dev.set(o.id, { vivo: vis.has(t0), I: vis.has(b0) ? (acc.get(b0) || 0) : 0, L: vis.has(b0) ? (accL.get(b0) || 0) : 0, prof: depth.get(t0) || 0 });
-      else if (c === "tap" || c === "carga" || c === "load") dev.set(o.id, { vivo: vis.has(t0), I: acc.get(t0) || 0 });
+      const c = CLS[o.k];
+      if (c === "prot" || c === "sw" || c === "med") {
+        const pl = polosDe(o), fases = pl.filter(t => t !== "N"); let vivo = false, I = 0, L = 0, prof = 0; const Iph = [];
+        fases.forEach(tp => { const Rn = runs[tp], t = `${o.id}:t${tp}`, b = `${o.id}:b${tp}`; if (Rn && Rn.vis.has(t)) { vivo = true; prof = Math.max(prof, Rn.depth.get(t) || 0); } if (Rn && Rn.vis.has(b)) { const i = Rn.acc.get(b) || 0; I = Math.max(I, i); Iph.push(i); L = Math.max(L, Rn.accL.get(b) || 0); } });
+        dev.set(o.id, { vivo, I, L, prof, P: Iph.reduce((a, x) => a + x, 0) * V });
+      } else if (c === "tap" || c === "carga") dev.set(o.id, { vivo: polosDe(o).every(tp => has(tp, `${o.id}:t${tp}`)), I: 0 });
+      else if (c === "load") { const e = estados[o.id]; dev.set(o.id, { vivo: e.okF && e.okN && sim.cerrado[o.id] !== false, I: e.I }); }
     });
     const cable = new Map();
-    f.cables.forEach(c => { const ok = vis.has(c.a) && vis.has(c.b); let I = 0; if (ok) { if (parent.get(c.b) === c.a) I = acc.get(c.b) || 0; else if (parent.get(c.a) === c.b) I = acc.get(c.a) || 0; } cable.set(c.id, { vivo: ok, I }); });
-    return { vis, dev, cable, V, src };
+    f.cables.forEach(c => { const T = tipoDe(c.a) === "X" ? tipoDe(c.b) : tipoDe(c.a), Rn = runs[T]; let vivo = false, I = 0; if (Rn && Rn.vis.has(c.a) && Rn.vis.has(c.b)) { vivo = true; if (Rn.parent.get(c.b) === c.a) I = Rn.acc.get(c.b) || 0; else if (Rn.parent.get(c.a) === c.b) I = Rn.acc.get(c.a) || 0; } cable.set(c.id, { vivo, I }); });
+    const vis = new Set(); Object.keys(runs).forEach(T => runs[T].vis.forEach(x => vis.add(x)));
+    return { vis, dev, cable, V, src, estados, cortos, runs };
   }
   function avisos(f, sim, R) {
     const a = [];
-    if (!R.src) a.push("Falta la acometida (bajada de línea)."); else if (!f.cables.length) a.push("No hay cables conectados.");
-    const hayProt = f.items.some(q => CLS[q.k] === "prot");
-    f.items.filter(o => CLS[o.k] === "load").forEach(o => {
-      const d = LOAD[o.k];
-      if (R.src && sim.red && !R.vis.has(o.id + ":t0") && f.cables.length) { a.push(`${d.n}: sin alimentación (no llega cable o hay una protección abierta).`); return; }
-      if (!hayProt && R.vis.has(o.id + ":t0")) a.push(`${d.n}: sin ninguna protección aguas arriba.`);
-      if (d.tri && !f.items.some(q => CLS[q.k] === "prot" && (q.p.polos || 3) >= 3)) a.push(`${d.n}: un motor trifásico necesita protección de 3 o 4 polos.`);
-    });
+    if (!R.src) a.push("Falta la acometida (bajada de línea)."); else if (!f.cables.length) a.push("No hay cables conectados."); else if (!sim.red) a.push("No hay red.");
+    if (R.src && sim.red && f.cables.length) {
+      R.cortos.forEach(c => a.push(c.k === "fn" ? "Un cable une una fase con el neutro: cortocircuito." : c.k === "ff" ? "Un cable une dos fases: cortocircuito." : "Un cable une una fase con la tierra: fuga a tierra."));
+      f.items.filter(o => CLS[o.k] === "load").forEach(o => {
+        const d = LOAD[o.k], e = R.estados[o.id];
+        if (!e.okF) a.push(`${d.n}: no le llega ${d.tri ? "alguna fase" : "la fase"}.`);
+        else if (!e.okN) a.push(`${d.n}: falta el neutro, el circuito no cierra y no funciona.`);
+        else if (!e.okT) a.push(`${d.n}: sin puesta a tierra, hay riesgo de contacto y el diferencial no puede actuar.`);
+        if (d.tri && !f.items.some(q => CLS[q.k] === "prot" && (q.p.polos || 3) >= 3)) a.push(`${d.n}: un motor trifásico necesita protección de 3 o 4 polos.`);
+      });
+      if (!f.items.some(q => q.k === "difer")) a.push("Falta el interruptor diferencial.");
+    }
     return a;
   }
 
-  /* ---------- Interfaz ---------- */
+    /* ---------- Interfaz ---------- */
   const CSS = `.fr{display:grid;grid-template-columns:210px minmax(0,1fr);gap:16px;align-items:start}
   .fr-pal{background:#f7f7f3;border:1px solid #c9cbc4;border-radius:20px;padding:12px;max-height:calc(100vh - 220px);overflow:auto;position:sticky;top:12px}
   .fr-pal h4{margin:10px 4px 6px;font-size:.74rem;color:#55574f;font-weight:800}.fr-pal h4:first-child{margin-top:2px}
@@ -255,7 +306,7 @@
     $("fr-pal").innerHTML = CAT.map(([id, nombre]) => `<h4>${nombre}</h4><div class="fr-tiles">${Object.keys(K).filter(k => K[k].cat === id).map(k => {
       let inner, w, h;
       if (K[k].z === "c") { inner = `<g transform="translate(4,0)">${icono[k]({})}</g>`; w = 46; h = 42; }
-      else if (K[k].z === "a") { inner = dibujarAcom({ p: K[k].def }, {}); w = 60; h = 56; }
+      else if (K[k].z === "a") { inner = dibujarAcom({ p: K[k].def }, {}); w = 70; h = 40; }
       else { const o = { k, p: Object.assign({}, K[k].def) }; w = modOf(o) * M; h = H; inner = `<g>${D[k](w, o.p, {})}</g>`; }
       return `<button type="button" class="fr-tile" draggable="${K[k].z ? "false" : "true"}" data-k="${k}" title="Agregar ${esc(K[k].n)}"><svg viewBox="-2 -2 ${w + 4} ${h + 4}" preserveAspectRatio="xMidYMid meet">${inner}</svg><span>${esc(K[k].n)}</span></button>`;
     }).join("")}</div>`).join("");
@@ -283,15 +334,26 @@
       if (modo !== "sim" || !R) return {};
       const d = R.dev.get(o.id) || {}, v = { sim: 1, on: !!d.vivo };
       if (c === "prot" || c === "sw") v.e = sim.disparo[o.id] ? "trip" : sim.cerrado[o.id] === false ? "off" : "on";
-      if (o.k === "voltimetro") v.txt = d.vivo ? String(R.V) : "0";
+      if (o.k === "voltimetro") v.txt = d.vivo ? "220" : "0";
       if (o.k === "amperimetro") v.txt = d.vivo ? d.I.toFixed(d.I >= 100 ? 0 : 1) : "0.0";
-      if (o.k === "medidor1" || o.k === "medidor3") { const P = d.vivo ? d.I * R.V * (o.k === "medidor3" ? Math.sqrt(3) : 1) : 0; v.txt = (P / 1000).toFixed(2); v.sub = "kW"; }
-      if (c === "load") { v.f = sim.falla[o.id]; v.i = d.I; v.on = !!d.vivo && sim.cerrado[o.id] !== false; }
+      if (o.k === "medidor1" || o.k === "medidor3") { v.txt = ((d.vivo ? d.P || 0 : 0) / 1000).toFixed(2); v.sub = "kW"; }
+      if (c === "load") { const e = R.estados[o.id] || {}; v.f = sim.falla[o.id]; v.i = d.I; v.on = !!d.vivo && sim.cerrado[o.id] !== false; if (R.src && sim.red && sim.cerrado[o.id] !== false) v.motivo = !e.okF ? "sin fase" : !e.okN ? "sin neutro" : ""; }
       if (c === "src") v.on = sim.red;
       return v;
     }
-    const camino = (a, b, ya, yb) => { const k = Math.max(22, Math.abs(yb - ya) / 2); return `M${a} ${ya} C${a} ${ya + k} ${b} ${yb - k} ${b} ${yb}`; };
-    function pintar() {
+    const camino = (x1, x2, y1, y2, lane) => {
+      lane = +lane || 0;
+      if (Math.abs(x1 - x2) < .5) return `M${x1} ${y1}L${x2} ${y2}`;
+      if (y2 > y1 + 18) { const ym = y1 + (y2 - y1) / 2 + lane; return `M${x1} ${y1}L${x1} ${ym}L${x2} ${ym}L${x2} ${y2}`; }
+      const ym = y1 + 14 + lane, ye = y2 - 14 - lane, xs = Math.max(x1, x2) + 16 + lane;
+      return `M${x1} ${y1}L${x1} ${ym}L${xs} ${ym}L${xs} ${ye}L${x2} ${ye}L${x2} ${y2}`;
+    };
+    const cableSvg = (d, col, sel) => {
+      const c = COLORES[col] || COLORES.gris;
+      return (sel ? `<path d="${d}" fill="none" stroke="#f9a01b" stroke-width="6" stroke-linejoin="miter" opacity=".55"/>` : "") + `<path d="${d}" fill="none" stroke="#222" stroke-width="3.8" stroke-linejoin="miter" stroke-linecap="butt"/>` +
+        (c[1] === "bi" ? `<path d="${d}" fill="none" stroke="#2f8a4c" stroke-width="2.6" stroke-linejoin="miter"/><path d="${d}" fill="none" stroke="#f0c419" stroke-width="2.6" stroke-dasharray="4 4" stroke-linejoin="miter"/>` : `<path d="${d}" fill="none" stroke="${c[1]}" stroke-width="2.6" stroke-linejoin="miter" stroke-linecap="butt"/>`);
+    };
+        function pintar() {
       const g = G(f); R = modo === "sim" ? evaluar(f, sim) : null;
       svg.setAttribute("viewBox", `0 0 ${g.W} ${g.Hh}`); svg.style.width = zoom + "%"; svg.classList.toggle("fr-sim", modo === "sim");
       let s = `<defs><linearGradient id="fr-riel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dfe1e4"/><stop offset=".5" stop-color="#b9bcc2"/><stop offset="1" stop-color="#d4d6da"/></linearGradient></defs>`;
@@ -306,22 +368,28 @@
       }
       const TM = new Map(); f.items.forEach(o => terminales(o, g, f).forEach(tt => TM.set(tt.id, tt)));
       const hayCC = Object.values(sim.falla).includes("cc");
-      f.cables.forEach(c => { const a = TM.get(c.a), b = TM.get(c.b); if (!a || !b) return; const d = camino(a.x, b.x, a.y, b.y), cs = R && R.cable.get(c.id);
-        s += `<path class="fr-cable${c.id === selC ? " sel" : ""}" d="${d}"/><path d="${d}" fill="none" stroke="transparent" stroke-width="9" data-cable="${c.id}" style="cursor:pointer"/>`;
+      f.cables.forEach(c => {
+        const a = TM.get(c.a), b = TM.get(c.b); if (!a || !b) return;
+        const T = (a.tipo === "X" ? b.tipo : a.tipo) || "L1", lane = ({ L1: -9, L2: -4.5, L3: 0, N: 4.5, PE: 9, X: 0 })[T] || 0, d = camino(a.x, b.x, a.y, b.y, lane), cs = R && R.cable.get(c.id);
+        s += cableSvg(d, c.color || COLOR_AUTO[T] || "gris", c.id === selC) + `<path d="${d}" fill="none" stroke="transparent" stroke-width="9" data-cable="${c.id}" style="cursor:pointer"/>`;
         if (sim.flash && sim.t < sim.flash.hasta && sim.flash.ids.includes(c.id)) s += `<path class="fr-flujo cc" d="${d}"/>`;
-        else if (cs && cs.vivo) s += `<path class="fr-flujo${hayCC && cs.I >= ISC * .5 ? " cc" : cs.I > 16 ? " alto" : ""}" d="${d}"/>`; });
+        else if (cs && cs.vivo && (cs.I > 0 || T === "N" || T === "PE" ? cs.I > 0 : true)) s += `<path class="fr-flujo${hayCC && cs.I >= ISC * .5 ? " cc" : cs.I > 16 ? " alto" : ""}" d="${d}"/>`;
+      });
       f.items.forEach(o => {
         const p = pos(o, g, f), v = estadoVista(o);
         if (o.z === "c") { s += `<g class="fr-carga fr-dev${o.id === sel ? " sel" : ""}" data-id="${o.id}" transform="translate(${p.x},${p.y})"><rect x="0" y="-4" width="${LW}" height="${LH}" rx="6" fill="transparent"/>${dibujarCarga(o, v)}</g>`; return; }
-        if (o.z === "a") { s += `<g class="fr-dev${o.id === sel ? " sel" : ""}" data-id="${o.id}" transform="translate(${p.x},${p.y})"><rect x="0" y="0" width="60" height="${TOP - 18}" rx="6" fill="transparent"/>${dibujarAcom(o, v)}</g>`; return; }
+        if (o.z === "a") { s += `<g class="fr-dev${o.id === sel ? " sel" : ""}" data-id="${o.id}" transform="translate(${p.x},${p.y})"><rect x="0" y="0" width="70" height="${TOP - 18}" rx="6" fill="transparent"/>${dibujarAcom(o, v)}</g>`; return; }
         const w = modOf(o) * M, heat = sim.heat[o.id] || 0;
         s += `<g class="fr-dev${o.id === sel ? " sel" : ""}" data-id="${o.id}" transform="translate(${p.x},${p.y})">${D[o.k](w, o.p, v)}<rect x="0" y="0" width="${w}" height="${H}" fill="transparent"/>` +
           (v.e === "trip" ? `<circle cx="${w - 5}" cy="5.5" r="3" fill="#c23b2c" class="fr-alarma"/>` : "") +
           (modo === "sim" && heat > .05 ? `<rect x="3" y="${H + 13}" width="${w - 6}" height="2.6" rx="1.3" fill="#ddd"/><rect x="3" y="${H + 13}" width="${Math.min(1, heat) * (w - 6)}" height="2.6" rx="1.3" fill="${heat > .7 ? "#c23b2c" : "#f59e0b"}"/>` : "") +
           (o.rot ? `<rect x="${w / 2 - Math.min(w / 2, 22)}" y="${H + 2}" width="${Math.min(w, 44)}" height="9" rx="1.6" fill="#fff" stroke="#9a9b95" stroke-width=".5"/><text x="${w / 2}" y="${H + 8.6}" font-size="5.2" text-anchor="middle" font-family="Archivo,Arial,sans-serif" font-weight="700" fill="#1f201d">${esc(o.rot)}</text>` : "") + `</g>`;
       });
-      f.items.forEach(o => terminales(o, g, f).forEach(tt => { const usado = f.cables.some(c => c.a === tt.id || c.b === tt.id), activo = previa === tt.id, en = R && R.vis.has(tt.id);
-        s += `<g class="fr-term" data-term="${tt.id}"><circle cx="${tt.x}" cy="${tt.y}" r="${activo ? 4.8 : 3.4}" fill="${en ? "#ffb300" : usado ? "#2f8a4c" : "#f9a01b"}" stroke="#232323" stroke-width=".9"/></g>`; }));
+      f.items.forEach(o => terminales(o, g, f).forEach(tt => {
+        const usado = f.cables.some(c => c.a === tt.id || c.b === tt.id), activo = previa === tt.id, en = R && R.vis.has(tt.id), ac = PUNTO[tt.tipo] || "#f9a01b";
+        const ly = tt.lado === "t" && CLS[o.k] !== "src" && CLS[o.k] !== "load" ? tt.y - 5.4 : (tt.lado === "b" && CLS[o.k] !== "src" ? tt.y + 8.4 : (CLS[o.k] === "src" ? tt.y - 5.6 : tt.y + 8));
+        s += `<g class="fr-term" data-term="${tt.id}"><circle cx="${tt.x}" cy="${tt.y}" r="${activo ? 4.8 : 3.4}" fill="${ac}" stroke="${en ? "#ffb300" : "#232323"}" stroke-width="${en ? 1.8 : .9}"/>${usado ? `<circle cx="${tt.x}" cy="${tt.y}" r="1.2" fill="#fff"/>` : ""}` + (tt.tipo !== "X" ? `<text x="${tt.x}" y="${ly}" font-size="3.8" text-anchor="middle" font-family="Archivo,Arial,sans-serif" font-weight="700" fill="#55574f">${tt.tipo}</text>` : "") + `</g>`;
+      }));
       s += `<path id="fr-prev" d="" fill="none" stroke="#f9a01b" stroke-width="2" stroke-dasharray="4 3"/>`;
       if (!f.items.some(o => CLS[o.k] === "src")) s += `<text x="${g.W / 2}" y="${TOP / 2 + 4}" text-anchor="middle" font-size="7" fill="#9a9b95" font-family="Archivo,Arial,sans-serif" font-weight="700">Sumá la acometida (bajada de línea) desde el panel</text>`;
       svg.innerHTML = s; svg._TM = TM;
@@ -335,8 +403,8 @@
     function prop() {
       const o = f.items.find(i => i.id === sel), box = $("fr-prop");
       if (modo === "sim") { box.hidden = true; return; } box.hidden = false;
-      if (selC) { box.innerHTML = `<h3 style="margin:0 0 10px">Cable</h3><button type="button" class="btn chico peligro" id="fp-qc">Quitar cable</button>`; box.querySelector("#fp-qc").onclick = () => { f.cables = f.cables.filter(c => c.id !== selC); selC = null; todo(); }; return; }
-      if (!o) { box.innerHTML = `<p style="margin:0;color:#55574f">Tocá un dispositivo para editarlo o arrastralo. Unir dos puntos naranjas arma un cable.</p>`; return; }
+      if (selC) { const cb = f.cables.find(c => c.id === selC); if (!cb) { selC = null; return; } const T = tipoDe(cb.a) === "X" ? tipoDe(cb.b) : tipoDe(cb.a); box.innerHTML = `<h3 style="margin:0 0 10px">Cable</h3><div class="g"><div><label for="fp-col">Color</label><select id="fp-col">${Object.keys(COLORES).map(k => `<option value="${k}"${k === (cb.color || COLOR_AUTO[T]) ? " selected" : ""}>${COLORES[k][0]}</option>`).join("")}</select></div></div><div style="margin-top:12px"><button type="button" class="btn chico peligro" id="fp-qc">Quitar cable</button></div>`; box.querySelector("#fp-col").onchange = e => { cb.color = e.target.value; guardar(); pintar(); }; box.querySelector("#fp-qc").onclick = () => { f.cables = f.cables.filter(c => c.id !== selC); selC = null; todo(); }; return; }
+      if (!o) { box.innerHTML = `<p style="margin:0;color:#55574f">Tocá un dispositivo para editarlo o arrastralo. Unir dos puntos arma un cable. Colores habituales: fases marrón, negro y rojo; neutro celeste; tierra verde-amarillo.</p>`; return; }
       const k = K[o.k];
       box.innerHTML = `<h3 style="margin:0 0 10px">${esc(k.n)}</h3><div class="g">${enRiel(o) ? `<div><label for="fp-rot">Rótulo (circuito)</label><input id="fp-rot" value="${esc(o.rot || "")}" placeholder="Luces, Tomas…"></div>` : ""}` +
         k.campos.map(c => {
@@ -422,21 +490,31 @@
     function cablear() {
       const A = f.items.find(o => o.z === "a"); if (!A) return aviso("Primero sumá la acometida");
       if (f.cables.length && !confirm("Esto reemplaza los cables actuales. ¿Seguir?")) return;
-      f.cables = []; const w = (a, b) => f.cables.push({ id: uid(), a, b });
-      const rail = f.items.filter(enRiel).sort((a, b) => (a.f - b.f) || (a.x - b.x));
-      let up = A.id + ":b0";
-      rail.filter(o => ["medidor1", "medidor3", "amperimetro"].includes(o.k)).forEach(o => { w(up, o.id + ":t0"); up = o.id + ":b0"; });
-      const G1 = rail.find(o => o.k === "general"), D1 = rail.find(o => o.k === "difer");
-      if (G1) { w(up, G1.id + ":t0"); up = G1.id + ":b0"; }
-      if (D1) { w(up, D1.id + ":t0"); up = D1.id + ":b0"; }
-      rail.filter(o => ["voltimetro", "piloto", "monitor", "dps", "fuente"].includes(o.k)).forEach(o => w(up, o.id + ":t0"));
-      const ramas = rail.filter(o => ["termo", "fusible", "guardamotor", "contactor"].includes(o.k));
-      ramas.forEach(o => w(up, o.id + ":t0"));
-      f.items.filter(o => o.z === "c").forEach((c, i) => { const r = ramas[i] || ramas[ramas.length - 1]; if (r) w(r.id + ":b0", c.id + ":t0"); });
+      f.cables = []; const w = (a, b, tp) => f.cables.push({ id: uid(), a, b, color: COLOR_AUTO[tp] || "gris" });
+      const rail = f.items.filter(enRiel).sort((a, b) => (a.f - b.f) || (a.x - b.x)), up = {};
+      polosDe(A).forEach(tp => { up[tp] = `${A.id}:b${tp}`; });
+      const pasar = o => polosDe(o).forEach(tp => { if (up[tp]) { w(up[tp], `${o.id}:t${tp}`, tp); up[tp] = `${o.id}:b${tp}`; } });
+      rail.filter(o => ["medidor1", "medidor3", "amperimetro"].includes(o.k)).forEach(pasar);
+      const G1 = rail.find(o => o.k === "general"), D1 = rail.find(o => o.k === "difer"); if (G1) pasar(G1); if (D1) pasar(D1);
+      const bn = rail.find(o => o.k === "barraN"), bt = rail.find(o => o.k === "barraT"); let ni = 0, ti = 0;
+      if (bn && up.N) w(up.N, `${bn.id}:tN0`, "N");
+      if (bt && up.PE) w(up.PE, `${bt.id}:tPE0`, "PE");
+      const neutro = () => (bn ? `${bn.id}:bN${ni++ % modOf(bn)}` : up.N), tierra = () => (bt ? `${bt.id}:bPE${ti++ % modOf(bt)}` : up.PE);
+      rail.filter(o => ["voltimetro", "piloto", "monitor", "dps", "fuente"].includes(o.k)).forEach(o => polosDe(o).forEach(tp => { const o2 = tp === "N" ? neutro() : up[tp]; if (o2) w(o2, `${o.id}:t${tp}`, tp); }));
+      const ramas = rail.filter(o => ["termo", "fusible", "guardamotor", "contactor"].includes(o.k)), tieneN = {};
+      ramas.forEach(o => polosDe(o).forEach(tp => { const o2 = tp === "N" ? neutro() : up[tp]; if (o2) w(o2, `${o.id}:t${tp}`, tp); if (tp === "N") tieneN[o.id] = 1; }));
+      f.items.filter(o => o.z === "c").forEach((c, i) => {
+        const r = ramas[i] || ramas[ramas.length - 1]; if (!r) return; const pr = polosDe(r);
+        polosDe(c).forEach(tp => {
+          if (tp === "PE") { const o2 = tierra(); if (o2) w(o2, `${c.id}:tPE`, "PE"); }
+          else if (tp === "N") { const o2 = pr.includes("N") ? `${r.id}:bN` : neutro(); if (o2) w(o2, `${c.id}:tN`, "N"); }
+          else if (pr.includes(tp)) w(`${r.id}:b${tp}`, `${c.id}:t${tp}`, tp);
+        });
+      });
       todo(); aviso("Cableado armado");
     }
 
-    /* Eventos de la caja y la paleta */
+        /* Eventos de la caja y la paleta */
     el.addEventListener("change", e => {
       const id = e.target.id;
       if (id === "fr-pre") { const p = PRESETS.find(q => q[0] === e.target.value); f.preset = p[0]; if (p[2]) aplicar(p[2], p[3]); else pintarCab(); }
@@ -469,7 +547,7 @@
       const ia = a.split(":")[0], ib = b.split(":")[0], ka = (f.items.find(o => o.id === ia) || {}).k;
       if (a === b || (ia === ib && CLS[ka] !== "junc")) return aviso("Unilo con otro dispositivo");
       if (f.cables.some(c => (c.a === a && c.b === b) || (c.a === b && c.b === a))) return;
-      f.cables.push({ id: uid(), a, b }); selC = null; todo();
+      const T = tipoDe(a) === "X" ? tipoDe(b) : tipoDe(a); f.cables.push({ id: uid(), a, b, color: COLOR_AUTO[T] || "gris" }); selC = null; todo();
     }
     svg.addEventListener("pointerdown", e => {
       const term = e.target.closest(".fr-term");
