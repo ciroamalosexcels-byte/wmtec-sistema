@@ -126,7 +126,7 @@
   }
   const libre = (f, fila, x, mod, ignorar) => {
     if (fila < 0 || fila >= f.filas || x < 0 || x + mod > f.mpf) return false;
-    return !f.items.some(o => enRiel(o) && o.id !== ignorar && o.f === fila && x < o.x + modOf(o) && o.x < x + mod);
+    return !f.items.some(o => enRiel(o) && !(ignorar instanceof Set ? ignorar.has(o.id) : o.id === ignorar) && o.f === fila && x < o.x + modOf(o) && o.x < x + mod);
   };
   const hueco = (f, mod, desde) => { for (let i = 0; i < f.filas; i++) { const fi = ((desde || 0) + i) % f.filas; for (let x = 0; x + mod <= f.mpf; x++) if (libre(f, fi, x, mod)) return { f: fi, x }; } return null; };
   const uid = () => Math.random().toString(36).slice(2, 9);
@@ -275,8 +275,8 @@
   .fr-dev{cursor:grab}.fr-dev.sel>rect:first-child{stroke:#f9a01b;stroke-width:1.6}.fr-sim .fr-dev,.fr-sim .fr-carga{cursor:pointer}
   .fr-term{cursor:crosshair}.fr-term circle{transition:r .1s}.fr-term:hover circle{r:4.6}
   .fr-cable{fill:none;stroke:#3b3b3b;stroke-width:2.2;stroke-linecap:round}.fr-cable.sel{stroke:#f9a01b;stroke-width:3}
-  .fr-flujo{fill:none;stroke:#ffb300;stroke-width:2.6;stroke-linecap:round;stroke-dasharray:5 6;animation:fr-flow .55s linear infinite}
-  .fr-flujo.alto{stroke:#f97316;animation-duration:.3s}.fr-flujo.cc{stroke:#e11d1d;stroke-width:3.4;animation-duration:.12s}
+  .fr-flujo{fill:none;stroke:#fff;stroke-opacity:.9;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:5 6;animation:fr-flow .55s linear infinite}
+  .fr-flujo.alto{stroke:#ffd54f;stroke-width:2;animation-duration:.3s}.fr-flujo.cc{stroke:#ff3b30;stroke-width:3.4;stroke-opacity:1;animation-duration:.12s}
   @keyframes fr-flow{to{stroke-dashoffset:-11}}
   .fr-giro{animation:fr-spin .5s linear infinite}@keyframes fr-spin{to{transform:rotate(360deg)}}
   .fr-chispa{animation:fr-chispa .18s steps(2) infinite}@keyframes fr-chispa{50%{opacity:.25}}
@@ -295,7 +295,22 @@
     if (!document.getElementById("fr-css")) { const s = document.createElement("style"); s.id = "fr-css"; s.textContent = CSS; document.head.appendChild(s); }
     const f = iniciar(tb); let sel = null, selC = null, arrastre = null, sim = mk(), modo = "armar", R = null, ultimaSig = "", timer = null, previa = null;
     let zoom = innerWidth < 900 ? 100 : 62; try { zoom = +localStorage.getItem("fr-zoom") || zoom; } catch (e) { }
-    const guardar = () => { alCambiar && alCambiar(); };
+    let multi = new Set(), marco = null, clip = null, hist = [], hpos = -1, hsig = "", ht = null, restaurando = false;
+    const guardar = () => { alCambiar && alCambiar(); if (!restaurando) { clearTimeout(ht); ht = setTimeout(pushHist, 350); } };
+    /* Historial (Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z): una copia de la caja, los dispositivos y los cables después de cada cambio terminado */
+    const snap = () => JSON.stringify({ preset: f.preset, filas: f.filas, mpf: f.mpf, ancho: f.ancho, alto: f.alto, prof: f.prof, items: f.items, cables: f.cables });
+    function pushHist() {
+      clearTimeout(ht); ht = null; const sg = snap(); if (sg === hsig) return;
+      hsig = sg; hist = hist.slice(0, hpos + 1); hist.push(sg); if (hist.length > 80) hist.shift(); hpos = hist.length - 1; syncHist();
+    }
+    function restaurar(p) {
+      if (p < 0 || p >= hist.length) return;
+      hpos = p; restaurando = true; Object.assign(f, JSON.parse(hist[p])); restaurando = false; hsig = hist[p];
+      multi = new Set(); sel = null; selC = null; previa = null; alCambiar && alCambiar(); pintarCab(); info(); pintar(); lista(); prop(); panelSim();
+    }
+    const deshacer = () => { if (ht) pushHist(); restaurar(hpos - 1); };
+    const rehacer = () => restaurar(hpos + 1);
+    function syncHist() { const u = el.querySelector("#fr-undo"), r2 = el.querySelector("#fr-redo"); if (u) u.disabled = hpos <= 0; if (r2) r2.disabled = hpos >= hist.length - 1; }
     const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
     const aviso = txt => { const x = document.createElement("div"); x.className = "toast"; x.textContent = txt; document.body.appendChild(x); setTimeout(() => x.remove(), 2400); };
 
@@ -321,7 +336,8 @@
       <div><label for="fr-al">Alto (mm)</label><input id="fr-al" inputmode="numeric" value="${esc(f.alto)}" placeholder="${m.alto}"></div>
       <div><label for="fr-pr">Prof. (mm)</label><input id="fr-pr" inputmode="numeric" value="${esc(f.prof)}" placeholder="110"></div>
       <div><label for="fr-z">Tamaño</label><input id="fr-z" type="range" min="30" max="100" value="${zoom}"></div>
-      ${modo === "armar" ? '<button type="button" class="btn chico claro" id="fr-auto">Cablear solo</button><button type="button" class="btn chico claro" id="fr-quitarc">Quitar cables</button>' : ""}`;
+      ${modo === "armar" ? '<button type="button" class="btn chico claro" id="fr-undo">Deshacer</button><button type="button" class="btn chico claro" id="fr-redo">Rehacer</button><button type="button" class="btn chico claro" id="fr-auto">Cablear solo</button><button type="button" class="btn chico claro" id="fr-quitarc">Quitar cables</button>' : ""}`;
+      syncHist();
     }
     function info() {
       const m = medidas(f), u = usados(f), tot = f.filas * f.mpf;
@@ -341,17 +357,33 @@
       if (c === "src") v.on = sim.red;
       return v;
     }
-    const camino = (x1, x2, y1, y2, lane) => {
-      lane = +lane || 0;
-      if (Math.abs(x1 - x2) < .5) return `M${x1} ${y1}L${x2} ${y2}`;
-      if (y2 > y1 + 18) { const ym = y1 + (y2 - y1) / 2 + lane; return `M${x1} ${y1}L${x1} ${ym}L${x2} ${ym}L${x2} ${y2}`; }
-      const ym = y1 + 14 + lane, ye = y2 - 14 - lane, xs = Math.max(x1, x2) + 16 + lane;
-      return `M${x1} ${y1}L${x1} ${ym}L${xs} ${ym}L${xs} ${ye}L${x2} ${ye}L${x2} ${y2}`;
+    const redondo = (pts, r) => {
+      pts = pts.filter((q, k) => k === 0 || Math.hypot(q[0] - pts[k - 1][0], q[1] - pts[k - 1][1]) > .01);
+      let d = `M${pts[0][0]} ${pts[0][1]}`;
+      for (let i = 1; i < pts.length - 1; i++) {
+        const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], [x2, y2] = pts[i + 1], l1 = Math.hypot(x1 - x0, y1 - y0), l2 = Math.hypot(x2 - x1, y2 - y1), rr = Math.min(r, l1 / 2, l2 / 2);
+        d += `L${x1 + (x0 - x1) / l1 * rr} ${y1 + (y0 - y1) / l1 * rr}Q${x1} ${y1} ${x1 + (x2 - x1) / l2 * rr} ${y1 + (y2 - y1) / l2 * rr}`;
+      }
+      return d + `L${pts[pts.length - 1][0]} ${pts[pts.length - 1][1]}`;
+    };
+    /* dA y dB: hacia dónde sale cada borne (-1 arriba, 1 abajo). Del mismo lado el cable hace una U. */
+    const camino = (x1, x2, y1, y2, lane, dA, dB) => {
+      lane = +lane || 0; dA = dA == null ? 1 : dA; dB = dB == null ? -dA : dB; const st = 12; let pts;
+      if (dA !== dB) {
+        if (dA === -1) return camino(x2, x1, y2, y1, lane, dB, dA);
+        if (Math.abs(x1 - x2) < .5 && y2 > y1) return `M${x1} ${y1}L${x2} ${y2}`;
+        if (y2 - y1 >= 2 * st) { const ym = y1 + (y2 - y1) / 2 + lane; pts = [[x1, y1], [x1, ym], [x2, ym], [x2, y2]]; }
+        else { const ya = y1 + st + lane, yb = y2 - st - lane, xs = Math.abs(x1 - x2) > 8 ? (x1 + x2) / 2 + lane * .4 : Math.max(x1, x2) + 16 + lane; pts = [[x1, y1], [x1, ya], [xs, ya], [xs, yb], [x2, yb], [x2, y2]]; }
+      } else {
+        const nivel = dA === -1 ? Math.min(y1, y2) - st - lane : Math.max(y1, y2) + st + lane;
+        pts = [[x1, y1], [x1, nivel], [x2, nivel], [x2, y2]];
+      }
+      return redondo(pts, 6);
     };
     const cableSvg = (d, col, sel) => {
       const c = COLORES[col] || COLORES.gris;
-      return (sel ? `<path d="${d}" fill="none" stroke="#f9a01b" stroke-width="6" stroke-linejoin="miter" opacity=".55"/>` : "") + `<path d="${d}" fill="none" stroke="#222" stroke-width="3.8" stroke-linejoin="miter" stroke-linecap="butt"/>` +
-        (c[1] === "bi" ? `<path d="${d}" fill="none" stroke="#2f8a4c" stroke-width="2.6" stroke-linejoin="miter"/><path d="${d}" fill="none" stroke="#f0c419" stroke-width="2.6" stroke-dasharray="4 4" stroke-linejoin="miter"/>` : `<path d="${d}" fill="none" stroke="${c[1]}" stroke-width="2.6" stroke-linejoin="miter" stroke-linecap="butt"/>`);
+      return (sel ? `<path d="${d}" fill="none" stroke="#f9a01b" stroke-width="8.4" stroke-linejoin="round" opacity=".55"/>` : "") + `<path d="${d}" fill="none" stroke="#1d1d1d" stroke-width="5.6" stroke-linejoin="round" stroke-linecap="round"/>` +
+        (c[1] === "bi" ? `<path d="${d}" fill="none" stroke="#2f8a4c" stroke-width="4" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#f0c419" stroke-width="4" stroke-dasharray="5 5" stroke-linejoin="round"/>` : `<path d="${d}" fill="none" stroke="${c[1]}" stroke-width="4" stroke-linejoin="round" stroke-linecap="butt"/>`);
     };
         function pintar() {
       const g = G(f); R = modo === "sim" ? evaluar(f, sim) : null;
@@ -370,17 +402,17 @@
       const hayCC = Object.values(sim.falla).includes("cc");
       f.cables.forEach(c => {
         const a = TM.get(c.a), b = TM.get(c.b); if (!a || !b) return;
-        const T = (a.tipo === "X" ? b.tipo : a.tipo) || "L1", lane = ({ L1: -9, L2: -4.5, L3: 0, N: 4.5, PE: 9, X: 0 })[T] || 0, d = camino(a.x, b.x, a.y, b.y, lane), cs = R && R.cable.get(c.id);
+        const T = (a.tipo === "X" ? b.tipo : a.tipo) || "L1", lane = ({ L1: -9, L2: -4.5, L3: 0, N: 4.5, PE: 9, X: 0 })[T] || 0, d = camino(a.x, b.x, a.y, b.y, lane, a.lado === "t" ? -1 : 1, b.lado === "t" ? -1 : 1), cs = R && R.cable.get(c.id);
         s += cableSvg(d, c.color || COLOR_AUTO[T] || "gris", c.id === selC) + `<path d="${d}" fill="none" stroke="transparent" stroke-width="9" data-cable="${c.id}" style="cursor:pointer"/>`;
         if (sim.flash && sim.t < sim.flash.hasta && sim.flash.ids.includes(c.id)) s += `<path class="fr-flujo cc" d="${d}"/>`;
         else if (cs && cs.vivo && (cs.I > 0 || T === "N" || T === "PE" ? cs.I > 0 : true)) s += `<path class="fr-flujo${hayCC && cs.I >= ISC * .5 ? " cc" : cs.I > 16 ? " alto" : ""}" d="${d}"/>`;
       });
       f.items.forEach(o => {
         const p = pos(o, g, f), v = estadoVista(o);
-        if (o.z === "c") { s += `<g class="fr-carga fr-dev${o.id === sel ? " sel" : ""}" data-id="${o.id}" transform="translate(${p.x},${p.y})"><rect x="0" y="-4" width="${LW}" height="${LH}" rx="6" fill="transparent"/>${dibujarCarga(o, v)}</g>`; return; }
-        if (o.z === "a") { s += `<g class="fr-dev${o.id === sel ? " sel" : ""}" data-id="${o.id}" transform="translate(${p.x},${p.y})"><rect x="0" y="0" width="70" height="${TOP - 18}" rx="6" fill="transparent"/>${dibujarAcom(o, v)}</g>`; return; }
+        if (o.z === "c") { s += `<g class="fr-carga fr-dev${multi.has(o.id) ? " sel" : ""}" data-id="${o.id}" transform="translate(${p.x},${p.y})"><rect x="0" y="-4" width="${LW}" height="${LH}" rx="6" fill="transparent"/>${dibujarCarga(o, v)}</g>`; return; }
+        if (o.z === "a") { s += `<g class="fr-dev${multi.has(o.id) ? " sel" : ""}" data-id="${o.id}" transform="translate(${p.x},${p.y})"><rect x="0" y="0" width="70" height="${TOP - 18}" rx="6" fill="transparent"/>${dibujarAcom(o, v)}</g>`; return; }
         const w = modOf(o) * M, heat = sim.heat[o.id] || 0;
-        s += `<g class="fr-dev${o.id === sel ? " sel" : ""}" data-id="${o.id}" transform="translate(${p.x},${p.y})">${D[o.k](w, o.p, v)}<rect x="0" y="0" width="${w}" height="${H}" fill="transparent"/>` +
+        s += `<g class="fr-dev${multi.has(o.id) ? " sel" : ""}" data-id="${o.id}" transform="translate(${p.x},${p.y})">${D[o.k](w, o.p, v)}<rect x="0" y="0" width="${w}" height="${H}" fill="transparent"/>` +
           (v.e === "trip" ? `<circle cx="${w - 5}" cy="5.5" r="3" fill="#c23b2c" class="fr-alarma"/>` : "") +
           (modo === "sim" && heat > .05 ? `<rect x="3" y="${H + 13}" width="${w - 6}" height="2.6" rx="1.3" fill="#ddd"/><rect x="3" y="${H + 13}" width="${Math.min(1, heat) * (w - 6)}" height="2.6" rx="1.3" fill="${heat > .7 ? "#c23b2c" : "#f59e0b"}"/>` : "") +
           (o.rot ? `<rect x="${w / 2 - Math.min(w / 2, 22)}" y="${H + 2}" width="${Math.min(w, 44)}" height="9" rx="1.6" fill="#fff" stroke="#9a9b95" stroke-width=".5"/><text x="${w / 2}" y="${H + 8.6}" font-size="5.2" text-anchor="middle" font-family="Archivo,Arial,sans-serif" font-weight="700" fill="#1f201d">${esc(o.rot)}</text>` : "") + `</g>`;
@@ -403,6 +435,10 @@
     function prop() {
       const o = f.items.find(i => i.id === sel), box = $("fr-prop");
       if (modo === "sim") { box.hidden = true; return; } box.hidden = false;
+      if (multi.size > 1) {
+        box.innerHTML = `<h3 style="margin:0 0 10px">${multi.size} elementos seleccionados</h3><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn chico claro" id="fm-dup">Duplicar</button><button type="button" class="btn chico claro" id="fm-cp">Copiar</button><button type="button" class="btn chico peligro" id="fm-del">Quitar</button></div><p style="margin:10px 0 0;color:#55574f;font-size:.86rem">Ctrl+C, Ctrl+X y Ctrl+V copian, cortan y pegan. Ctrl+Z deshace. Las flechas los mueven y Suprimir los quita.</p>`;
+        box.querySelector("#fm-dup").onclick = () => { copiar(); pegar(); }; box.querySelector("#fm-cp").onclick = copiar; box.querySelector("#fm-del").onclick = () => quitarVarios([...multi]); return;
+      }
       if (selC) { const cb = f.cables.find(c => c.id === selC); if (!cb) { selC = null; return; } const T = tipoDe(cb.a) === "X" ? tipoDe(cb.b) : tipoDe(cb.a); box.innerHTML = `<h3 style="margin:0 0 10px">Cable</h3><div class="g"><div><label for="fp-col">Color</label><select id="fp-col">${Object.keys(COLORES).map(k => `<option value="${k}"${k === (cb.color || COLOR_AUTO[T]) ? " selected" : ""}>${COLORES[k][0]}</option>`).join("")}</select></div></div><div style="margin-top:12px"><button type="button" class="btn chico peligro" id="fp-qc">Quitar cable</button></div>`; box.querySelector("#fp-col").onchange = e => { cb.color = e.target.value; guardar(); pintar(); }; box.querySelector("#fp-qc").onclick = () => { f.cables = f.cables.filter(c => c.id !== selC); selC = null; todo(); }; return; }
       if (!o) { box.innerHTML = `<p style="margin:0;color:#55574f">Tocá un dispositivo para editarlo o arrastralo. Unir dos puntos arma un cable. Colores habituales: fases marrón, negro y rojo; neutro celeste; tierra verde-amarillo.</p>`; return; }
       const k = K[o.k];
@@ -423,9 +459,32 @@
       const rot = box.querySelector("#fp-rot"); if (rot) rot.oninput = e => { o.rot = e.target.value; guardar(); pintar(); };
       k.campos.forEach(c => { const i = box.querySelector("#fp-" + c); if (i) i.onchange = e => cambiar(c, e.target.value); });
       box.querySelector("#fp-del").onclick = () => quitar(o.id);
-      box.querySelector("#fp-dup").onclick = () => { if (!enRiel(o)) { if (o.z === "a") return aviso("Hay una sola acometida"); const n = { id: uid(), k: o.k, p: Object.assign({}, o.p), z: o.z }; f.items.push(n); sel = n.id; return todo(); } const h = hueco(f, modOf(o), o.f); if (!h) return aviso("No hay lugar libre en el tablero"); const n = { id: uid(), k: o.k, p: Object.assign({}, o.p), rot: o.rot, f: h.f, x: h.x }; f.items.push(n); sel = n.id; todo(); };
+      box.querySelector("#fp-dup").onclick = () => { if (!enRiel(o)) { if (o.z === "a") return aviso("Hay una sola acometida"); const n = { id: uid(), k: o.k, p: Object.assign({}, o.p), z: o.z }; f.items.push(n); sel = n.id; multi = new Set([n.id]); return todo(); } const h = hueco(f, modOf(o), o.f); if (!h) return aviso("No hay lugar libre en el tablero"); const n = { id: uid(), k: o.k, p: Object.assign({}, o.p), rot: o.rot, f: h.f, x: h.x }; f.items.push(n); sel = n.id; multi = new Set([n.id]); todo(); };
     }
-    function quitar(id) { f.items = f.items.filter(i => i.id !== id); f.cables = f.cables.filter(c => !c.a.startsWith(id + ":") && !c.b.startsWith(id + ":")); if (sel === id) sel = null; todo(); }
+    function quitarVarios(ids) {
+      const S = new Set(ids); f.items = f.items.filter(i => !S.has(i.id)); f.cables = f.cables.filter(c => !S.has(c.a.split(":")[0]) && !S.has(c.b.split(":")[0])); multi = new Set(); sel = null; selC = null; todo();
+    }
+    /* Copiar, cortar y pegar: los dispositivos y los cables que hay entre ellos */
+    function copiar() {
+      const ids = [...multi], its = f.items.filter(o => ids.includes(o.id) && CLS[o.k] !== "src"); if (!its.length) return aviso("Seleccioná algo para copiar");
+      const S = new Set(its.map(o => o.id)); clip = { items: JSON.parse(JSON.stringify(its)), cables: JSON.parse(JSON.stringify(f.cables.filter(c => S.has(c.a.split(":")[0]) && S.has(c.b.split(":")[0])))) };
+      aviso(its.length === 1 ? "Copiado" : its.length + " copiados");
+    }
+    function cortar() { copiar(); if (clip) quitarVarios([...multi]); }
+    function pegar() {
+      if (!clip) return aviso("No hay nada copiado");
+      const mapa = {}, nuevos = [], extra = [];
+      for (const o of clip.items) {
+        const n = JSON.parse(JSON.stringify(o)); n.id = uid(); mapa[o.id] = n.id;
+        if (!enRiel(n)) { extra.push(n); continue; }
+        const h = hueco(f, modOf(n), o.f); if (!h) { aviso("No hay lugar libre para pegar todo"); continue; }
+        n.f = h.f; n.x = h.x; f.items.push(n); nuevos.push(n);
+      }
+      extra.forEach(n => { f.items.push(n); nuevos.push(n); });
+      clip.cables.forEach(c => { const a = mapa[c.a.split(":")[0]], b = mapa[c.b.split(":")[0]]; if (a && b) f.cables.push({ id: uid(), a: a + ":" + c.a.split(":").slice(1).join(":"), b: b + ":" + c.b.split(":").slice(1).join(":"), color: c.color }); });
+      multi = new Set(nuevos.map(n => n.id)); sel = nuevos[0] ? nuevos[0].id : null; selC = null; todo();
+    }
+    function quitar(id) { f.items = f.items.filter(i => i.id !== id); f.cables = f.cables.filter(c => !c.a.startsWith(id + ":") && !c.b.startsWith(id + ":")); multi.delete(id); if (sel === id) sel = null; todo(); }
 
     /* Panel de la simulación */
     function panelSim() {
@@ -473,7 +532,7 @@
       if (sig !== ultimaSig || disparo) { ultimaSig = sig; pintar(); panelSim(); }
     }
     function cambiarModo(m) {
-      modo = m; sel = null; selC = null; previa = null; clearInterval(timer);
+      modo = m; sel = null; multi = new Set(); selC = null; previa = null; clearInterval(timer);
       if (m === "sim") { sim = mk(); sim.on = true; ultimaSig = ""; timer = setInterval(tick, 100); } else sim.on = false;
       pintarCab(); info(); pintar(); prop(); panelSim();
     }
@@ -483,7 +542,7 @@
       if (kk.z === "a") { if (f.items.some(o => o.z === "a")) return aviso("Ya hay una acometida"); it.z = "a"; }
       else if (kk.z === "c") { it.z = "c"; }
       else { const m = modOf(it); it.rot = ""; if (fila != null && libre(f, fila, x, m)) { it.f = fila; it.x = x; } else { const h = hueco(f, m, sel ? (f.items.find(i => i.id === sel) || {}).f || 0 : 0); if (!h) return aviso("No hay lugar libre en el tablero"); it.f = h.f; it.x = h.x; } }
-      f.items.push(it); sel = it.id; todo();
+      f.items.push(it); sel = it.id; multi = new Set([it.id]); todo();
     }
 
     /* Cablear solo: acometida -> general -> diferencial -> protecciones -> cargas */
@@ -527,6 +586,8 @@
     el.addEventListener("input", e => { if (e.target.id === "fr-z") { zoom = +e.target.value; svg.style.width = zoom + "%"; try { localStorage.setItem("fr-zoom", zoom); } catch (x) { } } });
     el.addEventListener("click", e => {
       const m = e.target.closest("[data-modo]"); if (m) return cambiarModo(m.dataset.modo);
+      if (e.target.id === "fr-undo") return deshacer();
+      if (e.target.id === "fr-redo") return rehacer();
       if (e.target.id === "fr-auto") return cablear();
       if (e.target.id === "fr-quitarc") { f.cables = []; todo(); }
     });
@@ -549,48 +610,90 @@
       if (f.cables.some(c => (c.a === a && c.b === b) || (c.a === b && c.b === a))) return;
       const T = tipoDe(a) === "X" ? tipoDe(b) : tipoDe(a); f.cables.push({ id: uid(), a, b, color: COLOR_AUTO[T] || "gris" }); selC = null; todo();
     }
+    const NS = "http://www.w3.org/2000/svg";
+    function dibujarMarco() {
+      let r = svg.querySelector("#fr-marco"); if (!r) { r = document.createElementNS(NS, "rect"); r.id = "fr-marco"; r.setAttribute("fill", "rgba(249,160,27,.12)"); r.setAttribute("stroke", "#f9a01b"); r.setAttribute("stroke-width", ".9"); r.setAttribute("stroke-dasharray", "3 2"); svg.appendChild(r); }
+      r.setAttribute("x", Math.min(marco.x0, marco.x1)); r.setAttribute("y", Math.min(marco.y0, marco.y1)); r.setAttribute("width", Math.abs(marco.x1 - marco.x0)); r.setAttribute("height", Math.abs(marco.y1 - marco.y0));
+    }
+    function terminarMarco() {
+      const m = marco; marco = null; const r = svg.querySelector("#fr-marco"); if (r) r.remove();
+      const x0 = Math.min(m.x0, m.x1), x1 = Math.max(m.x0, m.x1), y0 = Math.min(m.y0, m.y1), y1 = Math.max(m.y0, m.y1);
+      if (x1 - x0 < 2 && y1 - y0 < 2) { if (!m.suma) { sel = null; multi = new Set(); selC = null; } pintar(); prop(); panelSim(); return; }
+      const g = G(f), dentro = f.items.filter(o => { const p = pos(o, g, f), w = o.z === "c" ? LW : o.z === "a" ? 70 : modOf(o) * M, h = o.z === "c" ? LH : o.z === "a" ? TOP - 18 : H; return p.x < x1 && p.x + w > x0 && p.y < y1 && p.y + h > y0; });
+      multi = new Set([...m.base, ...dentro.map(o => o.id)]); sel = multi.size ? [...multi][0] : null; selC = null; pintar(); prop();
+    }
     svg.addEventListener("pointerdown", e => {
       const term = e.target.closest(".fr-term");
       if (term && modo === "armar") { const id = term.dataset.term; if (!previa) { previa = id; pintar(); } else { const a = previa; previa = null; crearCable(a, id); } return; }
       const cab = e.target.closest("[data-cable]");
-      if (cab && modo === "armar") { selC = cab.dataset.cable; sel = null; prop(); pintar(); return; }
+      if (cab && modo === "armar") { selC = cab.dataset.cable; sel = null; multi = new Set(); prop(); pintar(); return; }
       const g = e.target.closest(".fr-dev");
-      if (!g) { if (previa) { previa = null; pintar(); } if (sel || selC) { sel = null; selC = null; pintar(); prop(); panelSim(); } return; }
+      if (!g) {
+        if (previa) { previa = null; pintar(); }
+        if (modo === "armar") { const p = aPunto(e.clientX, e.clientY); marco = { x0: p.x, y0: p.y, x1: p.x, y1: p.y, suma: e.shiftKey, base: e.shiftKey ? new Set(multi) : new Set() }; selC = null; svg.setPointerCapture(e.pointerId); }
+        else if (sel) { sel = null; multi = new Set(); pintar(); prop(); panelSim(); }
+        return;
+      }
       const o = f.items.find(i => i.id === g.dataset.id); if (!o) return;
       if (modo === "sim") {
-        sel = o.id; const c = CLS[o.k];
+        sel = o.id; multi = new Set([o.id]); const c = CLS[o.k];
         if (c === "prot") { if (sim.disparo[o.id]) { delete sim.disparo[o.id]; sim.cerrado[o.id] = true; sim.log.push({ t: sim.t, m: `Se rearmó ${K[o.k].d(o.p)}.` }); } else sim.cerrado[o.id] = sim.cerrado[o.id] === false; }
         else if (c === "sw") sim.cerrado[o.id] = sim.cerrado[o.id] === false;
         ultimaSig = ""; tick(true); panelSim(); return;
       }
-      selC = null; sel = o.id; prop();
+      selC = null;
+      if (e.shiftKey) { if (multi.has(o.id)) multi.delete(o.id); else multi.add(o.id); sel = multi.size ? (multi.has(o.id) ? o.id : [...multi][0]) : null; prop(); pintar(); return; }
+      const yaDentro = multi.has(o.id) && multi.size > 1;
+      if (!yaDentro) multi = new Set([o.id]);
+      sel = o.id; prop();
       if (!enRiel(o)) { pintar(); return; }
-      const p = aPunto(e.clientX, e.clientY), gg = G(f);
-      arrastre = { it: o, off: p.x - (gg.OX + MX + o.x * M), mov: false, ghost: null }; svg.setPointerCapture(e.pointerId); pintar();
+      const grupo = f.items.filter(q => multi.has(q.id) && enRiel(q)).map(q => ({ it: q, f: q.f, x: q.x })), p = aPunto(e.clientX, e.clientY), gg = G(f);
+      arrastre = { it: o, grupo, off: p.x - (gg.OX + MX + o.x * M), mov: false, ok: false, d: { f: 0, x: 0 }, antes: yaDentro }; svg.setPointerCapture(e.pointerId); pintar();
     });
     svg.addEventListener("pointermove", e => {
-      if (previa) { const prev = svg.querySelector("#fr-prev"), a = svg._TM && svg._TM.get(previa); if (prev && a) { const p = aPunto(e.clientX, e.clientY); prev.setAttribute("d", camino(a.x, p.x, a.y, p.y)); } return; }
-      if (!arrastre) return; const p = aPunto(e.clientX, e.clientY), m = modOf(arrastre.it);
-      const c = celda(p, m, arrastre.off); arrastre.mov = true; arrastre.ghost = { f: c.f, x: c.x, ok: libre(f, c.f, c.x, m, arrastre.it.id) };
-      const gg = G(f); let ghost = svg.querySelector("#fr-ghost"); if (!ghost) { ghost = document.createElementNS("http://www.w3.org/2000/svg", "rect"); ghost.id = "fr-ghost"; ghost.setAttribute("rx", "2.6"); ghost.setAttribute("stroke-width", "1.2"); ghost.setAttribute("stroke-dasharray", "3 2"); svg.appendChild(ghost); }
-      ghost.setAttribute("x", gg.OX + MX + c.x * M); ghost.setAttribute("y", TOP + MY + c.f * PASO + PASO / 2 - H / 2); ghost.setAttribute("width", m * M); ghost.setAttribute("height", H);
-      ghost.setAttribute("fill", arrastre.ghost.ok ? "rgba(249,160,27,.22)" : "rgba(194,59,44,.25)"); ghost.setAttribute("stroke", arrastre.ghost.ok ? "#f9a01b" : "#c23b2c");
+      if (marco) { const p = aPunto(e.clientX, e.clientY); marco.x1 = p.x; marco.y1 = p.y; dibujarMarco(); return; }
+      if (previa) { const prev = svg.querySelector("#fr-prev"), a = svg._TM && svg._TM.get(previa); if (prev && a) { const p = aPunto(e.clientX, e.clientY); prev.setAttribute("d", camino(a.x, p.x, a.y, p.y, 0, a.lado === "t" ? -1 : 1, a.lado === "t" ? 1 : -1)); } return; }
+      if (!arrastre) return;
+      const p = aPunto(e.clientX, e.clientY), m = modOf(arrastre.it), c = celda(p, m, arrastre.off), base = arrastre.grupo.find(q => q.it === arrastre.it) || { f: arrastre.it.f, x: arrastre.it.x };
+      const dF = c.f - base.f, dX = c.x - base.x, ids = new Set(arrastre.grupo.map(q => q.it.id));
+      arrastre.mov = true; arrastre.d = { f: dF, x: dX }; arrastre.ok = arrastre.grupo.every(q => libre(f, q.f + dF, q.x + dX, modOf(q.it), ids));
+      svg.querySelectorAll(".fr-ghost").forEach(x => x.remove()); const gg = G(f);
+      arrastre.grupo.forEach(q => { const r = document.createElementNS(NS, "rect"); r.setAttribute("class", "fr-ghost"); r.setAttribute("rx", "2.6"); r.setAttribute("stroke-width", "1.2"); r.setAttribute("stroke-dasharray", "3 2");
+        r.setAttribute("x", gg.OX + MX + (q.x + dX) * M); r.setAttribute("y", TOP + MY + (q.f + dF) * PASO + PASO / 2 - H / 2); r.setAttribute("width", modOf(q.it) * M); r.setAttribute("height", H);
+        r.setAttribute("fill", arrastre.ok ? "rgba(249,160,27,.22)" : "rgba(194,59,44,.25)"); r.setAttribute("stroke", arrastre.ok ? "#f9a01b" : "#c23b2c"); svg.appendChild(r); });
     });
     const soltar = () => {
+      if (marco) return terminarMarco();
       if (!arrastre) return; const a = arrastre; arrastre = null;
-      if (a.mov && a.ghost && a.ghost.ok && (a.ghost.f !== a.it.f || a.ghost.x !== a.it.x)) { a.it.f = a.ghost.f; a.it.x = a.ghost.x; todo(); } else pintar();
+      if (a.mov && a.ok && (a.d.f || a.d.x)) { a.grupo.forEach(q => { q.it.f = q.f + a.d.f; q.it.x = q.x + a.d.x; }); todo(); }
+      else { if (!a.mov && a.antes) { multi = new Set([a.it.id]); sel = a.it.id; prop(); } pintar(); }
     };
     svg.addEventListener("pointerup", soltar); svg.addEventListener("pointercancel", soltar);
     document.addEventListener("keydown", function h(e) {
       if (!document.body.contains(el)) return document.removeEventListener("keydown", h);
-      const libreTeclado = !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName);
-      if (e.key === "Escape" && previa) { previa = null; pintar(); }
-      if ((e.key === "Delete" || e.key === "Backspace") && libreTeclado && modo === "armar") { if (selC) { f.cables = f.cables.filter(c => c.id !== selC); selC = null; todo(); e.preventDefault(); } else if (sel) { e.preventDefault(); quitar(sel); } }
+      if (/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) return;
+      const ctrl = e.ctrlKey || e.metaKey, k = e.key.toLowerCase();
+      if (e.key === "Escape") { if (previa) { previa = null; pintar(); } else if (multi.size || selC) { multi = new Set(); sel = null; selC = null; pintar(); prop(); panelSim(); } return; }
+      if (modo !== "armar") return;
+      if (ctrl && k === "z" && !e.shiftKey) { e.preventDefault(); return deshacer(); }
+      if (ctrl && (k === "y" || (k === "z" && e.shiftKey))) { e.preventDefault(); return rehacer(); }
+      if (ctrl && k === "c") { e.preventDefault(); return copiar(); }
+      if (ctrl && k === "x") { e.preventDefault(); return cortar(); }
+      if (ctrl && k === "v") { e.preventDefault(); return pegar(); }
+      if (ctrl && k === "d") { e.preventDefault(); copiar(); return pegar(); }
+      if (ctrl && k === "a") { e.preventDefault(); multi = new Set(f.items.map(o => o.id)); sel = f.items[0] ? f.items[0].id : null; selC = null; pintar(); prop(); return; }
+      if (e.key === "Delete" || e.key === "Backspace") { e.preventDefault(); if (selC) { f.cables = f.cables.filter(c => c.id !== selC); selC = null; todo(); } else if (multi.size) quitarVarios([...multi]); return; }
+      const fl = { ArrowLeft: [0, -1], ArrowRight: [0, 1], ArrowUp: [-1, 0], ArrowDown: [1, 0] }[e.key];
+      if (fl && multi.size && !ctrl) {
+        e.preventDefault(); const grupo = f.items.filter(o => multi.has(o.id) && enRiel(o)); if (!grupo.length) return; const ids = new Set(grupo.map(o => o.id));
+        if (grupo.every(o => libre(f, o.f + fl[0], o.x + fl[1], modOf(o), ids))) { grupo.forEach(o => { o.f += fl[0]; o.x += fl[1]; }); todo(); }
+      }
     });
     el._exportar = () => {
       const s = svg.outerHTML.replace(/class="[^"]*"/g, "").replace(/style="[^"]*"/, "").replace("<svg ", '<svg width="1600" ');
       const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(['<?xml version="1.0" encoding="UTF-8"?>' + s], { type: "image/svg+xml" })); a.download = (tb.nombre || "tablero").replace(/[^\w-]+/g, "-") + "-frente.svg"; a.click();
     };
+    hist = [snap()]; hpos = 0; hsig = hist[0];
     todo();
     return { exportar: el._exportar, _tick: tick, _modo: cambiarModo, _st: () => ({ f, sim, R }) };
   }
