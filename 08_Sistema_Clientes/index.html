@@ -99,7 +99,7 @@ textarea{min-height:76px;resize:vertical}
 .hoy-acc{gap:10px;flex-wrap:wrap;margin-bottom:16px}.hoy-acc .btn{min-height:52px;font-size:1.05rem;padding:.7em 1.6em}
 .grid.corto .extra{display:none}.grid .solo-corto{display:none}.grid.corto .solo-corto{display:block}
 .pila[hidden]{display:none}
-.flujo{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:6px;font-size:0.9rem;align-items:center}.flujo .btn{min-height:36px}
+.flujo{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:6px;font-size:0.9rem;align-items:center}.flujo .btn{min-height:36px}.fotos{display:flex;gap:6px;flex-wrap:wrap}.fotos .fto{max-width:110px;max-height:80px}
 .cifras{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin-bottom:20px}
 .cifra{background:var(--carbon);color:var(--papel);border-radius:var(--r-tarjeta);padding:14px 16px;text-decoration:none;display:block}
 .cifra b{display:block;font-size:1.9rem;line-height:1.05;font-weight:800;font-variation-settings:"wdth" 70;color:var(--papel)}
@@ -387,7 +387,7 @@ dialog .acc{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-
     <button class="nav bmas" id="b-mas" type="button" aria-expanded="false" aria-controls="mas" title="Más"><svg class="ic" aria-hidden="true"><use href="#i-mas"/></svg><span class="t">Más</span></button>
     <div class="mas" id="mas">
       <a class="nav" href="#presupuestos" data-r="presupuestos" title="Presupuestos"><svg class="ic" aria-hidden="true"><use href="#i-pres"/></svg><span class="t">Presupuestos</span><span class="cuenta" id="c-pres"></span></a>
-      <a class="nav" href="#diagnosticos" data-r="diagnosticos" title="Diagnósticos"><svg class="ic" aria-hidden="true"><use href="#i-diag"/></svg><span class="t">Diagnósticos</span><span class="cuenta" id="c-diag"></span></a>
+      <a class="nav solo-completa" href="#diagnosticos" data-r="diagnosticos" title="Diagnósticos"><svg class="ic" aria-hidden="true"><use href="#i-diag"/></svg><span class="t">Diagnósticos</span><span class="cuenta" id="c-diag"></span></a>
       <a class="nav solo-completa" href="#finanzas" data-r="finanzas" title="Finanzas"><svg class="ic" aria-hidden="true"><use href="#i-fin"/></svg><span class="t">Finanzas</span></a>
       <a class="nav solo-completa" href="#tableros" data-r="tableros" title="Tableros"><svg class="ic" aria-hidden="true"><use href="#i-tab"/></svg><span class="t">Tableros</span></a>
       <a class="nav solo-completa" href="#colaboradores" data-r="colaboradores" title="Colaboradores"><svg class="ic" aria-hidden="true"><use href="#i-colab"/></svg><span class="t">Colaboradores</span><span class="cuenta" id="c-colab"></span></a>
@@ -416,8 +416,8 @@ dialog .acc{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-
       <div class="seg vsel no-print" role="group" aria-label="Vista"><button type="button" data-vista="esencial">Esencial</button><button type="button" data-vista="completa">Completa</button></div>
       <button class="mas-crear" id="b-crear" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="menu-crear" aria-label="Crear"><svg class="ic" aria-hidden="true"><use href="#i-mas2"/></svg><span class="t">Crear</span></button>
       <div class="menu-crear" id="menu-crear" role="menu" hidden>
+        <button type="button" role="menuitem" data-a="anotar">Anotar trabajo</button>
         <button type="button" role="menuitem" data-a="nuevo">Nuevo cliente</button>
-        <button type="button" role="menuitem" data-a="nuevotrab">Nuevo trabajo</button>
         <button type="button" role="menuitem" data-a="nuevopres">Nuevo presupuesto</button>
         <button type="button" role="menuitem" data-a="nuevocobro">Registrar cobro</button>
       </div>
@@ -460,7 +460,7 @@ const RUBROS=["Frigorífico","Planta de alimentos","Logística / depósito","Met
 const ORIGENES=["Web","Instagram","WhatsApp","Recomendación","Llamada","Evento","Otro"];
 const ESTADOS=[{id:"ok",n:"Bien"},{id:"mes",n:"Este mes"},{id:"urg",n:"Urgente"},{id:"nm",n:"No medido"}];
 const COLOR={ok:"var(--verde)",mes:"var(--ambar)",urg:"var(--rojo)",nm:"var(--gris)"};
-const TIPOS_TRAB=["Diagnóstico","Mantenimiento preventivo","Correctivo / reparación","Urgencia","Instalación","Grupo electrógeno","Medición (PAT / termografía)"];
+const TIPOS_TRAB=["Reparar o cambiar algo","Instalar o poner en marcha una máquina","Falla de una máquina","Domiciliario","Diagnóstico de tablero","Mantenimiento","Otro"];
 const MEDIOS=["Transferencia","Efectivo","Mercado Pago","Cheque","Otro"];
 const EST_PRES={borrador:"Borrador",enviado:"Enviado",aceptado:"Aceptado",rechazado:"Rechazado"};
 /* Lista de control: base de trabajo (inspección visual, conexiones, protecciones, puesta a tierra, motores, documentación). Ajustar al método de Walter. */
@@ -672,6 +672,8 @@ function vPanel(){
   const L=[],visto=new Set();
   vencidos.sort((a,b)=>a.vence<b.vence?-1:1).forEach(c=>{const cl=cli(c.cid);
     L.push(fila("urg",`Cobrar ${fmt(c.monto)} a ${esc(nomCorto(cl))}`,`${esc(c.concepto)} · venció ${cuando(c.vence)}`,"#cliente/"+c.cid,`<button class="btn chico pri" data-a="cobrar" data-id="${c.id}">Cobrar</button><button class="btn chico" data-a="recordar" data-id="${c.id}">Recordar</button>`))});
+  D.trab.filter(t=>t.estado==="hecho"&&num(t.monto)&&!t.cobrado&&!t.pid).forEach(t=>{const cl=cli(t.cid);
+    L.push(fila("urg",`Cobrar ${fmt(t.monto)} a ${esc(nomCorto(cl))}`,esc(t.tipo+(t.desc?": "+t.desc:"")),"#cliente/"+t.cid,`<button class="btn chico pri" data-a="cobro-trab" data-id="${t.id}">Cobrar</button>`))});
   D.trab.filter(t=>t.estado==="agendado"&&t.fecha<=h).sort((a,b)=>a.fecha<b.fecha?-1:1).forEach(t=>{const cl=cli(t.cid);
     L.push(fila(t.fecha<h?"urg":"",`${t.fecha<h?"Trabajo atrasado":"Hoy"}: ${esc(t.tipo)} en ${esc(nomCorto(cl))}`,esc([t.sitio,t.fecha<h?"era "+fecha(t.fecha):""].filter(Boolean).join(" · "))||"&nbsp;","#cliente/"+t.cid,`<button class="btn chico pri" data-a="trabhecho" data-id="${t.id}">Marcar hecho</button>`))});
   act.filter(c=>c.prox&&c.prox<=h).sort((a,b)=>a.prox<b.prox?-1:1).forEach(c=>{visto.add(c.id);
@@ -688,7 +690,7 @@ function vPanel(){
   if(cobMes)cifras.push(`<a class="cifra" href="#finanzas"><b>${fmt(cobMes)}</b><span>cobrado este mes</span></a>`);
   const max=ESE()&&!HOYALL?5:L.length;
   V.innerHTML=`<div class="cab"><div><h1>Hoy</h1><p>${fechaL(h)}</p></div></div>
-  <div class="hoy-acc solo-esencial no-print"><button class="btn pri" data-a="nuevo">+ Anotar consulta</button><button class="btn" data-a="nuevocobro">Cobrar</button></div>
+  <div class="hoy-acc solo-esencial no-print"><button class="btn pri" data-a="anotar">+ Anotar trabajo</button><button class="btn" data-a="nuevocobro">Cobrar</button></div>
   ${D.clientes.length?"":vacioInicial()}
   ${D.clientes.length?`<section class="card barra" style="margin-bottom:18px"><h2>Para hacer${L.length?` <span class="n-hoy">${L.length}</span>`:""}</h2><ul class="lista" style="margin-top:12px">${L.slice(0,max).join("")||'<li class="vacio">Sin pendientes por hoy.</li>'}${L.length>max?`<li class="vacio"><button class="btn chico claro" data-hoyall="1">Ver todo (${L.length})</button></li>`:""}</ul></section>`:""}
   ${cifras.length?`<div class="cifras chicas solo-completa">${cifras.join("")}</div>`:""}`;
@@ -858,7 +860,7 @@ function nuevoPres(cid,diagId,tid){
   const d=diagId&&dia(diagId);
   if(d){p.cid=d.cid;p.titulo=d.sitio||"";const l=[];CHECK.forEach(g=>g.it.forEach(it=>{const v=d.items[it[0]];if(v&&(v.e==="urg"||v.e==="mes")&&v.a)l.push({d:v.a,m:""})}));if(l.length)p.items=l;p.did=d.id}
   const tr=tid?D.trab.find(x=>x.id===tid):(p.did&&D.trab.find(x=>x.did===p.did));
-  if(tr){p.tid=tr.id;tr.pid=p.id;if(!p.titulo)p.titulo=tr.tipo+(tr.sitio?" – "+tr.sitio:"");p.cid=tr.cid}
+  if(tr){p.tid=tr.id;tr.pid=p.id;if(!p.titulo)p.titulo=tr.tipo+(tr.sitio?" – "+tr.sitio:"");p.cid=tr.cid;if(!d)p.items=[{d:[tr.tipo,tr.desc].filter(Boolean).join(": "),m:tr.monto||""}]}
   D.cfg.prox++;D.pres.push(p);guardar();location.hash="#pres/"+p.id}
 function vPresS(p){
   const c=cli(p.cid),f=n=>fmt(n);
@@ -903,7 +905,7 @@ function vPresDocS(p){
   V.innerHTML=`<div class="cab no-print"><div><p><a href="#presupuestos">← Presupuestos</a></p></div><div class="tools" style="margin:0"><button class="btn pri" id="i-print" type="button">Imprimir / guardar PDF</button>${w?`<a class="btn wsp" href="${w}" target="_blank" rel="noopener">Abrir WhatsApp</a>`:""}<a class="btn claro" href="#pres/${p.id}">Editar</a>${p.estado==="borrador"?`<button class="btn claro" data-a="pres-enviar" data-id="${p.id}">Marcar como enviado</button>`:""}${p.estado==="enviado"?`<button class="btn claro" data-a="pres-aceptar" data-id="${p.id}">Aceptado</button><button class="btn peligro chico" data-a="pres-rechazar" data-id="${p.id}">Rechazado</button>`:""}</div></div>
   <article class="doc a4"><div class="a4-barra"></div>
    <div class="a4-cab"><div><h1>PRESUPUESTO</h1><div class="a4-fn"><div><small>FECHA</small><b>${fecha(p.fecha)}</b></div><div><small>N°</small><b>${esc(p.num)}</b></div></div></div>
-    <div class="a4-emisor"><div class="a4-logo"><img src="../06_Landing_web/logo/wmtec-logo-oscuro.svg" alt="WM TEC"></div><b>Walter Martin Meza</b><span>Pringles 2565</span><span>${WALTER.tel}</span><span>${WALTER.ig}</span></div></div>
+    <div class="a4-emisor"><div class="a4-logo"><img src="../06_Landing_web/logo/wmtec-logo-oscuro.svg" alt="WM TEC"></div><b>Walter Martín Meza</b><span>Pringles 2565</span><span>${WALTER.tel}</span><span>${WALTER.ig}</span></div></div>
    <div class="a4-cli"><small>CLIENTE</small><b>${esc(nom(c))}</b>${p.titulo?`<span>${esc(p.titulo)}</span>`:""}</div>
    <table class="pd-t"><thead><tr><th>DESCRIPCIÓN</th><th class="num">IMPORTE</th></tr></thead><tbody>${p.items.filter(r=>r.d||num(r.m)).map(r=>`<tr><td>${esc(r.d).replace(/\n/g,"<br>")}</td><td class="num">${num(r.m)?fmt(num(r.m)):""}</td></tr>`).join("")}</tbody></table>
    ${p.nota?`<p class="pd-nota"><b>Nota:</b> ${esc(p.nota)}</p>`:""}
@@ -985,7 +987,19 @@ function vTablero(id){
 }
 
 /* ---- Trabajos ---- */
+const fotosTrab=t=>{const f=t.fotos||[];return (f.length?`<span class="fotos">${f.map((x,i)=>`<img class="fto" src="${x}" alt="Foto ${i+1}">`).join("")}</span>`:"")+(t.estado==="agendado"?`<label class="btn chico claro fto-b">Sacar foto<input type="file" accept="image/*" capture="environment" data-tf="${t.id}" class="sr"></label>`:"")};
 function flujoTrab(t){
+  if(ESE()){
+    const pr=t.pid&&pre(t.pid),cb=pr?D.cobros.filter(c=>c.pid===pr.id):[],pend=cb.filter(pendiente),ag=t.estado==="agendado",b=[];
+    const bt=(a,tx,pri)=>`<button class="btn chico ${pri?"pri":"claro"}" data-a="${a}" data-id="${t.id}">${tx}</button>`;
+    if(pr)b.push(`<span>Presupuesto <a href="#presdoc/${pr.id}">${esc(pr.num)} · ${EST_PRES[pr.estado]}</a></span>`);
+    if(num(t.monto)&&!pr)b.push(`<span>${fmt(t.monto)}</span>`);
+    if(ag){if(!pr)b.push(bt("pres-trab","Pasar presupuesto"));b.push(bt("trabhecho","Marcar hecho",1))}
+    else if(pend.length)b.push(`<button class="btn chico pri" data-a="cobrar" data-id="${pend[0].id}">Cobrar ${fmt(pend.reduce((a,c)=>a+num(c.monto),0))}</button>`);
+    else if(t.cobrado||cb.length)b.push("<span>Cobrado</span>");
+    else if(!pr&&t.estado==="hecho")b.push(bt("cobro-trab","Cobrar",1));
+    const f=fotosTrab(t);
+    return (b.length||f)?`<div class="flujo">${b.join("")}${f}</div>`:""}
   const d=t.did&&dia(t.did),pr=t.pid&&pre(t.pid),cb=pr?D.cobros.filter(c=>c.pid===pr.id):[],pend=cb.filter(pendiente),ag=t.estado==="agendado";
   let dado=false;const bt=(a,tx)=>{if(ESE()&&dado)return "";dado=true;return `<button class="btn chico ${ESE()?"pri":"claro"}" data-a="${a}" data-id="${t.id}">${tx}</button>`};
   const pz=[];
@@ -1121,7 +1135,9 @@ document.addEventListener("click",e=>{const vs=e.target.closest("[data-vista]");
   const b=e.target.closest("[data-a]");if(b&&b.tagName!=="INPUT"){acc(b.dataset.a,b.dataset.id)}
   const cb=e.target.closest("[data-cal]");if(cb){const n=+cb.dataset.cal;if(n===0){const t=new Date();CAL={y:t.getFullYear(),m:t.getMonth(),sel:hoy()}}else{let m=CAL.m+n,y=CAL.y;if(m<0){m=11;y--}if(m>11){m=0;y++}CAL.m=m;CAL.y=y}vCal()}
   const dd=e.target.closest("[data-dia]");if(dd){CAL.sel=dd.dataset.dia;vCal()}});
-document.addEventListener("change",e=>{const t=e.target;if(t.dataset&&t.dataset.mover)mover(t.dataset.mover,t.value)});
+document.addEventListener("change",e=>{const t=e.target;if(t.dataset&&t.dataset.mover)mover(t.dataset.mover,t.value);
+  if(t.dataset&&t.dataset.tf&&t.files&&t.files[0]){const tr=D.trab.find(x=>x.id===t.dataset.tf),r=new FileReader();
+    r.onload=()=>{const im=new Image();im.onload=()=>{const m=1000,sc=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);c.getContext("2d").drawImage(im,0,0,c.width,c.height);tr.fotos=tr.fotos||[];tr.fotos.push(c.toDataURL("image/jpeg",.6));guardar();render()};im.src=r.result};r.readAsDataURL(t.files[0])}});
 document.addEventListener("click",e=>{
   const t=e.target.closest("[data-fintab]");if(t){e.preventDefault();FIN.tab=t.dataset.fintab;if(ruta().r!=="finanzas")location.hash="#finanzas";else vFin();return}
   const m=e.target.closest("[data-finmes]");if(m){const n=+m.dataset.finmes;FIN.m=n===0?mesHoy():addMes(FIN.m,n);vFin()}});
@@ -1161,6 +1177,22 @@ function acc(a,id){
   else if(a==="borrardiag"){if(confirm("¿Borrar este diagnóstico?")){const d=dia(id);D.diag=D.diag.filter(x=>x.id!==id);guardar();location.hash="#cliente/"+d.cid}}
   else if(a==="nuevopres"){if(!D.clientes.length){aviso("Primero cargá un cliente");return}nuevoPres(id)}
   else if(a==="pres-desde-diag"){nuevoPres(null,id)}
+  else if(a==="anotar"){
+    const ops=["— Cliente nuevo —"].concat(D.clientes.slice().sort((x,y)=>nom(x).localeCompare(nom(y))).map(nom));
+    pedir("Anotar trabajo",[{k:"cli",l:"Cliente",t:"select",o:ops,v:ops[1]||ops[0]},{k:"nuevo",l:"Si es nuevo: nombre o empresa",w:1,ph:"Ej. Frigorífico Máximo"},{k:"desc",l:"Qué hay que hacer",t:"area",w:1,ph:"Ej. Cambiar el reflector roto de la caja estanca, entra agua"},{k:"sitio",l:"Dónde",w:1,ph:"Planta, cámara, tablero…"},{k:"tipo",l:"Tipo",t:"select",o:TIPOS_TRAB,v:TIPOS_TRAB[0]},{k:"fecha",l:"Para cuándo",t:"date",v:h},{k:"monto",l:"Precio (si ya lo sabés)",ph:"$"}],r=>{
+      let c;
+      if(r.cli===ops[0]){if(!r.nuevo.trim()){aviso("Falta el nombre del cliente");return}
+        c={id:uid(),nombre:"",empresa:r.nuevo.trim(),tel:"",mail:"",rubro:"Otro",origen:"WhatsApp",zona:"",cuit:"",colab:"",etapa:"nueva",prox:"",proxm:"",notas:"",hist:[]};log(c,"Cliente creado");D.clientes.push(c)}
+      else c=D.clientes.find(x=>nom(x)===r.cli);
+      const t={id:uid(),ot:ot3(),cid:c.id,fecha:r.fecha||h,tipo:r.tipo,sitio:r.sitio,desc:r.desc,horas:"",estado:"agendado",prox:"",monto:num(r.monto)||"",fotos:[]};
+      D.trab.push(t);log(c,"Trabajo anotado: "+r.tipo+(r.desc?" – "+r.desc:""));
+      if(c.etapa==="nueva"){log(c,"Etapa: "+etapaN("nueva")+" → "+etapaN("visita"));c.etapa="visita"}
+      guardar();location.hash="#cliente/"+c.id;render()},"Anotar")}
+  else if(a==="cobro-trab"){const t=D.trab.find(x=>x.id===id);
+    pedir("Cobrar trabajo",[{k:"monto",l:"Monto ($)",v:t.monto||""},{k:"medio",l:"Medio",t:"select",o:MEDIOS,v:"Transferencia"},{k:"f",l:"Fecha",t:"date",v:h}],r=>{
+      if(!num(r.monto)){aviso("Falta el monto");return}
+      D.cobros.push({id:uid(),cid:t.cid,pid:null,concepto:t.tipo+(t.desc?": "+t.desc:""),monto:num(r.monto),vence:r.f,pagado:r.f,medio:r.medio,comp:""});
+      t.cobrado=true;if(!num(t.monto))t.monto=num(r.monto);log(cli(t.cid),"Cobro registrado: "+fmt(num(r.monto))+" – "+t.tipo);guardar();render()},"Registrar cobro")}
   else if(a==="pres-trab"){const t=D.trab.find(x=>x.id===id);nuevoPres(t.cid,t.did||null,t.id)}
   else if(a==="diag-trab"){const t=D.trab.find(x=>x.id===id),c=cli(t.cid);
     const d={id:uid(),cid:t.cid,fecha:h,sitio:t.sitio||t.tipo,carga:"",resp:"",items:{},med:{},concl:"",tid:t.id};
@@ -1196,6 +1228,8 @@ function acc(a,id){
   else if(a==="nuevotrab"){
     conClientes("Nuevo trabajo",id,[{k:"tipo",l:"Tipo",t:"select",o:TIPOS_TRAB,v:TIPOS_TRAB[1]},{k:"fecha",l:"Fecha",t:"date",v:CAL&&ruta().r==="calendario"?CAL.sel:h},{k:"estado",l:"Estado",t:"select",o:["agendado","hecho"],v:"agendado"},{k:"horas",l:"Horas"},{k:"sitio",l:"Dónde",w:1},{k:"desc",l:"Qué se hace / se hizo",t:"area",w:1},{k:"prox",l:"Próximo mantenimiento (si corresponde)",t:"date"}],r=>{
       D.trab.push({id:uid(),ot:ot3(),cid:r.cid,fecha:r.fecha,tipo:r.tipo,sitio:r.sitio,desc:r.desc,horas:r.horas,estado:r.estado,prox:r.prox});log(cli(r.cid),(r.estado==="hecho"?"Trabajo realizado: ":"Trabajo agendado: ")+r.tipo+" ("+fecha(r.fecha)+")");{const cc=cli(r.cid);if(r.estado==="agendado"&&cc.etapa==="nueva"){cc.etapa="visita";log(cc,"Etapa: "+etapaN("nueva")+" → "+etapaN("visita"))}}guardar();render()})}
+  else if(a==="trabhecho"&&ESE()){const t=D.trab.find(x=>x.id===id);
+    pedir("Trabajo terminado",[{k:"obs",l:"Qué se hizo (opcional)",t:"area",w:1,v:t.desc}],r=>{t.estado="hecho";t.desc=r.obs;log(cli(t.cid),"Trabajo realizado: "+t.tipo);guardar();render()},"Marcar hecho")}
   else if(a==="trabhecho"){const t=D.trab.find(x=>x.id===id);
     pedir("Trabajo terminado",[{k:"horas",l:"Horas",v:t.horas},{k:"prox",l:"Próximo mantenimiento",t:"date",v:addDias(t.fecha,90)},{k:"obs",l:"Qué se hizo",t:"area",w:1,v:t.desc}],r=>{t.estado="hecho";t.horas=r.horas;t.prox=r.prox;t.desc=r.obs;log(cli(t.cid),"Trabajo realizado: "+t.tipo);guardar();render()},"Marcar hecho")}
   else if(a==="borrartrab"){if(confirm("¿Borrar este trabajo?")){D.trab=D.trab.filter(x=>x.id!==id);guardar();render()}}
