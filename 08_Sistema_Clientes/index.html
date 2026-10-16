@@ -161,7 +161,18 @@ table.t a{text-decoration:none;font-weight:700}
 .leyenda{display:flex;gap:14px;flex-wrap:wrap;font-size:.82rem;color:var(--tinta-suave);margin:10px 0}
 .leyenda span{display:inline-flex;align-items:center;gap:5px}
 
-.tab-frame{display:block;width:100%;height:calc(100vh - 200px);min-height:480px;border:0;border-radius:20px;background:#fff;box-shadow:0 1px 0 #c9cbc4}
+.tab-frame{display:block;width:100%;height:calc(100vh - 78px);min-height:480px;border:0;border-radius:20px;background:#fff;box-shadow:0 1px 0 #c9cbc4}
+/* tablero: pantalla de edición */
+main.tablero{padding:10px 14px 6px}
+.tb-top{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.tb-top .tb-nom{width:230px;font-weight:700}.tb-top select{width:auto;min-width:170px}.tb-top .grow{flex:1}
+.ibtn{width:38px;height:38px;border-radius:50%;border:0;display:grid;place-items:center;background:#fff;box-shadow:inset 0 0 0 1px #c9cbc4;color:var(--tinta);cursor:pointer;padding:0}
+.ibtn:hover{background:#f1f1ec}.ibtn.rojo{color:var(--rojo)}
+.ibtn svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.seg.seg-chico button{padding:.28em .9em;font-size:.84rem}
+#frente-box{height:calc(100vh - 78px);min-height:520px}
+[data-tip]{position:relative}
+[data-tip]:hover::after,[data-tip]:focus-visible::after{content:attr(data-tip);position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#232323;color:#fff;padding:.4em .75em;border-radius:10px;font-size:.78rem;font-weight:600;white-space:nowrap;z-index:60;pointer-events:none;box-shadow:0 8px 20px rgba(0,0,0,.3)}
 /* agenda visual */
 .agenda{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin-top:12px}
 .dia-c{background:#fff;border-radius:14px;padding:8px;min-height:108px;display:flex;flex-direction:column;gap:4px;box-shadow:0 1px 0 #d3d5ce;min-width:0}
@@ -513,6 +524,7 @@ function render(){
   set("c-clientes",D.clientes.length);set("c-colab",D.colabs.length);set("c-diag",D.diag.length);set("c-trab",D.trab.filter(t=>t.estado==="agendado").length);
   set("c-embudo",D.clientes.filter(c=>["nueva","visita","diag","presu"].includes(c.etapa)).length);
   set("c-pres",D.pres.filter(p=>["borrador","enviado"].includes(p.estado)).length);set("c-cobros",venc||D.cobros.filter(pendiente).length,venc);
+  V.classList.toggle("tablero", q.r === "tablero");
   ({panel:vPanel,calendario:vCal,pipeline:vPipeline,clientes:vClientes,cliente:vCliente,colaboradores:vColabs,colab:vColab,diagnosticos:vDiagnosticos,diag:vDiag,informe:vInforme,presupuestos:vPresupuestos,pres:vPres,presdoc:vPresDoc,cobros:vCobros,finanzas:vFin,tableros:vTableros,tablero:vTablero,trabajos:vTrabajos}[q.r]||vPanel)(q.id);
   if(!["calendario"].includes(q.r))window.scrollTo(0,0);
 }
@@ -759,8 +771,11 @@ function vTableros(){tabModo="frente";
 let tabModo="frente",frenteApi=null;
 function vTablero(id){
   const t=D.tableros.find(x=>x.id===id);if(!t){location.hash="#tableros";return}
-  const cab=`<div class="cab"><div><p><a href="#tableros">← Tableros</a></p><h1>${esc(t.nombre)}</h1></div><div class="tools no-print" style="margin:0"><label class="sr" for="tb-n">Nombre</label><input id="tb-n" value="${esc(t.nombre)}"><label class="sr" for="tb-c">Cliente</label><select id="tb-c"><option value="">— Sin cliente —</option>${cliOpts(t.cid)}</select>${tabModo==="frente"?'<button class="btn claro" id="tb-exp" type="button">Exportar imagen</button><button class="btn claro" onclick="window.print()" type="button">Imprimir</button>':""}<button class="btn peligro chico" data-a="borrartab" data-id="${t.id}">Borrar</button></div></div>
-  <div class="seg no-print" role="tablist" style="margin-bottom:14px"><button role="tab" class="${tabModo==="frente"?"on":""}" data-tabmodo="frente">Frente del tablero</button><button role="tab" class="${tabModo==="unifilar"?"on":""}" data-tabmodo="unifilar">Esquema unifilar</button></div>`;
+  const IB = {exp: '<path d="M12 3v12m0 0-4-4m4 4 4-4M5 20h14"/>', imp: '<path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z"/>', del: '<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/>'};
+  const ib = (id, ic, tip, cls, extra) => `<button type="button" class="ibtn${cls ? " " + cls : ""}"${id ? ` id="${id}"` : ""} data-tip="${tip}" aria-label="${tip}"${extra || ""}><svg viewBox="0 0 24 24" aria-hidden="true">${IB[ic]}</svg></button>`;
+  const cab=`<div class="tb-top no-print"><a class="btn chico claro" href="#tableros" data-tip="Volver a la lista de tableros">← Tableros</a><label class="sr" for="tb-n">Nombre</label><input id="tb-n" class="tb-nom" value="${esc(t.nombre)}"><label class="sr" for="tb-c">Cliente</label><select id="tb-c"><option value="">— Sin cliente —</option>${cliOpts(t.cid)}</select>
+  <div class="seg seg-chico" role="tablist"><button role="tab" class="${tabModo==="frente"?"on":""}" data-tabmodo="frente" data-tip="Dibujo del frente con rieles y dispositivos">Frente</button><button role="tab" class="${tabModo==="unifilar"?"on":""}" data-tabmodo="unifilar" data-tip="Esquema unifilar">Unifilar</button></div><span class="grow"></span>
+  ${tabModo==="frente"?ib("tb-exp","exp","Exportar imagen (SVG)")+ib("","imp","Imprimir",""," onclick=\"window.print()\""):""}${ib("","del","Borrar el tablero","rojo",` data-a="borrartab" data-id="${t.id}"`)}</div>`;
   frenteApi=null;
   if(tabModo==="frente"){
     V.innerHTML=cab+'<div id="frente-box"></div>';
@@ -782,7 +797,7 @@ function vTablero(id){
       },1500);
     }
   }
-  V.querySelector("#tb-n").onchange=e=>{t.nombre=e.target.value.trim()||t.nombre;t.fecha=hoy();guardar();V.querySelector("h1").textContent=t.nombre};
+  V.querySelector("#tb-n").onchange=e=>{t.nombre=e.target.value.trim()||t.nombre;e.target.value=t.nombre;t.fecha=hoy();guardar()};
   V.querySelector("#tb-c").onchange=e=>{t.cid=e.target.value;guardar()};
 }
 

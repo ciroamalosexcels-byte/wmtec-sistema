@@ -289,6 +289,32 @@
   .fr-log{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px;font-size:.88rem;max-height:200px;overflow:auto}.fr-log li{background:#fff;border-radius:10px;padding:5px 10px}
   .fr-log li b{font-variant-numeric:tabular-nums;color:#55574f;margin-right:6px}
   @media print{.fr-pal,.fr-cab,.fr-prop,.fr-simp{display:none}.fr{display:block}.fr-lienzo,.fr-lista{border:0;background:#fff}}
+  .fr2{display:grid;grid-template-columns:50px minmax(0,1fr) 300px;gap:10px;height:100%;min-height:0}
+  .fr-rail{display:flex;flex-direction:column;gap:4px;padding:7px 5px;background:#f7f7f3;border:1px solid #c9cbc4;border-radius:18px;align-self:start;max-height:100%;overflow:visible}
+  .fr-rail button{position:relative;width:38px;height:38px;border:0;border-radius:12px;background:none;color:#3a3b36;display:grid;place-items:center;padding:0;cursor:pointer}
+  .fr-rail button:hover{background:#ececE6}.fr-rail button.on{background:#232323;color:#fff}.fr-rail button.on.sim{background:#c23b2c}
+  .fr-rail button:disabled{opacity:.3;cursor:default}.fr-rail button:disabled:hover{background:none}
+  .fr-rail hr{border:0;border-top:1px solid #d6d8d0;margin:3px 5px;width:28px}
+  .fr-rail svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .fr-rail [data-tip]:hover::after,.fr-rail [data-tip]:focus-visible::after{left:calc(100% + 10px);top:50%;transform:translateY(-50%)}
+  .fr-mid{display:flex;flex-direction:column;min-height:0;min-width:0}
+  .fr2 .fr-lienzo{flex:1;min-height:0;padding:8px}
+  .fr-estado{font-size:.8rem;color:#55574f;margin:6px 4px 0}
+  .fr-lado{display:flex;flex-direction:column;min-height:0;background:#f7f7f3;border:1px solid #c9cbc4;border-radius:18px;overflow:hidden}
+  .fr-tabs{display:flex;gap:2px;padding:6px;border-bottom:1px solid #dcded6}
+  .fr-tabs button{flex:1;border:0;background:none;padding:.45em .1em;border-radius:10px;font-weight:700;font-size:.76rem;color:#55574f;cursor:pointer}
+  .fr-tabs button:hover{background:#ececE6}.fr-tabs button.on{background:#232323;color:#fff}
+  .fr-panes{flex:1;min-height:0;overflow:auto;padding:10px}
+  .fr-lado .fr-panes>div{display:none}
+  .fr-lado[data-t=comp] .p-comp,.fr-lado[data-t=prop] .p-prop,.fr-lado[data-t=sim] .p-sim,.fr-lado[data-t=caja] .p-caja,.fr-lado[data-t=lista] .p-lista{display:block}
+  .fr-lado .fr-pal{position:static;max-height:none;overflow:visible;border:0;background:none;padding:0}
+  .fr-lado .fr-tiles{grid-template-columns:repeat(3,1fr)}
+  .fr-lado .fr-prop,.fr-lado .fr-simp,.fr-lado .fr-lista{border:0;background:none;padding:0;margin:0}
+  .fr-lado .fr-cab{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0}.fr-lado .fr-cab>div:first-child{grid-column:1/-1}
+  .fr-lado .fr-cab input,.fr-lado .fr-cab select{width:100%}
+  .fr-lado .fr-prop .g{grid-template-columns:1fr 1fr}
+  @media print{.fr-rail,.fr-lado{display:none}.fr2{display:block;height:auto}}
+  @media (max-width:900px){.fr2{grid-template-columns:1fr;height:auto}.fr-rail{flex-direction:row;flex-wrap:wrap;align-self:stretch}.fr-rail hr{width:1px;height:28px;border-top:0;border-left:1px solid #d6d8d0;margin:5px 3px}.fr2 .fr-lienzo{min-height:60vh}.fr-lado{max-height:70vh}}
   @media (max-width:900px){.fr{grid-template-columns:1fr}.fr-pal{position:static;max-height:none}}`;
 
   function montar(el, tb, alCambiar) {
@@ -314,7 +340,7 @@
     const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
     const aviso = txt => { const x = document.createElement("div"); x.className = "toast"; x.textContent = txt; document.body.appendChild(x); setTimeout(() => x.remove(), 2400); };
 
-    el.innerHTML = `<div class="fr"><aside class="fr-pal" id="fr-pal"></aside><div><div class="fr-cab" id="fr-cab"></div><p class="fr-info" id="fr-info"></p><div class="fr-lienzo" id="fr-lz"><svg id="fr-svg" xmlns="http://www.w3.org/2000/svg"></svg></div><div class="fr-simp" id="fr-simp" hidden></div><div class="fr-prop" id="fr-prop"></div><div class="fr-lista" id="fr-lista"></div></div></div>`;
+    el.innerHTML = `<div class="fr2"><div class="fr-rail" id="fr-rail"></div><div class="fr-mid"><div class="fr-lienzo" id="fr-lz"><svg id="fr-svg" xmlns="http://www.w3.org/2000/svg"></svg></div><p class="fr-estado" id="fr-info"></p></div><aside class="fr-lado" id="fr-lado" data-t="comp"><div class="fr-tabs" id="fr-tabs"></div><div class="fr-panes"><div class="p-comp"><div class="fr-pal" id="fr-pal"></div></div><div class="p-prop"><div class="fr-prop" id="fr-prop"></div></div><div class="p-sim"><div class="fr-simp" id="fr-simp" hidden></div></div><div class="p-caja"><div class="fr-cab" id="fr-cab"></div></div><div class="p-lista"><div class="fr-lista" id="fr-lista"></div></div></div></aside></div>`;
     const $ = id => el.querySelector("#" + id), svg = $("fr-svg");
 
     /* Paleta */
@@ -328,16 +354,46 @@
 
     function pintarCab() {
       const m = medidas(f);
-      $("fr-cab").innerHTML = `<div class="fr-modo" role="tablist"><button type="button" data-modo="armar" class="${modo === "armar" ? "on" : ""}">Armar</button><button type="button" data-modo="sim" class="${modo === "sim" ? "on sim" : ""}">Simular</button></div>
-      <div><label for="fr-pre">Caja</label><select id="fr-pre">${PRESETS.map(p => `<option value="${p[0]}"${p[0] === f.preset ? " selected" : ""}>${p[1]}</option>`).join("")}</select></div>
+      $("fr-cab").innerHTML = `<div><label for="fr-pre">Caja</label><select id="fr-pre">${PRESETS.map(p => `<option value="${p[0]}"${p[0] === f.preset ? " selected" : ""}>${p[1]}</option>`).join("")}</select></div>
       <div><label for="fr-fil">Filas</label><input id="fr-fil" type="number" min="1" max="6" value="${f.filas}"></div>
       <div><label for="fr-mpf">Módulos por fila</label><input id="fr-mpf" type="number" min="4" max="36" value="${f.mpf}"></div>
       <div><label for="fr-an">Ancho (mm)</label><input id="fr-an" inputmode="numeric" value="${esc(f.ancho)}" placeholder="${m.ancho}"></div>
       <div><label for="fr-al">Alto (mm)</label><input id="fr-al" inputmode="numeric" value="${esc(f.alto)}" placeholder="${m.alto}"></div>
-      <div><label for="fr-pr">Prof. (mm)</label><input id="fr-pr" inputmode="numeric" value="${esc(f.prof)}" placeholder="110"></div>
-      <div><label for="fr-z">Tamaño</label><input id="fr-z" type="range" min="30" max="100" value="${zoom}"></div>
-      ${modo === "armar" ? '<button type="button" class="btn chico claro" id="fr-undo">Deshacer</button><button type="button" class="btn chico claro" id="fr-redo">Rehacer</button><button type="button" class="btn chico claro" id="fr-auto">Cablear solo</button><button type="button" class="btn chico claro" id="fr-quitarc">Quitar cables</button>' : ""}`;
+      <div><label for="fr-pr">Prof. (mm)</label><input id="fr-pr" inputmode="numeric" value="${esc(f.prof)}" placeholder="110"></div>`;
+    }
+    /* Barra de herramientas (iconos con descripción al pasar el mouse) y pestañas del panel lateral */
+    const IC = {
+      puntero: '<path d="m4 4 7 17 2.2-7.2L20.5 11.5z"/>', play: '<path d="M7 4.5v15l12-7.5z"/>',
+      undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/>', redo: '<path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13"/>',
+      copiar: '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>', cortar: '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/>',
+      pegar: '<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>', duplicar: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11M14.5 12.5v6M11.5 15.5h6"/>',
+      todo: '<rect x="4" y="4" width="16" height="16" rx="2" stroke-dasharray="3 3"/>', basura: '<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/>',
+      rayo: '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>', cortacable: '<path d="M18.8 13.2l1.4-1.4a4 4 0 0 0-5.7-5.7l-1.4 1.4M5.2 10.8l-1.4 1.4a4 4 0 0 0 5.7 5.7l1.4-1.4M8 8 4 4M16 16l4 4"/>',
+      masz: '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M8 11h6M11 8v6"/>', menosz: '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M8 11h6"/>', ajustar: '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>'
+    };
+    const ico = n => `<svg viewBox="0 0 24 24" aria-hidden="true">${IC[n]}</svg>`;
+    function pintarRail() {
+      const b = (ac, ic, tip, cls, id) => `<button type="button" data-ac="${ac}" data-tip="${tip}" aria-label="${tip}"${id ? ` id="${id}"` : ""}${cls ? ` class="${cls}"` : ""}>${ico(ic)}</button>`;
+      $("fr-rail").innerHTML = b("armar", "puntero", "Armar: mover dispositivos y unir cables (A)", modo === "armar" ? "on" : "") + b("sim", "play", "Simular: ver la corriente y provocar fallas (S)", modo === "sim" ? "on sim" : "") +
+        (modo === "armar" ? "<hr>" + b("undo", "undo", "Deshacer (Ctrl+Z)", "", "fr-undo") + b("redo", "redo", "Rehacer (Ctrl+Y)", "", "fr-redo") +
+          "<hr>" + b("copy", "copiar", "Copiar lo seleccionado (Ctrl+C)") + b("cut", "cortar", "Cortar (Ctrl+X)") + b("paste", "pegar", "Pegar (Ctrl+V)") + b("dup", "duplicar", "Duplicar (Ctrl+D)") +
+          "<hr>" + b("selall", "todo", "Seleccionar todo (Ctrl+A)") + b("del", "basura", "Quitar lo seleccionado (Suprimir)") +
+          "<hr>" + b("auto", "rayo", "Cablear solo: acometida, protecciones y cargas") + b("quitarc", "cortacable", "Quitar todos los cables") : "") +
+        "<hr>" + b("zin", "masz", "Acercar") + b("zout", "menosz", "Alejar") + b("fit", "ajustar", "Ajustar a la pantalla");
       syncHist();
+    }
+    let ptab = "comp", ultSel = "", noAuto = false;
+    function pintarTabs() {
+      const t = modo === "sim" ? [["sim", "Simulación"], ["lista", "Lista"]] : [["comp", "Componentes"], ["prop", "Propiedades"], ["caja", "Caja"], ["lista", "Lista"]];
+      if (!t.some(x => x[0] === ptab)) ptab = t[0][0];
+      $("fr-tabs").innerHTML = t.map(x => `<button type="button" data-ptab="${x[0]}" class="${x[0] === ptab ? "on" : ""}">${x[1]}</button>`).join(""); $("fr-lado").dataset.t = ptab;
+    }
+    const verTab = n => { ptab = n; pintarTabs(); };
+    function zoomPor(d) { zoom = Math.max(20, Math.min(220, zoom + d)); svg.style.width = zoom + "%"; try { localStorage.setItem("fr-zoom", zoom); } catch (e) { } }
+    function ajustar() {
+      const lz = $("fr-lz"), vb = svg.viewBox.baseVal; if (!vb || !vb.height) return;
+      const cw = lz.clientWidth - 16, ch = lz.clientHeight - 16; zoom = Math.max(20, Math.min(100, Math.floor(ch * (vb.width / vb.height) / cw * 100))); svg.style.width = zoom + "%";
+      try { localStorage.setItem("fr-zoom", zoom); } catch (e) { }
     }
     function info() {
       const m = medidas(f), u = usados(f), tot = f.filas * f.mpf;
@@ -433,6 +489,8 @@
       $("fr-lista").innerHTML = `<h3 style="margin:0 0 8px">Lista de materiales</h3>` + (ks.length ? `<table>${ks.map(k => `<tr><td>${esc(k)}</td><td>${c[k]}</td></tr>`).join("")}</table>` : `<p style="margin:0;color:#55574f">Agregá dispositivos desde el panel de la izquierda.</p>`);
     }
     function prop() {
+      const sg = [...multi].join(",") + "|" + selC;
+      if (sg !== ultSel) { ultSel = sg; if (noAuto) noAuto = false; else if (modo === "armar") verTab(multi.size || selC ? "prop" : "comp"); }
       const o = f.items.find(i => i.id === sel), box = $("fr-prop");
       if (modo === "sim") { box.hidden = true; return; } box.hidden = false;
       if (multi.size > 1) {
@@ -461,6 +519,8 @@
       box.querySelector("#fp-del").onclick = () => quitar(o.id);
       box.querySelector("#fp-dup").onclick = () => { if (!enRiel(o)) { if (o.z === "a") return aviso("Hay una sola acometida"); const n = { id: uid(), k: o.k, p: Object.assign({}, o.p), z: o.z }; f.items.push(n); sel = n.id; multi = new Set([n.id]); return todo(); } const h = hueco(f, modOf(o), o.f); if (!h) return aviso("No hay lugar libre en el tablero"); const n = { id: uid(), k: o.k, p: Object.assign({}, o.p), rot: o.rot, f: h.f, x: h.x }; f.items.push(n); sel = n.id; multi = new Set([n.id]); todo(); };
     }
+    function selTodo() { multi = new Set(f.items.map(o => o.id)); sel = f.items[0] ? f.items[0].id : null; selC = null; pintar(); prop(); }
+    function borrarSel() { if (selC) { f.cables = f.cables.filter(c => c.id !== selC); selC = null; todo(); } else if (multi.size) quitarVarios([...multi]); }
     function quitarVarios(ids) {
       const S = new Set(ids); f.items = f.items.filter(i => !S.has(i.id)); f.cables = f.cables.filter(c => !S.has(c.a.split(":")[0]) && !S.has(c.b.split(":")[0])); multi = new Set(); sel = null; selC = null; todo();
     }
@@ -534,7 +594,7 @@
     function cambiarModo(m) {
       modo = m; sel = null; multi = new Set(); selC = null; previa = null; clearInterval(timer);
       if (m === "sim") { sim = mk(); sim.on = true; ultimaSig = ""; timer = setInterval(tick, 100); } else sim.on = false;
-      pintarCab(); info(); pintar(); prop(); panelSim();
+      ptab = m === "sim" ? "sim" : "comp"; ultSel = ""; pintarTabs(); pintarRail(); pintarCab(); info(); pintar(); prop(); panelSim();
     }
 
     function agregar(k, fila, x) {
@@ -542,7 +602,7 @@
       if (kk.z === "a") { if (f.items.some(o => o.z === "a")) return aviso("Ya hay una acometida"); it.z = "a"; }
       else if (kk.z === "c") { it.z = "c"; }
       else { const m = modOf(it); it.rot = ""; if (fila != null && libre(f, fila, x, m)) { it.f = fila; it.x = x; } else { const h = hueco(f, m, sel ? (f.items.find(i => i.id === sel) || {}).f || 0 : 0); if (!h) return aviso("No hay lugar libre en el tablero"); it.f = h.f; it.x = h.x; } }
-      f.items.push(it); sel = it.id; multi = new Set([it.id]); todo();
+      f.items.push(it); sel = it.id; multi = new Set([it.id]); noAuto = true; todo();
     }
 
     /* Cablear solo: acometida -> general -> diferencial -> protecciones -> cargas */
@@ -585,6 +645,9 @@
     });
     el.addEventListener("input", e => { if (e.target.id === "fr-z") { zoom = +e.target.value; svg.style.width = zoom + "%"; try { localStorage.setItem("fr-zoom", zoom); } catch (x) { } } });
     el.addEventListener("click", e => {
+      const ac = e.target.closest("[data-ac]");
+      if (ac) { const fn = { armar: () => cambiarModo("armar"), sim: () => cambiarModo("sim"), undo: deshacer, redo: rehacer, copy: copiar, cut: cortar, paste: pegar, dup: () => { copiar(); pegar(); }, selall: selTodo, del: borrarSel, auto: cablear, quitarc: () => { f.cables = []; todo(); }, zin: () => zoomPor(12), zout: () => zoomPor(-12), fit: ajustar }[ac.dataset.ac]; if (fn) fn(); return; }
+      const pt = e.target.closest("[data-ptab]"); if (pt) return verTab(pt.dataset.ptab);
       const m = e.target.closest("[data-modo]"); if (m) return cambiarModo(m.dataset.modo);
       if (e.target.id === "fr-undo") return deshacer();
       if (e.target.id === "fr-redo") return rehacer();
@@ -674,6 +737,8 @@
       if (/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) return;
       const ctrl = e.ctrlKey || e.metaKey, k = e.key.toLowerCase();
       if (e.key === "Escape") { if (previa) { previa = null; pintar(); } else if (multi.size || selC) { multi = new Set(); sel = null; selC = null; pintar(); prop(); panelSim(); } return; }
+      if (!ctrl && !e.altKey && k === "s") { cambiarModo("sim"); return; }
+      if (!ctrl && !e.altKey && k === "a") { cambiarModo("armar"); return; }
       if (modo !== "armar") return;
       if (ctrl && k === "z" && !e.shiftKey) { e.preventDefault(); return deshacer(); }
       if (ctrl && (k === "y" || (k === "z" && e.shiftKey))) { e.preventDefault(); return rehacer(); }
@@ -681,8 +746,8 @@
       if (ctrl && k === "x") { e.preventDefault(); return cortar(); }
       if (ctrl && k === "v") { e.preventDefault(); return pegar(); }
       if (ctrl && k === "d") { e.preventDefault(); copiar(); return pegar(); }
-      if (ctrl && k === "a") { e.preventDefault(); multi = new Set(f.items.map(o => o.id)); sel = f.items[0] ? f.items[0].id : null; selC = null; pintar(); prop(); return; }
-      if (e.key === "Delete" || e.key === "Backspace") { e.preventDefault(); if (selC) { f.cables = f.cables.filter(c => c.id !== selC); selC = null; todo(); } else if (multi.size) quitarVarios([...multi]); return; }
+      if (ctrl && k === "a") { e.preventDefault(); return selTodo(); }
+      if (e.key === "Delete" || e.key === "Backspace") { e.preventDefault(); return borrarSel(); }
       const fl = { ArrowLeft: [0, -1], ArrowRight: [0, 1], ArrowUp: [-1, 0], ArrowDown: [1, 0] }[e.key];
       if (fl && multi.size && !ctrl) {
         e.preventDefault(); const grupo = f.items.filter(o => multi.has(o.id) && enRiel(o)); if (!grupo.length) return; const ids = new Set(grupo.map(o => o.id));
@@ -694,7 +759,10 @@
       const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(['<?xml version="1.0" encoding="UTF-8"?>' + s], { type: "image/svg+xml" })); a.download = (tb.nombre || "tablero").replace(/[^\w-]+/g, "-") + "-frente.svg"; a.click();
     };
     hist = [snap()]; hpos = 0; hsig = hist[0];
+    pintarTabs(); pintarRail();
     todo();
+    let guardado = null; try { guardado = localStorage.getItem("fr-zoom"); } catch (e) { }
+    requestAnimationFrame(() => { if (!guardado) ajustar(); });
     return { exportar: el._exportar, _tick: tick, _modo: cambiarModo, _st: () => ({ f, sim, R }) };
   }
   window.Frente = { montar, contar: tb => (tb && tb.frente ? tb.frente.items.length : 0) };
