@@ -2,51 +2,64 @@
    Un módulo DIN = 18 mm. Uso: Frente.montar(elemento, tablero, alCambiar). */
 (function () {
   "use strict";
-  const M = 18, H = 88, PASO = 132, MX = 26, MY = 30, TOP0 = 74, LW = 48, LH = 56, GAP = 34, ISC = 3000;
+  const M = 18, H = 88, PASO = 156, MX = 26, MY = 30, TOP0 = 74, LW = 48, LH = 56, GAP = 34, ISC = 3000;
   let TOP = TOP0;
   const CLS = { termo: "prot", difer: "prot", general: "prot", fusible: "prot", guardamotor: "prot", contactor: "sw", rele: "sw", temporizador: "sw", horario: "sw", relewifi: "sw", voltimetro: "tap", amperimetro: "med", medidor1: "med", medidor3: "med", bornera: "junc", barraN: "junc", barraT: "junc", dps: "tap", monitor: "tap", piloto: "tap", fuente: "carga", reserva: "none", acometida: "src" };
 
   /* ---------- Dibujos (vista frontal, en mm). v = estado en la simulación ---------- */
   const t = (x, y, s, txt, o) => `<text x="${x}" y="${y}" font-size="${s}" text-anchor="middle" font-family="Archivo,Arial,sans-serif" ${o || 'fill="#222"'}>${txt}</text>`;
-  const cuerpo = (w, base) => `<rect x=".4" y="0" width="${w - .8}" height="${H}" rx="2.6" fill="${base || "#f3f3ef"}" stroke="#7d7f78" stroke-width=".8"/>` +
-    `<rect x=".4" y="0" width="${w - .8}" height="11" rx="2.6" fill="#dbdcd6" stroke="#7d7f78" stroke-width=".8"/><rect x=".4" y="${H - 11}" width="${w - .8}" height="11" rx="2.6" fill="#dbdcd6" stroke="#7d7f78" stroke-width=".8"/>`;
-  const palancas = (w, y, h, n, e) => {
-    const ph = h * .5, py = e === "off" ? y + h - 3 - ph : e === "trip" ? y + (h - ph) / 2 : y + 3;
-    let s = `<rect x="3.4" y="${y}" width="${w - 6.8}" height="${h}" rx="2" fill="#2a2a2a"/>`;
-    for (let i = 0; i < n; i++) s += `<rect x="${i * M + 5}" y="${py}" width="8" height="${ph}" rx="1.4" fill="${e === "trip" ? "#c23b2c" : "#4d4d4d"}" stroke="#0f0f0f" stroke-width=".5"/><rect x="${i * M + 6.6}" y="${py + 2}" width="4.8" height="1.2" fill="#d8d8d8"/>`;
-    return s;
+  const cuerpo = (w, base) => `<rect x=".5" y=".5" width="${w - 1}" height="${H - 1}" rx="3" fill="${base || "#f6f6f3"}" stroke="#9fa19a" stroke-width=".9"/><rect x="1.6" y="1.6" width="${w - 3.2}" height="${H - 3.2}" rx="2.3" fill="none" stroke="#fff" stroke-width=".7"/><line x1="2" y1="22" x2="${w - 2}" y2="22" stroke="#e1e2dd" stroke-width=".6"/><line x1="2" y1="${H - 22}" x2="${w - 2}" y2="${H - 22}" stroke="#e1e2dd" stroke-width=".6"/>`;
+  /* banda negra de la palanca: n palancas repartidas en el ancho; e = on, off o trip */
+  const banda = (w, n, e, col, y, h) => {
+    y = y || 50; h = h || 16; let s2 = `<rect x="2.6" y="${y}" width="${w - 5.2}" height="${h}" rx="2" fill="#242424"/>`;
+    for (let i = 0; i < n; i++) { const pw = w / n, kw = Math.min(11, pw - 6), kx = i * pw + (pw - kw) / 2, ky = e === "off" ? y + h - 9.6 : e === "trip" ? y + 3.4 : y + 1.2;
+      s2 += `<rect x="${kx}" y="${ky}" width="${kw}" height="8.4" rx="1.6" fill="${e === "trip" ? "#c23b2c" : (col || "#4a4a4a")}" stroke="#0d0d0d" stroke-width=".5"/><rect x="${kx + 1.4}" y="${ky + 1.2}" width="${kw - 2.8}" height="1.2" fill="#fff" opacity=".35"/>`; }
+    return s2;
   };
-  const lcd = (w, y, h, txt, fg, sub) => `<rect x="3" y="${y}" width="${w - 6}" height="${h}" rx="1.6" fill="#101a14" stroke="#4a4a4a" stroke-width=".6"/>` + t(w / 2 - (sub ? 3 : 0), y + h * .7, h * .5, txt, `fill="${fg}" font-family="Consolas,monospace" font-weight="700"`) + (sub ? t(w - 6, y + h * .7, h * .28, sub, `fill="${fg}"`) : "");
+  const lcd = (w, y, h, txt, fg, sub) => `<rect x="3" y="${y}" width="${w - 6}" height="${h}" rx="1.6" fill="#101a14" stroke="#4a4a4a" stroke-width=".6"/>` + t(w / 2 - (sub ? 3 : 0), y + h * .72, h * .5, txt, `fill="${fg}" font-family="Consolas,monospace" font-weight="700"`) + (sub ? t(w - 6, y + h * .72, h * .28, sub, `fill="${fg}"`) : "");
   const led = (x, y, v, col) => `<circle cx="${x}" cy="${y}" r="2.2" fill="${v && v.sim ? (v.on ? col : "#6b6d66") : col}"/>`;
+  const gris = 'fill="#6b6d66"', negro = 'fill="#1f201d" font-weight="800"';
+  /* tornillos de los bornes: arriba entra el cable con el tornillo en un hueco, abajo la cabeza negra */
+  const tornilloSup = (x, y) => `<circle cx="${x}" cy="${y}" r="6" fill="#dcddd7" stroke="#a3a59d" stroke-width=".8"/><circle cx="${x}" cy="${y}" r="3.8" fill="#8d8f88"/><line x1="${x - 2.6}" y1="${y}" x2="${x + 2.6}" y2="${y}" stroke="#3b3c38" stroke-width=".9"/>`;
+  const tornilloInf = (x, y) => `<circle cx="${x}" cy="${y}" r="5.8" fill="#161616" stroke="#000" stroke-width=".6"/><circle cx="${x}" cy="${y}" r="4" fill="#2b2b2b"/><line x1="${x - 2.8}" y1="${y}" x2="${x + 2.8}" y2="${y}" stroke="#bdbdbd" stroke-width=".9"/>`;
   const D = {
-    termo: (w, p, v) => cuerpo(w) + t(w / 2, 8, 5.4, `${p.curva}${p.amp}`, 'fill="#222" font-weight="700"') + palancas(w, 24, 36, w / M, v.e) + t(w / 2, 72, 4.4, `${p.amp} A`, 'fill="#55574f"'),
-    difer: (w, p, v) => cuerpo(w) + t(w / 2, 8, 5, `ID ${p.amp}A`, 'fill="#222" font-weight="700"') + palancas(w, 22, 28, w / M, v.e) +
-      `<rect x="${w - 14}" y="55" width="10" height="9" rx="1.6" fill="#2563eb" stroke="#173a8a" stroke-width=".5"/>` + t(w - 9, 61.6, 5, "T", 'fill="#fff" font-weight="700"') + t(w / 2 - 3, 62, 4.4, `${p.sens} mA`, 'fill="#55574f"'),
-    general: (w, p, v) => { const y = v.e === "off" ? 38 : v.e === "trip" ? 32 : 26; return cuerpo(w, "#eeeee9") + t(w / 2, 8, 5.4, `${p.amp} A`, 'fill="#222" font-weight="700"') + `<rect x="3.4" y="22" width="${w - 6.8}" height="42" rx="2" fill="#2a2a2a"/><rect x="${w / 2 - 6}" y="${y}" width="12" height="20" rx="1.6" fill="${v.e === "off" ? "#555" : v.e === "trip" ? "#e08a00" : "#c23b2c"}" stroke="#0f0f0f" stroke-width=".5"/>` + t(w / 2, 60, 4.5, "I  -  O", 'fill="#e6e6e0"') + t(w / 2, 74, 4.4, "General", 'fill="#55574f"'); },
-    dps: (w, p, v) => cuerpo(w) + t(w / 2, 8, 5, "DPS", 'fill="#222" font-weight="700"') + `<rect x="4" y="30" width="${w - 8}" height="18" rx="2" fill="#2f8a4c"/>` + t(w / 2, 42, 6, "OK", 'fill="#fff" font-weight="700"') + t(w / 2, 66, 4.4, "Tipo 2", 'fill="#55574f"'),
-    guardamotor: (w, p, v) => cuerpo(w) + t(w / 2, 8, 5, "GM", 'fill="#222" font-weight="700"') + `<circle cx="${w / 2}" cy="36" r="12" fill="#222" stroke="#666" stroke-width="1"/><line x1="${w / 2}" y1="36" x2="${w / 2 + 6}" y2="29" stroke="#fff" stroke-width="1.6"/>` +
-      `<rect x="${w / 2 - 15}" y="54" width="13" height="10" rx="1.6" fill="${v.e === "on" || !v.sim ? "#2f8a4c" : "#3f6b4f"}"/><rect x="${w / 2 + 2}" y="54" width="13" height="10" rx="1.6" fill="${v.e === "on" || !v.sim ? "#8c3a32" : "#c23b2c"}"/>` + t(w / 2 - 8.5, 61.5, 5, "I", 'fill="#fff" font-weight="700"') + t(w / 2 + 8.5, 61.5, 5, "O", 'fill="#fff" font-weight="700"') + t(w / 2, 76, 4.4, `${p.rango || ""} A`, 'fill="#55574f"'),
-    fusible: (w, p, v) => cuerpo(w) + `<rect x="3.4" y="24" width="${w - 6.8}" height="38" rx="2" fill="${v.e === "trip" ? "#f3d3cf" : "#e6e6df"}" stroke="#9a9b95" stroke-width=".6"/><rect x="${w / 2 - 2}" y="28" width="4" height="${v.e === "trip" ? 12 : 30}" rx="1.4" fill="${v.e === "trip" ? "#c23b2c" : "#b7b8b2"}"/>` + t(w / 2, 8, 5, `${p.amp} A`, 'fill="#222" font-weight="700"') + t(w / 2, 74, 4.2, v.e === "trip" ? "Fundido" : "Fusible", 'fill="#55574f"'),
-    voltimetro: (w, p, v) => cuerpo(w, "#ececE8") + lcd(w, 22, 28, v.txt != null ? v.txt : "230", "#7CFF9B", "V") + `<circle cx="${w / 3}" cy="62" r="3" fill="#bdbeb8" stroke="#777" stroke-width=".5"/><circle cx="${w * .66}" cy="62" r="3" fill="#bdbeb8" stroke="#777" stroke-width=".5"/>` + t(w / 2, 8, 5, "Voltímetro", 'fill="#222" font-weight="700"'),
-    amperimetro: (w, p, v) => cuerpo(w, "#ececE8") + lcd(w, 22, 28, v.txt != null ? v.txt : "16.4", "#ffb84d", "A") + `<circle cx="${w / 3}" cy="62" r="3" fill="#bdbeb8" stroke="#777" stroke-width=".5"/><circle cx="${w * .66}" cy="62" r="3" fill="#bdbeb8" stroke="#777" stroke-width=".5"/>` + t(w / 2, 8, 5, "Amperímetro", 'fill="#222" font-weight="700"'),
-    medidor1: (w, p, v) => cuerpo(w, "#f1f1ed") + t(w / 2, 8, 5, "Medidor 1~", 'fill="#222" font-weight="700"') + `<rect x="6" y="18" width="${w - 12}" height="22" rx="1.6" fill="#cbd9c4" stroke="#777" stroke-width=".6"/>` + t(w / 2, 32, 8, v.txt != null ? v.txt : "0012345.6", 'fill="#1d2b1d" font-family="Consolas,monospace" font-weight="700"') + t(w - 12, 38, 4, v.sub || "kWh", 'fill="#1d2b1d"') +
-      t(w / 2, 52, 4.6, "230 V  ~  50 Hz", 'fill="#55574f"') + `<circle cx="${w - 8}" cy="46" r="1.8" fill="${v.on ? "#e11d1d" : "#8c3a32"}"/><rect x="${w / 2 - 16}" y="62" width="14" height="8" rx="1.4" fill="#bdbeb8" stroke="#777" stroke-width=".5"/><rect x="${w / 2 + 2}" y="62" width="14" height="8" rx="1.4" fill="#bdbeb8" stroke="#777" stroke-width=".5"/>`,
-    medidor3: (w, p, v) => cuerpo(w, "#f1f1ed") + t(w / 2, 8, 5, "Medidor 3~", 'fill="#222" font-weight="700"') + `<rect x="6" y="18" width="${w - 12}" height="22" rx="1.6" fill="#cbd9c4" stroke="#777" stroke-width=".6"/>` + t(w / 2, 32, 9, v.txt != null ? v.txt : "0012345.6", 'fill="#1d2b1d" font-family="Consolas,monospace" font-weight="700"') + t(w - 12, 38, 4, v.sub || "kWh", 'fill="#1d2b1d"') +
-      t(w / 2, 52, 4.6, "3 x 230/400 V", 'fill="#55574f"') + ["L1", "L2", "L3"].map((x, i) => `<circle cx="${w / 2 - 14 + i * 14}" cy="60" r="1.8" fill="${v.sim && !v.on ? "#6b6d66" : "#2fe06b"}"/>` + t(w / 2 - 14 + i * 14, 67, 3.6, x, 'fill="#55574f"')).join("") + `<rect x="${w / 2 - 16}" y="70" width="14" height="6" rx="1.2" fill="#bdbeb8" stroke="#777" stroke-width=".5"/><rect x="${w / 2 + 2}" y="70" width="14" height="6" rx="1.2" fill="#bdbeb8" stroke="#777" stroke-width=".5"/>`,
-    rele: (w, p, v) => cuerpo(w, "#e8edf5") + led(w / 2, 20, v, "#2fe06b") + `<rect x="3.6" y="28" width="${w - 7.2}" height="24" rx="1.6" fill="#2e5aac" stroke="#1b3a74" stroke-width=".6"/>` + t(w / 2, 43, 4.2, "RELÉ", 'fill="#fff" font-weight="700"') + t(w / 2, 62, 3.8, "A1  A2", 'fill="#55574f"') + t(w / 2, 70, 3.8, p.bobina, 'fill="#55574f"'),
-    contactor: (w, p, v) => cuerpo(w, "#d9dad5") + t(w / 2, 8, 4.8, `${p.polos}P ${p.amp}A`, 'fill="#222" font-weight="700"') + `<rect x="${w / 2 - 8}" y="${v.e === "off" ? 33 : 28}" width="16" height="14" rx="1.8" fill="${v.e === "off" ? "#7a7a7a" : "#3a3a3a"}" stroke="#111" stroke-width=".5"/>` + t(w / 2, 52, 4, "A1   A2", 'fill="#222"') + t(w / 2, 62, 3.8, p.bobina, 'fill="#55574f"') + t(w / 2, 74, 4.2, "Contactor", 'fill="#55574f"') + led(w - 6, 18, v, "#2fe06b"),
-    temporizador: (w, p, v) => cuerpo(w, "#f1f1ed") + `<circle cx="${w / 2}" cy="38" r="11" fill="#fafaf7" stroke="#333" stroke-width="1"/>` + Array.from({ length: 12 }, (_, i) => { const a = i * Math.PI / 6; return `<line x1="${w / 2 + 8.4 * Math.sin(a)}" y1="${38 - 8.4 * Math.cos(a)}" x2="${w / 2 + 10 * Math.sin(a)}" y2="${38 - 10 * Math.cos(a)}" stroke="#333" stroke-width=".6"/>` }).join("") +
-      `<line x1="${w / 2}" y1="38" x2="${w / 2 + 6}" y2="33" stroke="#c23b2c" stroke-width="1.4"/>` + led(w - 8, 18, v, "#f59e0b") + t(w / 2, 8, 4.6, "Temporizador", 'fill="#222" font-weight="700"') + t(w / 2, 62, 4.2, "0 - 10 min", 'fill="#55574f"'),
-    horario: (w, p, v) => cuerpo(w, "#f1f1ed") + t(w / 2, 8, 4.8, "Horario", 'fill="#222" font-weight="700"') + lcd(w, 17, 17, "12:30", "#7CFF9B") + `<circle cx="${w / 2}" cy="52" r="9" fill="#fafaf7" stroke="#333" stroke-width="1"/><line x1="${w / 2}" y1="52" x2="${w / 2}" y2="45" stroke="#333" stroke-width="1.2"/><line x1="${w / 2}" y1="52" x2="${w / 2 + 5}" y2="55" stroke="#c23b2c" stroke-width="1.2"/>` + t(w / 2, 74, 4.2, "Prog. diario", 'fill="#55574f"'),
-    relewifi: (w, p, v) => cuerpo(w, "#fbfbf9") + led(w / 2, 20, v, "#3b82f6") + [14, 9, 4].map(r => `<path d="M ${w / 2 - r} ${44} A ${r} ${r} 0 0 1 ${w / 2 + r} ${44}" fill="none" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round"/>`).join("") + `<circle cx="${w / 2}" cy="47" r="1.8" fill="#2563eb"/>` + t(w / 2, 8, 4.8, "Relé WiFi", 'fill="#222" font-weight="700"') + t(w / 2, 64, 4.2, "1 canal · 16 A", 'fill="#55574f"'),
-    fuente: (w, p, v) => cuerpo(w, "#dfe0db") + [18, 22, 26, 30].map(y => `<line x1="8" y1="${y}" x2="${w - 8}" y2="${y}" stroke="#9a9b95" stroke-width="1"/>`).join("") + t(w / 2, 8, 5, "Fuente", 'fill="#222" font-weight="700"') + t(w / 2, 48, 8, p.salida, 'fill="#222" font-weight="700"') + led(w - 9, 58, v, "#2fe06b") + t(w / 2, 74, 4.2, "Salida DC", 'fill="#55574f"'),
-    monitor: (w, p, v) => cuerpo(w, "#e8edf2") + t(w / 2, 8, 4.4, "Falta de fase", 'fill="#222" font-weight="700"') + ["L1", "L2", "L3"].map((x, i) => led(w / 2 - 10 + i * 10, 30, v, "#2fe06b") + t(w / 2 - 10 + i * 10, 40, 3.8, x, 'fill="#55574f"')).join("") + `<rect x="5" y="50" width="${w - 10}" height="12" rx="1.6" fill="#c9cbc5"/>` + t(w / 2, 72, 4.2, "Monitor", 'fill="#55574f"'),
-    piloto: (w, p, v) => { const c = ({ rojo: "#d6342a", verde: "#2fb15a", "ámbar": "#f0a30a", azul: "#2563eb", blanco: "#f4f4f4" })[p.color] || "#d6342a"; return cuerpo(w) + `<circle cx="${w / 2}" cy="40" r="7.4" fill="${v.sim && !v.on ? "#5c5d58" : c}" stroke="#222" stroke-width="1"/>` + (v.sim && v.on ? `<circle cx="${w / 2}" cy="40" r="11" fill="${c}" opacity=".3"/>` : "") + `<circle cx="${w / 2 - 2.4}" cy="37.4" r="2" fill="#fff" opacity=".55"/>` + t(w / 2, 8, 4.4, "Piloto", 'fill="#222" font-weight="700"'); },
-    bornera: (w) => { const n = Math.round(w / 9); let s = ""; for (let i = 0; i < n; i++) s += `<rect x="${i * 9 + .5}" y="18" width="8" height="54" rx="1.2" fill="#c9cbc5" stroke="#7d7f78" stroke-width=".6"/><circle cx="${i * 9 + 4.5}" cy="28" r="2.4" fill="#8d8f88"/><line x1="${i * 9 + 3}" y1="28" x2="${i * 9 + 6}" y2="28" stroke="#444" stroke-width=".7"/><rect x="${i * 9 + 2}" y="42" width="5" height="9" rx="1" fill="#6b6d66"/><circle cx="${i * 9 + 4.5}" cy="62" r="2.4" fill="#8d8f88"/>`; return s },
-    barraN: (w) => `<rect x=".4" y="26" width="${w - .8}" height="36" rx="2" fill="#3b7fc4" stroke="#215c96" stroke-width=".8"/>` + Array.from({ length: Math.round(w / 6) }, (_, i) => `<circle cx="${3 + i * 6}" cy="38" r="1.9" fill="#173f6b"/><circle cx="${3 + i * 6}" cy="52" r="1.9" fill="#173f6b"/>`).join("") + t(w / 2, 72, 5, "N", 'fill="#215c96" font-weight="700"'),
-    barraT: (w) => `<rect x=".4" y="26" width="${w - .8}" height="36" rx="2" fill="#2f8a4c" stroke="#1d5f33" stroke-width=".8"/>` + Array.from({ length: Math.round(w / 8) }, (_, i) => `<rect x="${i * 8 + 1}" y="26" width="4" height="36" fill="#f0c419" opacity=".9"/>`).join("") + Array.from({ length: Math.round(w / 6) }, (_, i) => `<circle cx="${3 + i * 6}" cy="44" r="1.9" fill="#1d3b27"/>`).join("") + t(w / 2, 72, 5, "PE", 'fill="#1d5f33" font-weight="700"'),
+    termo: (w, p, v) => { const n = w / M; let s2 = cuerpo(w) + t(M / 2, 35, 7, `${p.curva}${p.amp}`, negro) + t(M / 2, 41, 2.7, "230/400 V~", gris) + t(M / 2, 45, 2.7, "IEC 60898", gris);
+      for (let i = 1; i < n; i++) s2 += t(i * M + M / 2, 37, 4.8, "ITM", 'fill="#3b3c38" font-weight="700"') + `<path d="M${i * M + 5} 44h3l2-3 2 3h3" fill="none" stroke="#6b6d66" stroke-width=".7"/>`;
+      return s2 + banda(w, n, v.e); },
+    difer: (w, p, v) => cuerpo(w) + t(w / 2, 31, 6.4, "ID", negro) + t(w / 2, 37, 2.9, `In ${p.amp} A`, gris) + t(w / 2, 41.4, 2.9, `IΔn ${p.sens} mA`, gris) +
+      `<rect x="3.6" y="44.5" width="9.4" height="8.4" rx="1.4" fill="#2b5bd7" stroke="#173a8a" stroke-width=".5"/>` + t(8.3, 51, 5, "T", 'fill="#fff" font-weight="700"') + banda(w, 1, v.e, "#2b5bd7", 55, 12),
+    general: (w, p, v) => cuerpo(w, "#f1f1ed") + t(w / 2, 36, 7.8, `${p.amp} A`, negro) + t(w / 2, 42, 2.8, "Interruptor general", gris) + t(w / 2, 46, 2.8, "IEC 60947-3", gris) + banda(w, 1, v.e, "#b32d22", 50, 16),
+    dps: (w, p, v) => cuerpo(w) + t(w / 2, 30, 5, "DPS", negro) + `<rect x="4" y="34" width="${w - 8}" height="14" rx="2" fill="#2f8a4c"/>` + t(w / 2, 44, 6, "OK", 'fill="#fff" font-weight="700"') + t(w / 2, 58, 3.2, "Tipo 2", gris),
+    guardamotor: (w, p, v) => cuerpo(w) + t(w / 2, 29, 5, "GM", negro) + t(w / 2, 34, 3, `${p.rango || ""} A`, gris) + `<circle cx="${w / 2}" cy="46" r="9" fill="#222" stroke="#666" stroke-width="1"/><line x1="${w / 2}" y1="46" x2="${w / 2 + 5}" y2="40" stroke="#fff" stroke-width="1.5"/>` +
+      `<rect x="${w / 2 - 14}" y="58" width="12" height="8" rx="1.4" fill="${v.e === "on" || !v.sim ? "#2f8a4c" : "#3f6b4f"}"/><rect x="${w / 2 + 2}" y="58" width="12" height="8" rx="1.4" fill="${v.e === "on" || !v.sim ? "#8c3a32" : "#c23b2c"}"/>` + t(w / 2 - 8, 64, 4.6, "I", 'fill="#fff" font-weight="700"') + t(w / 2 + 8, 64, 4.6, "O", 'fill="#fff" font-weight="700"'),
+    fusible: (w, p, v) => cuerpo(w) + t(w / 2, 30, 5.2, `${p.amp} A`, negro) + `<rect x="3.6" y="35" width="${w - 7.2}" height="28" rx="2" fill="${v.e === "trip" ? "#f3d3cf" : "#e6e6df"}" stroke="#9a9b95" stroke-width=".6"/><rect x="${w / 2 - 2}" y="39" width="4" height="${v.e === "trip" ? 8 : 20}" rx="1.4" fill="${v.e === "trip" ? "#c23b2c" : "#b7b8b2"}"/>`,
+    voltimetro: (w, p, v) => cuerpo(w, "#ececE8") + lcd(w, 26, 22, v.txt != null ? v.txt : "230", "#7CFF9B", "V") + `<circle cx="${w / 3}" cy="55" r="2.6" fill="#bdbeb8" stroke="#777" stroke-width=".5"/><circle cx="${w * .66}" cy="55" r="2.6" fill="#bdbeb8" stroke="#777" stroke-width=".5"/>` + t(w / 2, 63, 3.4, "Voltímetro", gris),
+    amperimetro: (w, p, v) => cuerpo(w, "#ececE8") + lcd(w, 26, 22, v.txt != null ? v.txt : "16.4", "#ffb84d", "A") + `<circle cx="${w / 3}" cy="55" r="2.6" fill="#bdbeb8" stroke="#777" stroke-width=".5"/><circle cx="${w * .66}" cy="55" r="2.6" fill="#bdbeb8" stroke="#777" stroke-width=".5"/>` + t(w / 2, 63, 3.4, "Amperímetro", gris),
+    medidor1: (w, p, v) => cuerpo(w, "#f1f1ed") + t(w / 2, 30, 4.6, "Medidor 1~", negro) + `<rect x="6" y="33" width="${w - 12}" height="16" rx="1.6" fill="#cbd9c4" stroke="#777" stroke-width=".6"/>` + t(w / 2, 45, 8, v.txt != null ? v.txt : "0012345.6", 'fill="#1d2b1d" font-family="Consolas,monospace" font-weight="700"') + t(w - 11, 48, 3.4, v.sub || "kWh", 'fill="#1d2b1d"') +
+      t(w / 2, 56, 3.4, "230 V  ~  50 Hz", gris) + `<circle cx="${w - 8}" cy="60" r="1.8" fill="${v.on ? "#e11d1d" : "#8c3a32"}"/><rect x="${w / 2 - 16}" y="58" width="12" height="5.6" rx="1.2" fill="#bdbeb8" stroke="#777" stroke-width=".5"/><rect x="${w / 2 + 4}" y="58" width="12" height="5.6" rx="1.2" fill="#bdbeb8" stroke="#777" stroke-width=".5"/>`,
+    medidor3: (w, p, v) => cuerpo(w, "#f1f1ed") + t(w / 2, 30, 4.6, "Medidor 3~", negro) + `<rect x="6" y="33" width="${w - 12}" height="16" rx="1.6" fill="#cbd9c4" stroke="#777" stroke-width=".6"/>` + t(w / 2, 45, 9, v.txt != null ? v.txt : "0012345.6", 'fill="#1d2b1d" font-family="Consolas,monospace" font-weight="700"') + t(w - 12, 48, 3.4, v.sub || "kWh", 'fill="#1d2b1d"') +
+      t(w / 2, 55, 3.4, "3 x 230/400 V", gris) + ["L1", "L2", "L3"].map((x, i) => `<circle cx="${w / 2 - 14 + i * 14}" cy="60" r="1.6" fill="${v.sim && !v.on ? "#6b6d66" : "#2fe06b"}"/>` + t(w / 2 - 14 + i * 14, 65, 3, x, gris)).join(""),
+    rele: (w, p, v) => cuerpo(w, "#e8edf5") + led(w / 2, 28, v, "#2fe06b") + `<rect x="3.6" y="33" width="${w - 7.2}" height="20" rx="1.6" fill="#2e5aac" stroke="#1b3a74" stroke-width=".6"/>` + t(w / 2, 46, 4, "RELÉ", 'fill="#fff" font-weight="700"') + t(w / 2, 60, 3.4, "A1  A2", gris),
+    contactor: (w, p, v) => cuerpo(w, "#d9dad5") + t(w / 2, 30, 4.6, `${p.polos}P ${p.amp}A`, negro) + `<rect x="${w / 2 - 8}" y="${v.e === "off" ? 38 : 34}" width="16" height="12" rx="1.8" fill="${v.e === "off" ? "#7a7a7a" : "#3a3a3a"}" stroke="#111" stroke-width=".5"/>` + t(w / 2, 54, 3.4, "A1   A2", 'fill="#222"') + t(w / 2, 60, 3.2, p.bobina, gris) + led(w - 6, 28, v, "#2fe06b"),
+    temporizador: (w, p, v) => cuerpo(w, "#f1f1ed") + t(w / 2, 28, 3.6, "Temporizador", negro) + `<circle cx="${w / 2}" cy="43" r="9.5" fill="#fafaf7" stroke="#333" stroke-width="1"/>` + Array.from({ length: 12 }, (_, i) => { const a = i * Math.PI / 6; return `<line x1="${w / 2 + 7.4 * Math.sin(a)}" y1="${43 - 7.4 * Math.cos(a)}" x2="${w / 2 + 9 * Math.sin(a)}" y2="${43 - 9 * Math.cos(a)}" stroke="#333" stroke-width=".6"/>` }).join("") +
+      `<line x1="${w / 2}" y1="43" x2="${w / 2 + 5}" y2="39" stroke="#c23b2c" stroke-width="1.4"/>` + led(w - 7, 28, v, "#f59e0b") + t(w / 2, 60, 3.4, "0 - 10 min", gris),
+    horario: (w, p, v) => cuerpo(w, "#f1f1ed") + t(w / 2, 28, 3.6, "Horario", negro) + lcd(w, 31, 13, "12:30", "#7CFF9B") + `<circle cx="${w / 2}" cy="55" r="7" fill="#fafaf7" stroke="#333" stroke-width="1"/><line x1="${w / 2}" y1="55" x2="${w / 2}" y2="49.5" stroke="#333" stroke-width="1.1"/><line x1="${w / 2}" y1="55" x2="${w / 2 + 4}" y2="57" stroke="#c23b2c" stroke-width="1.1"/>`,
+    relewifi: (w, p, v) => cuerpo(w, "#fbfbf9") + led(w / 2, 28, v, "#3b82f6") + [12, 8, 4].map(r => `<path d="M ${w / 2 - r} 48 A ${r} ${r} 0 0 1 ${w / 2 + r} 48" fill="none" stroke="#2563eb" stroke-width="1.7" stroke-linecap="round"/>`).join("") + `<circle cx="${w / 2}" cy="51" r="1.7" fill="#2563eb"/>` + t(w / 2, 62, 3.4, "Relé WiFi", gris),
+    fuente: (w, p, v) => cuerpo(w, "#dfe0db") + [27, 31, 35, 39].map(y => `<line x1="8" y1="${y}" x2="${w - 8}" y2="${y}" stroke="#9a9b95" stroke-width="1"/>`).join("") + t(w / 2, 52, 7.5, p.salida, negro) + led(w - 9, 60, v, "#2fe06b") + t(w / 2, 62, 3.2, "Fuente", gris),
+    monitor: (w, p, v) => cuerpo(w, "#e8edf2") + t(w / 2, 28, 3.6, "Falta de fase", negro) + ["L1", "L2", "L3"].map((x, i) => led(w / 2 - 10 + i * 10, 36, v, "#2fe06b") + t(w / 2 - 10 + i * 10, 43, 3.2, x, gris)).join("") + `<rect x="5" y="49" width="${w - 10}" height="10" rx="1.6" fill="#c9cbc5"/>`,
+    piloto: (w, p, v) => { const c = ({ rojo: "#d6342a", verde: "#2fb15a", "ámbar": "#f0a30a", azul: "#2563eb", blanco: "#f4f4f4" })[p.color] || "#d6342a"; return cuerpo(w) + t(w / 2, 29, 4, "Piloto", negro) + `<circle cx="${w / 2}" cy="46" r="7" fill="${v.sim && !v.on ? "#5c5d58" : c}" stroke="#222" stroke-width="1"/>` + (v.sim && v.on ? `<circle cx="${w / 2}" cy="46" r="10.5" fill="${c}" opacity=".3"/>` : "") + `<circle cx="${w / 2 - 2.4}" cy="43.4" r="1.8" fill="#fff" opacity=".55"/>`; },
+    bornera: (w) => { const n = Math.round(w / 9); let s2 = ""; for (let i = 0; i < n; i++) { const x = i * 9 + 4.5; s2 += `<rect x="${i * 9 + .6}" y="10" width="7.8" height="68" rx="1.4" fill="${i % 2 ? "#d4d6d0" : "#cdd0ca"}" stroke="#8d8f88" stroke-width=".6"/>` + tornilloSup(x, 22) + `<rect x="${x - 2.5}" y="34" width="5" height="22" rx="1" fill="#9a9c95"/>` + tornilloInf(x, 66); } return s2; },
+    barraN: (w) => barra(w, "#3b7fc4", "N"),
+    barraT: (w) => barra(w, "#2f8a4c", "PE"),
     reserva: (w) => `<rect x="1" y="6" width="${w - 2}" height="${H - 12}" rx="2.4" fill="none" stroke="#9a9b95" stroke-width="1" stroke-dasharray="3 2.4"/>` + t(w / 2, 48, 5, "libre", 'fill="#9a9b95"')
   };
+  /* barra de cobre con tapas de colores y los tornillos al frente, como las de tierra y neutro de un tablero */
+  function barra(w, tapa, txt) {
+    let s2 = `<rect x="1" y="30" width="${w - 2}" height="28" rx="2.4" fill="#c9783a" stroke="#8a4f21" stroke-width=".8"/><rect x="1" y="30" width="${w - 2}" height="9" rx="2.4" fill="#e0985a" opacity=".7"/><rect x="0" y="27" width="5" height="34" rx="1.6" fill="${tapa}"/><rect x="${w - 5}" y="27" width="5" height="34" rx="1.6" fill="${tapa}"/>`;
+    const n = Math.round(w / M);
+    for (let i = 0; i < n; i++) { const x = (i + .5) * M; s2 += `<circle cx="${x}" cy="44" r="4.6" fill="#e9c27e" stroke="#7a4a1d" stroke-width=".7"/><circle cx="${x}" cy="44" r="3" fill="#b98a4a"/><line x1="${x - 2}" y1="42.2" x2="${x + 2}" y2="45.8" stroke="#5b3714" stroke-width=".9"/><line x1="${x + 2}" y1="42.2" x2="${x - 2}" y2="45.8" stroke="#5b3714" stroke-width=".9"/>`; }
+    return s2 + t(w / 2, 70, 5, txt, `fill="${tapa}" font-weight="800"`);
+  }
 
   /* Cargas (fuera del tablero) y acometida */
   const LOAD = {
@@ -167,14 +180,14 @@
     const p = pos(o, g, f), c = CLS[o.k], r = [], T = (lado, tipo, x, y, id) => ({ id: id || `${o.id}:${lado}${tipo}`, x, y, tipo, lado });
     if (c === "src") { const pl = polosDe(o); return pl.map((tp, i) => T("b", tp, p.x + 5 + i * (60 / (pl.length - 1)), TOP - 8)); }
     if (c === "load") { const pl = polosDe(o); return pl.map((tp, i) => T("t", tp, p.x + 6 + i * (34 / (pl.length - 1)), p.y - 8)); }
-    const w = enRiel(o) ? modOf(o) * M : 0, top = p.y - 5, bot = p.y + H + 17;
+    const w = enRiel(o) ? modOf(o) * M : 0, top = p.y + 10, bot = p.y + H - 10;
     if (c === "prot" || c === "sw" || c === "med") { const pl = polosDe(o); pl.forEach((tp, i) => { const x = p.x + w * (i + .5) / pl.length; r.push(T("t", tp, x, top)); r.push(T("b", tp, x, bot)); }); return r; }
     if (c === "tap" || c === "carga") { const pl = polosDe(o); pl.forEach((tp, i) => r.push(T("t", tp, p.x + w * (i + .5) / pl.length, top))); return r; }
     if (c === "junc") {
       const n = modOf(o);
-      if (o.k === "bornera") { for (let i = 0; i < n * 2; i++) { const x = p.x + w * (i + .5) / (n * 2); r.push(T("t", "X", x, top, `${o.id}:tX${i}`)); r.push(T("b", "X", x, bot, `${o.id}:bX${i}`)); } return r; }
+      if (o.k === "bornera") { for (let i = 0; i < n * 2; i++) { const x = p.x + w * (i + .5) / (n * 2); r.push(T("t", "X", x, p.y + 22, `${o.id}:tX${i}`)); r.push(T("b", "X", x, p.y + 66, `${o.id}:bX${i}`)); } return r; }
       const tp = o.k === "barraN" ? "N" : "PE";
-      for (let i = 0; i < n; i++) { const x = p.x + (i + .5) * M; r.push(T("t", tp, x, top, `${o.id}:t${tp}${i}`)); r.push(T("b", tp, x, bot, `${o.id}:b${tp}${i}`)); }
+      for (let i = 0; i < n; i++) { const x = p.x + (i + .5) * M; r.push(T("t", tp, x, p.y + 39, `${o.id}:t${tp}${i}`)); r.push(T("b", tp, x, p.y + 49, `${o.id}:b${tp}${i}`)); }
       return r;
     }
     return r;
@@ -415,6 +428,7 @@
       if (c === "src") v.on = sim.red;
       return v;
     }
+    const tornillos = (o, g2, f2, p) => { const c = CLS[o.k]; if (!(c === "prot" || c === "sw" || c === "med" || c === "tap" || c === "carga")) return ""; return terminales(o, g2, f2).map(tt => (tt.lado === "t" ? tornilloSup : tornilloInf)(tt.x - p.x, tt.y - p.y)).join(""); };
     const redondo = (pts, r) => {
       pts = pts.filter((q, k) => k === 0 || Math.hypot(q[0] - pts[k - 1][0], q[1] - pts[k - 1][1]) > .01);
       let d = `M${pts[0][0]} ${pts[0][1]}`;
@@ -426,7 +440,7 @@
     };
     /* dA y dB: hacia dónde sale cada borne (-1 arriba, 1 abajo). Del mismo lado el cable hace una U. */
     const camino = (x1, x2, y1, y2, lane, dA, dB) => {
-      lane = +lane || 0; dA = dA == null ? 1 : dA; dB = dB == null ? -dA : dB; const st = 20, ofs = (lane + 12) / 2; let pts;
+      lane = +lane || 0; dA = dA == null ? 1 : dA; dB = dB == null ? -dA : dB; const st = 28, ofs = (lane + 12) / 2; let pts;
       if (dA !== dB) {
         if (dA === -1) return camino(x2, x1, y2, y1, lane, dB, dA);
         if (Math.abs(x1 - x2) < .5 && y2 > y1) return `M${x1} ${y1}L${x2} ${y2}`;
@@ -440,7 +454,7 @@
     };
     /* vista previa mientras se arrastra: sale del borne hacia su lado y llega al puntero con ángulos rectos */
     const caminoLibre = (x1, y1, d, x2, y2) => {
-      const st = 20, enLado = (y2 - y1) * d >= st, ym = enLado ? y1 + (y2 - y1) / 2 : y1 + d * st;
+      const st = 28, enLado = (y2 - y1) * d >= st, ym = enLado ? y1 + (y2 - y1) / 2 : y1 + d * st;
       return redondo(Math.abs(x1 - x2) < .5 && enLado ? [[x1, y1], [x2, y2]] : [[x1, y1], [x1, ym], [x2, ym], [x2, y2]], 6);
     };
     const cableSvg = (d, col, sel) => {
@@ -475,15 +489,19 @@
         if (o.z === "c") { s += `<g class="fr-carga fr-dev${multi.has(o.id) ? " sel" : ""}" data-id="${o.id}" transform="translate(${p.x},${p.y})"><rect x="0" y="-4" width="${LW}" height="${LH}" rx="6" fill="transparent"/>${dibujarCarga(o, v)}</g>`; return; }
         if (o.z === "a") { s += `<g class="fr-dev${multi.has(o.id) ? " sel" : ""}" data-id="${o.id}" transform="translate(${p.x},${p.y})"><rect x="0" y="0" width="70" height="${TOP - 18}" rx="6" fill="transparent"/>${dibujarAcom(o, v)}</g>`; return; }
         const w = modOf(o) * M, heat = sim.heat[o.id] || 0;
-        s += `<g class="fr-dev${multi.has(o.id) ? " sel" : ""}" data-id="${o.id}" transform="translate(${p.x},${p.y})">${D[o.k](w, o.p, v)}<rect x="0" y="0" width="${w}" height="${H}" fill="transparent"/>` +
+        s += `<g class="fr-dev${multi.has(o.id) ? " sel" : ""}" data-id="${o.id}" transform="translate(${p.x},${p.y})">${D[o.k](w, o.p, v)}${tornillos(o, g, f, p)}<rect x="0" y="0" width="${w}" height="${H}" fill="transparent"/>` +
           (v.e === "trip" ? `<circle cx="${w - 5}" cy="5.5" r="3" fill="#c23b2c" class="fr-alarma"/>` : "") +
           (modo === "sim" && heat > .05 ? `<rect x="3" y="${H + 13}" width="${w - 6}" height="2.6" rx="1.3" fill="#ddd"/><rect x="3" y="${H + 13}" width="${Math.min(1, heat) * (w - 6)}" height="2.6" rx="1.3" fill="${heat > .7 ? "#c23b2c" : "#f59e0b"}"/>` : "") +
           (o.rot ? `<rect x="${w / 2 - Math.min(w / 2, 22)}" y="${H + 2}" width="${Math.min(w, 44)}" height="9" rx="1.6" fill="#fff" stroke="#9a9b95" stroke-width=".5"/><text x="${w / 2}" y="${H + 8.6}" font-size="5.2" text-anchor="middle" font-family="Archivo,Arial,sans-serif" font-weight="700" fill="#1f201d">${esc(o.rot)}</text>` : "") + `</g>`;
       });
       f.items.forEach(o => terminales(o, g, f).forEach(tt => {
-        const usado = f.cables.some(c => c.a === tt.id || c.b === tt.id), activo = previa === tt.id, en = R && R.vis.has(tt.id), ac = PUNTO[tt.tipo] || "#f9a01b";
-        const ly = tt.lado === "t" && CLS[o.k] !== "src" && CLS[o.k] !== "load" ? tt.y - 5.4 : (tt.lado === "b" && CLS[o.k] !== "src" ? tt.y + 8.4 : (CLS[o.k] === "src" ? tt.y - 5.6 : tt.y + 8));
-        s += `<g class="fr-term" data-term="${tt.id}"><circle cx="${tt.x}" cy="${tt.y}" r="${activo ? 4.8 : 3.4}" fill="${ac}" stroke="${en ? "#ffb300" : "#232323"}" stroke-width="${en ? 1.8 : .9}"/>${usado ? `<circle cx="${tt.x}" cy="${tt.y}" r="1.2" fill="#fff"/>` : ""}` + (tt.tipo !== "X" ? `<text x="${tt.x}" y="${ly}" font-size="3.8" text-anchor="middle" font-family="Archivo,Arial,sans-serif" font-weight="700" fill="#55574f">${tt.tipo}</text>` : "") + `</g>`;
+        const cl = CLS[o.k], usado = f.cables.some(c => c.a === tt.id || c.b === tt.id), activo = previa === tt.id, en = R && R.vis.has(tt.id), ac = PUNTO[tt.tipo] || "#f9a01b";
+        const sobre = cl === "prot" || cl === "sw" || cl === "med" || cl === "tap" || cl === "carga" || cl === "junc";
+        let marca;
+        if (sobre) marca = `<circle cx="${tt.x}" cy="${tt.y}" r="${activo ? 8.4 : cl === "junc" ? 3.4 : 7.2}" fill="rgba(255,255,255,.01)" stroke="${en ? "#ffb300" : ac}" stroke-width="${en ? 2.4 : 1.7}"/>${usado ? `<circle cx="${tt.x}" cy="${tt.y}" r="1.7" fill="${ac}" stroke="#fff" stroke-width=".6"/>` : ""}`;
+        else marca = `<circle cx="${tt.x}" cy="${tt.y}" r="${activo ? 4.8 : 3.4}" fill="${ac}" stroke="${en ? "#ffb300" : "#232323"}" stroke-width="${en ? 1.8 : .9}"/>${usado ? `<circle cx="${tt.x}" cy="${tt.y}" r="1.2" fill="#fff"/>` : ""}`;
+        const ly = sobre ? (tt.lado === "t" ? tt.y + 11.4 : tt.y - 8.4) : (cl === "src" ? tt.y - 5.6 : tt.y + 8);
+        s += `<g class="fr-term" data-term="${tt.id}">${marca}` + (tt.tipo !== "X" && !(cl === "junc") ? `<text x="${tt.x}" y="${ly}" font-size="3.2" text-anchor="middle" font-family="Archivo,Arial,sans-serif" font-weight="700" fill="#55574f">${tt.tipo}</text>` : "") + `</g>`;
       }));
       s += `<path id="fr-prev" d="" fill="none" stroke="#f9a01b" stroke-width="1.2" stroke-dasharray="3 2.4" stroke-linejoin="round"/>`;
       if (!f.items.some(o => CLS[o.k] === "src")) s += `<text x="${g.W / 2}" y="13" text-anchor="middle" font-size="5" fill="#9a9b95" font-family="Archivo,Arial,sans-serif" font-weight="700">Sumá la acometida (bajada de línea) desde Componentes</text>`;
