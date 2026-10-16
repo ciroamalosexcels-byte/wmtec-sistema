@@ -176,6 +176,7 @@ main.tablero{padding:10px 14px 6px}
 /* agenda visual */
 .agenda{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin-top:12px}
 .dia-c{background:#fff;border-radius:14px;padding:8px;min-height:108px;display:flex;flex-direction:column;gap:4px;box-shadow:0 1px 0 #d3d5ce;min-width:0}
+.dia-c.pasado{opacity:.5}
 .dia-c.fin{background:#eeeee9}.dia-c.hoy{box-shadow:0 0 0 2px var(--naranja);background:#fffaf0}
 .dia-c .dh{display:flex;align-items:baseline;gap:6px}
 .dia-c .dn{font-size:.72rem;text-transform:uppercase;color:#666;font-weight:700}
@@ -534,9 +535,9 @@ const vacioInicial=()=>`<div class="vacio"><p><b>Todavía no cargaste nada.</b><
 function agendaVisual(h){
   const ev=eventos(),atras=ev.filter(e=>e.f<h);
   const chip=e=>`<a class="chip ${e.t}" href="${e.h}" title="${esc(e.x)}">${esc(e.x)}</a>`;
-  const dias=[];for(let i=0;i<14;i++){const f=addDias(h,i),[y,m,d]=f.split("-").map(Number);dias.push({f,dt:new Date(y,m-1,d),es:ev.filter(e=>e.f===f)})}
+  const [hy,hm,hd]=h.split("-").map(Number),ini=addDias(h,-((new Date(hy,hm-1,hd).getDay()+6)%7)),dias=[];for(let i=0;i<14;i++){const f=addDias(ini,i),[y,m,d]=f.split("-").map(Number);dias.push({f,dt:new Date(y,m-1,d),es:f<h?[]:ev.filter(e=>e.f===f)})}
   return (atras.length?`<div class="atras"><b>Atrasado</b>${atras.slice(0,6).map(chip).join("")}${atras.length>6?`<span class="etq">+${atras.length-6}</span>`:""}</div>`:"")+
-  `<div class="agenda">${dias.map(x=>`<div class="dia-c${x.f===h?" hoy":""}${[0,6].includes(x.dt.getDay())?" fin":""}"><div class="dh"><span class="dn">${x.dt.toLocaleDateString("es-AR",{weekday:"short"}).replace(".","")}</span><span class="n">${x.dt.getDate()}</span></div>${x.es.slice(0,3).map(chip).join("")}${x.es.length>3?`<a class="mas" href="#calendario">+${x.es.length-3} más</a>`:""}</div>`).join("")}</div>`}
+  `<div class="agenda">${dias.map(x=>`<div class="dia-c${x.f===h?" hoy":""}${x.f<h?" pasado":""}${[0,6].includes(x.dt.getDay())?" fin":""}"><div class="dh"><span class="dn">${x.dt.toLocaleDateString("es-AR",{weekday:"short"}).replace(".","")}</span><span class="n">${x.dt.getDate()}</span></div>${x.es.slice(0,3).map(chip).join("")}${x.es.length>3?`<a class="mas" href="#calendario">+${x.es.length-3} más</a>`:""}</div>`).join("")}</div>`}
 
 function vPanel(){
   const h=hoy(),act=D.clientes.filter(c=>!["ganado","perdido"].includes(c.etapa));
@@ -556,7 +557,7 @@ function vPanel(){
    <a class="cifra" href="#finanzas"><b>${fmt(cobMes)}</b><span>Cobrado este mes</span></a>
    <a class="cifra${mv?" rojo":""}" href="#clientes"><b>${mv}</b><span>Mantenimientos vencidos</span></a>
    <a class="cifra${urg?" rojo":""}" href="#diagnosticos"><b>${urg}</b><span>Diagnósticos con puntos urgentes</span></a></div>
-  <section class="card barra" style="margin-bottom:18px"><div class="tools" style="justify-content:space-between;margin-bottom:0"><h2>Próximos 14 días</h2><span class="leyenda" style="margin:0">${Object.keys(TIPOLBL).map(k=>`<span><i class="pt ${k}"></i>${TIPOLBL[k]}</span>`).join("")}</span></div>${agendaVisual(h)}</section>
+  <section class="card barra" style="margin-bottom:18px"><div class="tools" style="justify-content:space-between;margin-bottom:0"><h2>Estas dos semanas</h2><span class="leyenda" style="margin:0">${Object.keys(TIPOLBL).map(k=>`<span><i class="pt ${k}"></i>${TIPOLBL[k]}</span>`).join("")}</span></div>${agendaVisual(h)}</section>
   <div class="cols2"><section class="card barra"><h2>Cobros pendientes</h2><ul class="lista" style="margin-top:12px">
    ${porCobrar.sort((a,b)=>a.vence<b.vence?-1:1).slice(0,5).map(c=>`<li><a class="fila" href="#cobros"><div class="grow"><span class="ttl">${fmt(c.monto)} · ${esc(nomCorto(cli(c.cid)))}</span><small>${esc(c.concepto)}</small></div><span class="${c.vence<h?"vence":""}">${fecha(c.vence)}</span></a></li>`).join("")||'<li class="vacio">No hay cobros pendientes.</li>'}</ul></section>
   <section class="card barra"><h2>Diagnósticos recientes</h2><ul class="lista" style="margin-top:12px">
