@@ -328,6 +328,7 @@ dialog .acc{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-
 </dialog>
 <dialog id="dlg-gen"><form method="dialog" id="f-gen"><h2 id="g-t"></h2><div class="grid" id="g-c"></div><div class="acc"><button class="btn claro" value="cancel" type="submit" formnovalidate>Cancelar</button><button class="btn pri" id="g-ok" type="button">Aceptar</button></div></form></dialog>
 
+<script src="tableros/frente.js"></script>
 <script>
 "use strict";
 /* ============ Configuración ============ */
@@ -749,29 +750,40 @@ function vCobros(){
 /* ---- Tableros (editor sldeditor, MIT) ---- */
 let tabTimer=null,tabUlt="";
 const TAB_KEY="ole-editor";
-const contarTab=t=>{const e=(t.diagrama||{}).elements;return Array.isArray(e)?e.length:e?Object.keys(e).length:0};
-function vTableros(){
+const contarTab=t=>{const e=(t.diagrama||{}).elements,u=Array.isArray(e)?e.length:e?Object.keys(e).length:0;return u+(window.Frente?Frente.contar(t):0)};
+function vTableros(){tabModo="frente";
   const l=D.tableros.slice().sort((a,b)=>a.fecha<b.fecha?1:-1);
   V.innerHTML=`<div class="cab"><div><h1>Tableros</h1></div><button class="btn pri" data-a="nuevotab">+ Nuevo tablero</button></div>
-  <div class="tabla-w"><table class="t"><thead><tr><th>Tablero</th><th>Cliente</th><th>Modificado</th><th class="num">Elementos</th><th></th></tr></thead><tbody>${l.map(t=>`<tr><td><a href="#tablero/${t.id}">${esc(t.nombre)}</a></td><td>${t.cid?`<a href="#cliente/${t.cid}">${esc(nomCorto(cli(t.cid)))}</a>`:"—"}</td><td>${fecha(t.fecha)}</td><td class="num">${contarTab(t)}</td><td class="num"><a class="btn chico pri" href="#tablero/${t.id}">Abrir</a></td></tr>`).join("")||'<tr><td colspan="5"><div class="vacio">Todavía no diseñaste ningún tablero.</div></td></tr>'}</tbody></table></div>`;
+  <div class="tabla-w"><table class="t"><thead><tr><th>Tablero</th><th>Cliente</th><th>Modificado</th><th class="num">Elementos</th><th></th></tr></thead><tbody>${l.map(t=>`<tr><td><a href="#tablero/${t.id}" data-frente="1">${esc(t.nombre)}</a></td><td>${t.cid?`<a href="#cliente/${t.cid}">${esc(nomCorto(cli(t.cid)))}</a>`:"—"}</td><td>${fecha(t.fecha)}</td><td class="num">${contarTab(t)}</td><td class="num"><a class="btn chico pri" href="#tablero/${t.id}">Abrir</a></td></tr>`).join("")||'<tr><td colspan="5"><div class="vacio">Todavía no diseñaste ningún tablero.</div></td></tr>'}</tbody></table></div>`;
 }
+let tabModo="frente",frenteApi=null;
 function vTablero(id){
   const t=D.tableros.find(x=>x.id===id);if(!t){location.hash="#tableros";return}
-  if(!API){V.innerHTML='<div class="vacio">El diseñador funciona abriendo el sistema con iniciar.bat.</div>';return}
-  try{
-    if(t.diagrama)localStorage.setItem(TAB_KEY,JSON.stringify({state:{diagram:t.diagrama,activeTool:"select",placeKind:null,lastPlaceKind:null},version:2}));else localStorage.removeItem(TAB_KEY);
-    localStorage.setItem("ole-onboarding-dismissed","1");
-  }catch(e){}
-  tabUlt=t.diagrama?JSON.stringify(t.diagrama):"";
-  V.innerHTML=`<div class="cab"><div><p><a href="#tableros">← Tableros</a></p><h1>${esc(t.nombre)}</h1></div><div class="tools" style="margin:0"><label class="sr" for="tb-n">Nombre</label><input id="tb-n" value="${esc(t.nombre)}"><label class="sr" for="tb-c">Cliente</label><select id="tb-c"><option value="">— Sin cliente —</option>${cliOpts(t.cid)}</select><button class="btn peligro chico" data-a="borrartab" data-id="${t.id}">Borrar</button></div></div>
-  <iframe class="tab-frame" src="tableros/index.html" title="Diseñador de tableros"></iframe>
-  <p class="calc" style="margin-top:8px">Editor sldeditor (licencia MIT). Símbolos de QElectroTech (licencia CC BY 3.0).</p>`;
+  const cab=`<div class="cab"><div><p><a href="#tableros">← Tableros</a></p><h1>${esc(t.nombre)}</h1></div><div class="tools no-print" style="margin:0"><label class="sr" for="tb-n">Nombre</label><input id="tb-n" value="${esc(t.nombre)}"><label class="sr" for="tb-c">Cliente</label><select id="tb-c"><option value="">— Sin cliente —</option>${cliOpts(t.cid)}</select>${tabModo==="frente"?'<button class="btn claro" id="tb-exp" type="button">Exportar imagen</button><button class="btn claro" onclick="window.print()" type="button">Imprimir</button>':""}<button class="btn peligro chico" data-a="borrartab" data-id="${t.id}">Borrar</button></div></div>
+  <div class="seg no-print" role="tablist" style="margin-bottom:14px"><button role="tab" class="${tabModo==="frente"?"on":""}" data-tabmodo="frente">Frente del tablero</button><button role="tab" class="${tabModo==="unifilar"?"on":""}" data-tabmodo="unifilar">Esquema unifilar</button></div>`;
+  frenteApi=null;
+  if(tabModo==="frente"){
+    V.innerHTML=cab+'<div id="frente-box"></div>';
+    frenteApi=Frente.montar(V.querySelector("#frente-box"),t,()=>{t.fecha=hoy();guardar()});
+    const ex=V.querySelector("#tb-exp");if(ex)ex.onclick=()=>frenteApi.exportar();
+  }else{
+    if(!API){V.innerHTML=cab+'<div class="vacio">El esquema unifilar funciona abriendo el sistema con iniciar.bat.</div>'}
+    else{
+      try{
+        if(t.diagrama)localStorage.setItem(TAB_KEY,JSON.stringify({state:{diagram:t.diagrama,activeTool:"select",placeKind:null,lastPlaceKind:null},version:2}));else localStorage.removeItem(TAB_KEY);
+        localStorage.setItem("ole-onboarding-dismissed","1");
+      }catch(e){}
+      tabUlt=t.diagrama?JSON.stringify(t.diagrama):"";
+      V.innerHTML=cab+`<iframe class="tab-frame" src="tableros/index.html" title="Esquema unifilar"></iframe>
+      <p class="calc" style="margin-top:8px">Editor sldeditor (licencia MIT). Símbolos de QElectroTech (licencia CC BY 3.0).</p>`;
+      tabTimer=setInterval(()=>{
+        if(ruta().r!=="tablero"||tabModo!=="unifilar"){clearInterval(tabTimer);return}
+        try{const raw=localStorage.getItem(TAB_KEY);if(!raw)return;const d=JSON.parse(raw).state.diagram;if(!d)return;const j=JSON.stringify(d);if(j!==tabUlt){tabUlt=j;t.diagrama=d;t.fecha=hoy();guardar()}}catch(e){}
+      },1500);
+    }
+  }
   V.querySelector("#tb-n").onchange=e=>{t.nombre=e.target.value.trim()||t.nombre;t.fecha=hoy();guardar();V.querySelector("h1").textContent=t.nombre};
   V.querySelector("#tb-c").onchange=e=>{t.cid=e.target.value;guardar()};
-  tabTimer=setInterval(()=>{
-    if(ruta().r!=="tablero"){clearInterval(tabTimer);return}
-    try{const raw=localStorage.getItem(TAB_KEY);if(!raw)return;const d=JSON.parse(raw).state.diagram;if(!d)return;const j=JSON.stringify(d);if(j!==tabUlt){tabUlt=j;t.diagrama=d;t.fecha=hoy();guardar()}}catch(e){}
-  },1500);
 }
 
 /* ---- Trabajos ---- */
@@ -901,6 +913,7 @@ document.addEventListener("click",e=>{
   const t=e.target.closest("[data-fintab]");if(t){e.preventDefault();FIN.tab=t.dataset.fintab;if(ruta().r!=="finanzas")location.hash="#finanzas";else vFin();return}
   const m=e.target.closest("[data-finmes]");if(m){const n=+m.dataset.finmes;FIN.m=n===0?mesHoy():addMes(FIN.m,n);vFin()}});
 document.getElementById("b-ej").onclick=borrarEjemplos;
+document.addEventListener("click",e=>{const m=e.target.closest("[data-tabmodo]");if(m&&ruta().r==="tablero"){tabModo=m.dataset.tabmodo;vTablero(ruta().id)}});
 function acc(a,id){
   const h=hoy();
   if(a==="nuevo"){abrirCliente();const cb=window.event&&window.event.target&&window.event.target.closest("[data-colab]");if(cb)fc.colab.value=cb.dataset.colab}

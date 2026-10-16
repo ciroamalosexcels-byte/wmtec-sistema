@@ -126,3 +126,5 @@ Wmezatec/
 
 - **Diseñador de tableros** (`08_Sistema_Clientes/tableros/`): editor de diagramas unifilares de código abierto (sldeditor, MIT) con símbolos de QElectroTech (CC BY 3.0), en español. Los diagramas se guardan por cliente desde la pestaña Tableros. Ver `tableros/THIRD_PARTY_NOTICES.md`.
 - **Tarjeta:** rediseñada sobre la marca (`07_Branding_WMTEC/tarjeta.html` y `tarjeta-doble-faz.pdf`).
+- **Tableros, frente:** además del unifilar, la pestaña "Frente del tablero" dibuja la caja con rieles DIN y dispositivos a escala (térmicas, diferenciales, medidores, relés, temporizadores, borneras, etc.), con medidas de la caja y lista de materiales. Código en `08_Sistema_Clientes/tableros/frente.js`.
+- **Tarjeta para imprenta:** `07_Branding_WMTEC/tarjeta-A3-imprenta.pdf` (2 hojas: frente y dorso, 20 por hoja, sangrado de 3 mm). Se regenera con `generar-tarjeta.py`.
