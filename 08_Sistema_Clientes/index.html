@@ -94,6 +94,10 @@ textarea{min-height:76px;resize:vertical}
 .pila{display:grid;gap:18px;align-content:start}
 .resumen{display:flex;flex-wrap:wrap;gap:6px 22px;margin:0 0 16px;padding:12px 16px;background:#fff;border-radius:14px;font-weight:700;box-shadow:0 1px 0 #d9dbd4}
 .resumen .rojo{color:var(--rojo)}
+.esencial .solo-completa{display:none!important}
+.solo-esencial{display:none}.esencial .solo-esencial{display:flex}
+.hoy-acc{gap:10px;flex-wrap:wrap;margin-bottom:16px}.hoy-acc .btn{min-height:52px;font-size:1.05rem;padding:.7em 1.6em}
+.grid.corto .extra{display:none}.grid .solo-corto{display:none}.grid.corto .solo-corto{display:block}
 .pila[hidden]{display:none}
 .flujo{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:6px;font-size:0.9rem;align-items:center}.flujo .btn{min-height:36px}
 .cifras{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin-bottom:20px}
@@ -296,7 +300,8 @@ dialog .acc{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-
 .q-res .tx{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
 .q-res .tx small{font-weight:400;color:var(--tinta-suave);margin-left:.5em}
 .q-res .nada{padding:.8em;color:var(--tinta-suave)}
-.mas-crear{margin-left:auto;display:flex;align-items:center;gap:8px;border:0;border-radius:var(--r-boton);background:var(--degradado);color:var(--carbon);font-weight:800;padding:.65em 1.2em .65em 1em}
+.vsel{margin-left:auto}.vsel button{font-size:.8rem;padding:.35em .9em}
+.mas-crear{display:flex;align-items:center;gap:8px;border:0;border-radius:var(--r-boton);background:var(--degradado);color:var(--carbon);font-weight:800;padding:.65em 1.2em .65em 1em}
 .menu-crear{position:absolute;right:clamp(16px,3vw,40px);top:calc(100% + 6px);min-width:230px;background:var(--carbon);border-radius:18px;padding:8px;box-shadow:0 20px 50px -10px rgba(0,0,0,.6);z-index:30}
 .menu-crear[hidden],.mas-crear[hidden]{display:none}
 .menu-crear button{display:block;width:100%;text-align:left;padding:.7em .9em;min-height:44px;border:0;border-radius:12px;background:none;color:#e4e4de;font-weight:600;font-size:1rem}
@@ -332,6 +337,7 @@ dialog .acc{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-
   .sem{width:100%}.sem label{flex:1 1 0}.sem span{display:flex;align-items:center;justify-content:center;min-height:46px;width:100%;font-size:0.9rem;text-align:center}
   .grupo-cab .btn,.fto-b{min-height:44px}
   .item input[data-o],.item input[data-a]{min-height:46px}
+  .barra-sup{flex-wrap:wrap}.busca{flex:1 1 100%;order:1}.vsel{order:2;margin-left:0}
   .ren{grid-template-columns:1fr}.pd-datos{grid-template-columns:1fr 1fr}
   .cols2{grid-template-columns:1fr}.item{grid-template-columns:1fr}
   .planes,.etp,.dc2{grid-template-columns:1fr}
@@ -382,9 +388,9 @@ dialog .acc{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-
     <div class="mas" id="mas">
       <a class="nav" href="#presupuestos" data-r="presupuestos" title="Presupuestos"><svg class="ic" aria-hidden="true"><use href="#i-pres"/></svg><span class="t">Presupuestos</span><span class="cuenta" id="c-pres"></span></a>
       <a class="nav" href="#diagnosticos" data-r="diagnosticos" title="Diagnósticos"><svg class="ic" aria-hidden="true"><use href="#i-diag"/></svg><span class="t">Diagnósticos</span><span class="cuenta" id="c-diag"></span></a>
-      <a class="nav" href="#finanzas" data-r="finanzas" title="Finanzas"><svg class="ic" aria-hidden="true"><use href="#i-fin"/></svg><span class="t">Finanzas</span></a>
-      <a class="nav" href="#tableros" data-r="tableros" title="Tableros"><svg class="ic" aria-hidden="true"><use href="#i-tab"/></svg><span class="t">Tableros</span></a>
-      <a class="nav" href="#colaboradores" data-r="colaboradores" title="Colaboradores"><svg class="ic" aria-hidden="true"><use href="#i-colab"/></svg><span class="t">Colaboradores</span><span class="cuenta" id="c-colab"></span></a>
+      <a class="nav solo-completa" href="#finanzas" data-r="finanzas" title="Finanzas"><svg class="ic" aria-hidden="true"><use href="#i-fin"/></svg><span class="t">Finanzas</span></a>
+      <a class="nav solo-completa" href="#tableros" data-r="tableros" title="Tableros"><svg class="ic" aria-hidden="true"><use href="#i-tab"/></svg><span class="t">Tableros</span></a>
+      <a class="nav solo-completa" href="#colaboradores" data-r="colaboradores" title="Colaboradores"><svg class="ic" aria-hidden="true"><use href="#i-colab"/></svg><span class="t">Colaboradores</span><span class="cuenta" id="c-colab"></span></a>
       <button class="nav cfg solo-cel" id="b-cfg2" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="menu-cfg" title="Configuración"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="t">Configuración</span></button>
     </div>
     <div class="pie">
@@ -407,6 +413,7 @@ dialog .acc{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-
         <input type="search" id="q-global" placeholder="Buscar cliente, presupuesto, trabajo o cobro" aria-label="Buscar" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="q-res">
         <div class="q-res" id="q-res" role="listbox" hidden></div>
       </div>
+      <div class="seg vsel no-print" role="group" aria-label="Vista"><button type="button" data-vista="esencial">Esencial</button><button type="button" data-vista="completa">Completa</button></div>
       <button class="mas-crear" id="b-crear" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="menu-crear" aria-label="Crear"><svg class="ic" aria-hidden="true"><use href="#i-mas2"/></svg><span class="t">Crear</span></button>
       <div class="menu-crear" id="menu-crear" role="menu" hidden>
         <button type="button" role="menuitem" data-a="nuevo">Nuevo cliente</button>
@@ -422,20 +429,21 @@ dialog .acc{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-
 <dialog id="dlg-cliente">
   <form method="dialog" id="f-cliente">
     <h2 id="dlg-cliente-t">Cliente</h2>
-    <div class="grid">
+    <div class="grid" id="k-grid">
       <div><label for="k-nombre">Nombre y apellido (contacto)</label><input id="k-nombre" name="nombre"></div>
       <div><label for="k-empresa">Empresa</label><input id="k-empresa" name="empresa"></div>
       <div><label for="k-tel">WhatsApp / teléfono</label><input id="k-tel" name="tel" inputmode="tel"></div>
-      <div><label for="k-mail">Mail</label><input id="k-mail" name="mail" type="email"></div>
-      <div><label for="k-rubro">Rubro</label><select id="k-rubro" name="rubro"></select></div>
-      <div><label for="k-origen">¿Cómo llegó?</label><select id="k-origen" name="origen"></select></div>
-      <div><label for="k-zona">Zona / dirección</label><input id="k-zona" name="zona"></div>
-      <div><label for="k-cuit">CUIT</label><input id="k-cuit" name="cuit"></div>
-      <div><label for="k-colab">Vino por (colaborador)</label><select id="k-colab" name="colab"></select></div>
-      <div><label for="k-etapa">Etapa</label><select id="k-etapa" name="etapa"></select></div>
-      <div><label for="k-prox">Próximo contacto</label><input id="k-prox" name="prox" type="date"></div>
-      <div class="ancho"><label for="k-proxm">Motivo del próximo contacto</label><input id="k-proxm" name="proxm" placeholder="Llamar para confirmar visita"></div>
-      <div class="ancho"><label for="k-notas">Notas</label><textarea id="k-notas" name="notas"></textarea></div>
+      <div class="extra"><label for="k-mail">Mail</label><input id="k-mail" name="mail" type="email"></div>
+      <div class="extra"><label for="k-rubro">Rubro</label><select id="k-rubro" name="rubro"></select></div>
+      <div class="extra"><label for="k-origen">¿Cómo llegó?</label><select id="k-origen" name="origen"></select></div>
+      <div class="extra"><label for="k-zona">Zona / dirección</label><input id="k-zona" name="zona"></div>
+      <div class="extra"><label for="k-cuit">CUIT</label><input id="k-cuit" name="cuit"></div>
+      <div class="extra"><label for="k-colab">Vino por (colaborador)</label><select id="k-colab" name="colab"></select></div>
+      <div class="extra"><label for="k-etapa">Etapa</label><select id="k-etapa" name="etapa"></select></div>
+      <div class="extra"><label for="k-prox">Próximo contacto</label><input id="k-prox" name="prox" type="date"></div>
+      <div class="ancho extra"><label for="k-proxm">Motivo del próximo contacto</label><input id="k-proxm" name="proxm" placeholder="Llamar para confirmar visita"></div>
+      <div class="ancho solo-corto"><button type="button" class="btn chico claro" id="k-mas">Agregar más datos</button></div>
+      <div class="ancho extra"><label for="k-notas">Notas</label><textarea id="k-notas" name="notas"></textarea></div>
     </div>
     <div class="acc"><button class="btn claro" value="cancel" type="submit" formnovalidate>Cancelar</button><button class="btn pri" id="k-guardar" type="button">Guardar</button></div>
   </form>
@@ -623,8 +631,12 @@ function ejemplo(){
 /* ============ Vistas ============ */
 const V=document.getElementById("vista");
 const ruta=()=>{const p=(location.hash.slice(1)||"panel").split("/");return{r:p[0],id:p[1]}};
+let VISTA=(()=>{try{return localStorage.getItem("wmtec_vista")==="completa"?"completa":"esencial"}catch(e){return "esencial"}})();
+const ESE=()=>VISTA==="esencial";let HOYALL=false;
 function render(){
   clearInterval(tabTimer);
+  document.body.classList.toggle("esencial",ESE());
+  document.querySelectorAll("[data-vista]").forEach(b=>{b.classList.toggle("on",b.dataset.vista===VISTA);b.setAttribute("aria-pressed",String(b.dataset.vista===VISTA))});
   const q=ruta(),mapa={pipeline:"clientes",tablero:"tableros",colab:"colaboradores",cliente:"clientes",diag:"diagnosticos",informe:"diagnosticos",pres:"presupuestos",presdoc:"presupuestos"};
   document.querySelectorAll(".lado a.nav").forEach(a=>a.classList.toggle("on",a.dataset.r===q.r||a.dataset.r===mapa[q.r]));
   const enMas=!!document.querySelector(".mas a.nav.on"),bm=document.getElementById("b-mas"),mm=document.getElementById("mas");
@@ -674,10 +686,12 @@ function vPanel(){
   if(porCobrar.length)cifras.push(`<a class="cifra${vencidos.length?" rojo":""}" href="#cobros"><b>${fmt(porCobrar.reduce((a,c)=>a+num(c.monto),0))}</b><span>por cobrar${vencidos.length?" · "+vencidos.length+" vencido"+(vencidos.length>1?"s":""):""}</span></a>`);
   if(abiertos.length)cifras.push(`<a class="cifra" href="#presupuestos"><b>${fmt(abiertos.reduce((a,p)=>a+montoPres(p),0))}</b><span>${abiertos.length} presupuesto${abiertos.length>1?"s":""} abierto${abiertos.length>1?"s":""}</span></a>`);
   if(cobMes)cifras.push(`<a class="cifra" href="#finanzas"><b>${fmt(cobMes)}</b><span>cobrado este mes</span></a>`);
+  const max=ESE()&&!HOYALL?5:L.length;
   V.innerHTML=`<div class="cab"><div><h1>Hoy</h1><p>${fechaL(h)}</p></div></div>
+  <div class="hoy-acc solo-esencial no-print"><button class="btn pri" data-a="nuevo">+ Anotar consulta</button><button class="btn" data-a="nuevocobro">Cobrar</button></div>
   ${D.clientes.length?"":vacioInicial()}
-  ${D.clientes.length?`<section class="card barra" style="margin-bottom:18px"><h2>Para hacer${L.length?` <span class="n-hoy">${L.length}</span>`:""}</h2><ul class="lista" style="margin-top:12px">${L.join("")||'<li class="vacio">Sin pendientes por hoy.</li>'}</ul></section>`:""}
-  ${cifras.length?`<div class="cifras chicas">${cifras.join("")}</div>`:""}`;
+  ${D.clientes.length?`<section class="card barra" style="margin-bottom:18px"><h2>Para hacer${L.length?` <span class="n-hoy">${L.length}</span>`:""}</h2><ul class="lista" style="margin-top:12px">${L.slice(0,max).join("")||'<li class="vacio">Sin pendientes por hoy.</li>'}${L.length>max?`<li class="vacio"><button class="btn chico claro" data-hoyall="1">Ver todo (${L.length})</button></li>`:""}</ul></section>`:""}
+  ${cifras.length?`<div class="cifras chicas solo-completa">${cifras.join("")}</div>`:""}`;
 }
 
 /* ---- Calendario ---- */
@@ -703,7 +717,7 @@ function vCal(){
 
 /* ---- Embudo (vista "Por etapa" de Clientes) ---- */
 let VCLI={v:"lista"};
-const segCli=()=>`<div class="seg no-print" role="tablist"><button role="tab" class="${VCLI.v==="lista"?"on":""}" data-cv="lista">Lista</button><button role="tab" class="${VCLI.v==="etapa"?"on":""}" data-cv="etapa">Por etapa</button></div>`;
+const segCli=()=>`<div class="seg no-print solo-completa" role="tablist"><button role="tab" class="${VCLI.v==="lista"?"on":""}" data-cv="lista">Lista</button><button role="tab" class="${VCLI.v==="etapa"?"on":""}" data-cv="etapa">Por etapa</button></div>`;
 function vPipeline(){VCLI.v="etapa";vClientes()}
 function vEtapas(){
   V.innerHTML=`<div class="cab"><div><h1>Clientes</h1></div><div class="tools" style="margin:0">${segCli()}<button class="btn pri" data-a="nuevo">+ Nuevo cliente</button></div></div>
@@ -715,6 +729,7 @@ function mover(id,e){const c=cli(id);if(!c||c.etapa===e)return;log(c,"Etapa: "+e
 
 /* ---- Cartera ---- */
 function vClientes(){
+  if(ESE())VCLI.v="lista";
   if(VCLI.v==="etapa"){vEtapas();return}
   V.innerHTML=`<div class="cab"><div><h1>Clientes</h1></div><div class="tools" style="margin:0">${segCli()}<button class="btn pri" data-a="nuevo">+ Nuevo cliente</button></div></div>
   <div class="tools no-print"><input type="search" id="q" placeholder="Buscar nombre, empresa o teléfono" aria-label="Buscar"><select id="fe" aria-label="Filtrar"><option value="">Todos</option>${ETAPAS.map(e=>`<option value="${e.id}">${e.n}</option>`).join("")}<option value="_saldo">Con saldo pendiente</option><option value="_mant">Mantenimiento vencido</option>${D.colabs.map(k=>`<option value="k:${k.id}">Vino por ${esc(k.nombre)}</option>`).join("")}</select></div>
@@ -972,12 +987,14 @@ function vTablero(id){
 /* ---- Trabajos ---- */
 function flujoTrab(t){
   const d=t.did&&dia(t.did),pr=t.pid&&pre(t.pid),cb=pr?D.cobros.filter(c=>c.pid===pr.id):[],pend=cb.filter(pendiente),ag=t.estado==="agendado";
-  const bt=(a,tx)=>`<button class="btn chico claro" data-a="${a}" data-id="${t.id}">${tx}</button>`;
+  let dado=false;const bt=(a,tx)=>{if(ESE()&&dado)return "";dado=true;return `<button class="btn chico ${ESE()?"pri":"claro"}" data-a="${a}" data-id="${t.id}">${tx}</button>`};
   const pz=[];
   if(d)pz.push(`<span>Diagnóstico <a href="#diag/${d.id}">${{ok:"Bien",mes:"Este mes",urg:"Urgente",nm:"sin evaluar"}[estadoGlobal(d)]}</a></span>`);else if(ag)pz.push(bt("diag-trab","Hacer diagnóstico"));
   if(pr)pz.push(`<span>Presupuesto <a href="#presdoc/${pr.id}">${esc(pr.num)} · ${EST_PRES[pr.estado]}</a></span>`);else if(ag||d)pz.push(bt("pres-trab","Crear presupuesto"));
   if(cb.length)pz.push(`<span>${pend.length?"Cobro pendiente "+fmt(pend.reduce((a,c)=>a+num(c.monto),0)):"Cobrado"}</span>`);
-  return pz.length?`<div class="flujo">${pz.join("")}</div>`:""}
+  if(ESE()&&!dado&&pend.length)pz.push(`<button class="btn chico pri" data-a="cobrar" data-id="${pend[0].id}">Cobrar</button>`);
+  const q=pz.filter(Boolean);
+  return q.length?`<div class="flujo">${q.join("")}</div>`:""}
 function vTrabajos(){
   V.innerHTML=`<div class="cab"><div><h1>Trabajos y mantenimiento</h1></div><button class="btn pri" data-a="nuevotrab">+ Trabajo</button></div>
   <div class="tabla-w"><table class="t"><thead><tr><th>Orden</th><th>Fecha</th><th>Cliente</th><th>Tipo</th><th>Dónde y qué</th><th>Horas</th><th>Próximo</th><th>Estado</th><th></th></tr></thead><tbody>${D.trab.slice().sort((a,b)=>a.fecha<b.fecha?1:-1).map(t=>`<tr><td>${esc(t.ot||"—")}</td><td>${fecha(t.fecha)}</td><td><a href="#cliente/${t.cid}">${esc(nomCorto(cli(t.cid)))}</a></td><td>${esc(t.tipo)}</td><td>${esc(t.sitio||"")}${t.desc?"<br><small>"+esc(t.desc)+"</small>":""}${flujoTrab(t)}</td><td class="num">${esc(t.horas||"")}</td><td>${t.prox?fecha(t.prox):"—"}</td><td><span class="etq ${t.estado==="hecho"?"ok":"az"}">${t.estado==="hecho"?"Hecho":"Agendado"}</span></td><td>${t.estado==="agendado"?`<button class="btn chico pri" data-a="trabhecho" data-id="${t.id}">Marcar hecho</button> `:""}<button class="btn chico claro" data-a="borrartrab" data-id="${t.id}">Borrar</button></td></tr>`).join("")||`<tr><td colspan="9"><div class="vacio">Todavía no hay trabajos cargados.</div></td></tr>`}</tbody></table></div>`;
@@ -1083,7 +1100,10 @@ const CAMPOS=["nombre","empresa","tel","mail","rubro","origen","zona","cuit","co
 fc.rubro.innerHTML=opts(RUBROS);fc.origen.innerHTML=opts(ORIGENES);fc.etapa.innerHTML=opts(ETAPAS,"",1);
 function abrirCliente(c){editId=c?c.id:null;document.getElementById("dlg-cliente-t").textContent=c?"Editar cliente":"Nuevo cliente";
   fc.colab.innerHTML='<option value="">— Ninguno —</option>'+D.colabs.map(x=>`<option value="${x.id}">${esc(x.nombre)}${x.empresa?" ("+esc(x.empresa)+")":""}</option>`).join("");
-  CAMPOS.forEach(k=>fc[k].value=c?(c[k]||""):(k==="etapa"?"nueva":k==="rubro"?RUBROS[0]:k==="origen"?ORIGENES[0]:""));dlg.showModal();fc.nombre.focus()}
+  const corto=ESE()&&!c;
+  CAMPOS.forEach(k=>fc[k].value=c?(c[k]||""):(k==="etapa"?"nueva":k==="rubro"?(corto?"Otro":RUBROS[0]):k==="origen"?(corto?"WhatsApp":ORIGENES[0]):""));
+  document.getElementById("k-grid").classList.toggle("corto",corto);dlg.showModal();fc.nombre.focus()}
+document.getElementById("k-mas").onclick=()=>document.getElementById("k-grid").classList.remove("corto");
 document.getElementById("k-guardar").onclick=()=>{
   if(!fc.nombre.value.trim()&&!fc.empresa.value.trim()){fc.empresa.focus();aviso("Cargá al menos el nombre de la empresa o del contacto");return}
   const o={};CAMPOS.forEach(k=>o[k]=fc[k].value.trim());
@@ -1095,7 +1115,9 @@ function conClientes(titulo,cid,campos,ok,okTxt){
   if(!D.clientes.length){aviso("Primero cargá un cliente");return}
   pedir(titulo,[{k:"cid",l:"Cliente",t:"select",o:[],v:cid}].concat(campos),ok,okTxt);
   const s=document.getElementById("g_cid");s.innerHTML=cliOpts(cid||D.clientes[0].id)}
-document.addEventListener("click",e=>{const ag=e.target.closest("[data-ag]");if(ag){VAG.v=ag.dataset.ag;vCal();return}const cv=e.target.closest("[data-cv]");if(cv){VCLI.v=cv.dataset.cv;vClientes();return}const g=e.target.closest("[data-go]");if(g&&!e.target.closest("a,button")){location.hash=g.dataset.go;return}
+document.addEventListener("click",e=>{const vs=e.target.closest("[data-vista]");if(vs){VISTA=vs.dataset.vista;try{localStorage.setItem("wmtec_vista",VISTA)}catch(x){}HOYALL=false;render();return}
+  const ha=e.target.closest("[data-hoyall]");if(ha){HOYALL=true;vPanel();return}
+  const ag=e.target.closest("[data-ag]");if(ag){VAG.v=ag.dataset.ag;vCal();return}const cv=e.target.closest("[data-cv]");if(cv){VCLI.v=cv.dataset.cv;vClientes();return}const g=e.target.closest("[data-go]");if(g&&!e.target.closest("a,button")){location.hash=g.dataset.go;return}
   const b=e.target.closest("[data-a]");if(b&&b.tagName!=="INPUT"){acc(b.dataset.a,b.dataset.id)}
   const cb=e.target.closest("[data-cal]");if(cb){const n=+cb.dataset.cal;if(n===0){const t=new Date();CAL={y:t.getFullYear(),m:t.getMonth(),sel:hoy()}}else{let m=CAL.m+n,y=CAL.y;if(m<0){m=11;y--}if(m>11){m=0;y++}CAL.m=m;CAL.y=y}vCal()}
   const dd=e.target.closest("[data-dia]");if(dd){CAL.sel=dd.dataset.dia;vCal()}});
