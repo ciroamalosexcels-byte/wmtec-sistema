@@ -2,7 +2,8 @@
    Un módulo DIN = 18 mm. Uso: Frente.montar(elemento, tablero, alCambiar). */
 (function () {
   "use strict";
-  const M = 18, H = 88, PASO = 132, MX = 26, MY = 30, TOP = 74, LW = 48, LH = 56, GAP = 34, ISC = 3000;
+  const M = 18, H = 88, PASO = 132, MX = 26, MY = 30, TOP0 = 74, LW = 48, LH = 56, GAP = 34, ISC = 3000;
+  let TOP = TOP0;
   const CLS = { termo: "prot", difer: "prot", general: "prot", fusible: "prot", guardamotor: "prot", contactor: "sw", rele: "sw", temporizador: "sw", horario: "sw", relewifi: "sw", voltimetro: "tap", amperimetro: "med", medidor1: "med", medidor3: "med", bornera: "junc", barraN: "junc", barraT: "junc", dps: "tap", monitor: "tap", piloto: "tap", fuente: "carga", reserva: "none", acometida: "src" };
 
   /* ---------- Dibujos (vista frontal, en mm). v = estado en la simulación ---------- */
@@ -135,8 +136,9 @@
 
   /* Geometría y terminales */
   function G(f) {
+    TOP = f.items.some(o => o.z === "a") ? TOP0 : 22;
     const nC = f.items.filter(o => o.z === "c").length, cajaW = f.mpf * M + 2 * MX, W = Math.max(cajaW, nC * LW + 2 * MX, 220), OX = (W - cajaW) / 2, cajaH = f.filas * PASO + 2 * MY, LY = TOP + cajaH + GAP;
-    return { nC, cajaW, W, OX, cajaH, LY, Hh: LY + LH + 14 };
+    return { nC, cajaW, W, OX, cajaH, LY, Hh: nC ? LY + LH + 14 : TOP + cajaH + 10 };
   }
   function pos(o, g, f) {
     if (o.z === "c") { const i = f.items.filter(q => q.z === "c").indexOf(o); return { x: (g.W - g.nC * LW) / 2 + i * LW, y: g.LY }; }
@@ -484,7 +486,7 @@
         s += `<g class="fr-term" data-term="${tt.id}"><circle cx="${tt.x}" cy="${tt.y}" r="${activo ? 4.8 : 3.4}" fill="${ac}" stroke="${en ? "#ffb300" : "#232323"}" stroke-width="${en ? 1.8 : .9}"/>${usado ? `<circle cx="${tt.x}" cy="${tt.y}" r="1.2" fill="#fff"/>` : ""}` + (tt.tipo !== "X" ? `<text x="${tt.x}" y="${ly}" font-size="3.8" text-anchor="middle" font-family="Archivo,Arial,sans-serif" font-weight="700" fill="#55574f">${tt.tipo}</text>` : "") + `</g>`;
       }));
       s += `<path id="fr-prev" d="" fill="none" stroke="#f9a01b" stroke-width="1.2" stroke-dasharray="3 2.4" stroke-linejoin="round"/>`;
-      if (!f.items.some(o => CLS[o.k] === "src")) s += `<text x="${g.W / 2}" y="${TOP / 2 + 4}" text-anchor="middle" font-size="7" fill="#9a9b95" font-family="Archivo,Arial,sans-serif" font-weight="700">Sumá la acometida (bajada de línea) desde el panel</text>`;
+      if (!f.items.some(o => CLS[o.k] === "src")) s += `<text x="${g.W / 2}" y="13" text-anchor="middle" font-size="5" fill="#9a9b95" font-family="Archivo,Arial,sans-serif" font-weight="700">Sumá la acometida (bajada de línea) desde Componentes</text>`;
       svg.innerHTML = s; svg._TM = TM;
     }
     function lista() {
