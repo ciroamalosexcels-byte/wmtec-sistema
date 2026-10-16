@@ -128,3 +128,4 @@ Wmezatec/
 - **Tarjeta:** rediseñada sobre la marca (`07_Branding_WMTEC/tarjeta.html` y `tarjeta-doble-faz.pdf`).
 - **Tableros, frente:** además del unifilar, la pestaña "Frente del tablero" dibuja la caja con rieles DIN y dispositivos a escala (térmicas, diferenciales, medidores, relés, temporizadores, borneras, etc.), con medidas de la caja y lista de materiales. Código en `08_Sistema_Clientes/tableros/frente.js`.
 - **Tarjeta para imprenta:** `07_Branding_WMTEC/tarjeta-A3-imprenta.pdf` (2 hojas: frente y dorso, 20 por hoja, sangrado de 3 mm). Se regenera con `generar-tarjeta.py`.
+- **Cableado y simulación del tablero:** en el frente se agrega la acometida (bajada de línea) y cargas (iluminación, tomas, aire, motores, etc.), se cablean entre sí y el modo Simular muestra la corriente circulando, disparo de térmicas y diferenciales por cortocircuito, sobrecarga o fuga a tierra, con registro de eventos.
