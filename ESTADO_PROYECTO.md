@@ -123,3 +123,6 @@ Wmezatec/
 - **Logo definitivo:** ligadura WM (base L1) con "TEC" abajo. Archivos en `06_Landing_web/logo/` (`wmtec-logo-oscuro`, `wmtec-logo-claro`, `wmtec-isotipo`) y copia en `07_Branding_WMTEC/`. Ya está en la landing.
 - **Sistema de clientes y diagnósticos:** `08_Sistema_Clientes/`. Se abre con doble clic en `iniciar.bat`; guarda solo en `datos/datos.json` (con copia diaria en `datos/copias/`). Incluye panel, calendario, embudo, cartera, diagnósticos, presupuestos (formato Biomarketing: 3 opciones, precio en efectivo, validez 15 días, pago 50/50), cobros y trabajos/mantenimiento. Trae 3 clientes de ejemplo, borrarlos desde cada ficha.
 - **No subir `08_Sistema_Clientes/datos/` a GitHub** (datos de clientes; ya está en `.gitignore`).
+
+- **Diseñador de tableros** (`08_Sistema_Clientes/tableros/`): editor de diagramas unifilares de código abierto (sldeditor, MIT) con símbolos de QElectroTech (CC BY 3.0), en español. Los diagramas se guardan por cliente desde la pestaña Tableros. Ver `tableros/THIRD_PARTY_NOTICES.md`.
+- **Tarjeta:** rediseñada sobre la marca (`07_Branding_WMTEC/tarjeta.html` y `tarjeta-doble-faz.pdf`).

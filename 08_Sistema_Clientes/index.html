@@ -161,6 +161,7 @@ table.t a{text-decoration:none;font-weight:700}
 .leyenda{display:flex;gap:14px;flex-wrap:wrap;font-size:.82rem;color:var(--tinta-suave);margin:10px 0}
 .leyenda span{display:inline-flex;align-items:center;gap:5px}
 
+.tab-frame{display:block;width:100%;height:calc(100vh - 200px);min-height:480px;border:0;border-radius:20px;background:#fff;box-shadow:0 1px 0 #c9cbc4}
 /* agenda visual */
 .agenda{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin-top:12px}
 .dia-c{background:#fff;border-radius:14px;padding:8px;min-height:108px;display:flex;flex-direction:column;gap:4px;box-shadow:0 1px 0 #d3d5ce;min-width:0}
@@ -265,6 +266,7 @@ dialog .acc{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-
 <symbol id="i-trab" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
 <symbol id="i-fin" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></symbol>
 <symbol id="i-borrar" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></symbol>
+<symbol id="i-tab" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M8 7h8M8 11h3M13 11h3M8 15h3M13 15h3"/></symbol>
 <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
 <symbol id="i-desc" viewBox="0 0 24 24"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 19h14"/></symbol>
 <symbol id="i-sub" viewBox="0 0 24 24"><path d="M12 16V5m0 0L8 9m4-4 4 4M5 19h14"/></symbol>
@@ -285,6 +287,7 @@ dialog .acc{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-
     <a class="nav" href="#presupuestos" data-r="presupuestos" title="Presupuestos"><svg class="ic" aria-hidden="true"><use href="#i-pres"/></svg><span class="t">Presupuestos</span><span class="cuenta" id="c-pres"></span></a>
     <a class="nav" href="#cobros" data-r="cobros" title="Cobros"><svg class="ic" aria-hidden="true"><use href="#i-cobro"/></svg><span class="t">Cobros</span><span class="cuenta" id="c-cobros"></span></a>
     <a class="nav" href="#finanzas" data-r="finanzas" title="Finanzas"><svg class="ic" aria-hidden="true"><use href="#i-fin"/></svg><span class="t">Finanzas</span></a>
+    <a class="nav" href="#tableros" data-r="tableros" title="Tableros"><svg class="ic" aria-hidden="true"><use href="#i-tab"/></svg><span class="t">Tableros</span></a>
     <a class="nav" href="#trabajos" data-r="trabajos" title="Trabajos"><svg class="ic" aria-hidden="true"><use href="#i-trab"/></svg><span class="t">Trabajos</span><span class="cuenta" id="c-trab"></span></a>
     <div class="pie">
       <div class="guardado" id="guardado"><i></i><span>Cargando…</span></div>
@@ -359,7 +362,7 @@ const PLANTILLAS=[
 
 /* ============ Datos ============ */
 const API=/^https?:$/.test(location.protocol), KEY="wmtec_crm_v2";
-const vacio=()=>({v:2,clientes:[],colabs:[],diag:[],pres:[],cobros:[],trab:[],movs:[],fijos:[],cfg:{prox:1,ot:1,saldoIni:0}});
+const vacio=()=>({v:2,clientes:[],colabs:[],diag:[],pres:[],cobros:[],trab:[],movs:[],fijos:[],tableros:[],cfg:{prox:1,ot:1,saldoIni:0}});
 const norm=x=>{const b=vacio();x=x&&typeof x==="object"?x:{};for(const k in b)if(x[k]===undefined)x[k]=b[k];return x};
 let D=vacio(), tG=null;
 function estado(t,m){const g=document.getElementById("guardado");g.className="guardado "+t;g.lastElementChild.textContent=m;g.title=m}
@@ -501,14 +504,15 @@ function ejemplo(){
 const V=document.getElementById("vista");
 const ruta=()=>{const p=(location.hash.slice(1)||"panel").split("/");return{r:p[0],id:p[1]}};
 function render(){
-  const q=ruta(),mapa={colab:"colaboradores",cliente:"clientes",diag:"diagnosticos",informe:"diagnosticos",pres:"presupuestos",presdoc:"presupuestos"};
+  clearInterval(tabTimer);
+  const q=ruta(),mapa={tablero:"tableros",colab:"colaboradores",cliente:"clientes",diag:"diagnosticos",informe:"diagnosticos",pres:"presupuestos",presdoc:"presupuestos"};
   document.querySelectorAll(".lado a.nav").forEach(a=>a.classList.toggle("on",a.dataset.r===q.r||a.dataset.r===mapa[q.r]));
   const set=(id,n,al)=>{const e=document.getElementById(id);e.textContent=n||"";e.classList.toggle("alerta",!!al&&!!n)};
   const h=hoy(),venc=D.cobros.filter(c=>pendiente(c)&&c.vence<h).length;
   set("c-clientes",D.clientes.length);set("c-colab",D.colabs.length);set("c-diag",D.diag.length);set("c-trab",D.trab.filter(t=>t.estado==="agendado").length);
   set("c-embudo",D.clientes.filter(c=>["nueva","visita","diag","presu"].includes(c.etapa)).length);
   set("c-pres",D.pres.filter(p=>["borrador","enviado"].includes(p.estado)).length);set("c-cobros",venc||D.cobros.filter(pendiente).length,venc);
-  ({panel:vPanel,calendario:vCal,pipeline:vPipeline,clientes:vClientes,cliente:vCliente,colaboradores:vColabs,colab:vColab,diagnosticos:vDiagnosticos,diag:vDiag,informe:vInforme,presupuestos:vPresupuestos,pres:vPres,presdoc:vPresDoc,cobros:vCobros,finanzas:vFin,trabajos:vTrabajos}[q.r]||vPanel)(q.id);
+  ({panel:vPanel,calendario:vCal,pipeline:vPipeline,clientes:vClientes,cliente:vCliente,colaboradores:vColabs,colab:vColab,diagnosticos:vDiagnosticos,diag:vDiag,informe:vInforme,presupuestos:vPresupuestos,pres:vPres,presdoc:vPresDoc,cobros:vCobros,finanzas:vFin,tableros:vTableros,tablero:vTablero,trabajos:vTrabajos}[q.r]||vPanel)(q.id);
   if(!["calendario"].includes(q.r))window.scrollTo(0,0);
 }
 const vacioInicial=()=>`<div class="vacio"><p><b>Todavía no cargaste nada.</b></p><button class="btn pri" data-a="nuevo">Cargar primer cliente</button> <button class="btn claro" data-a="ejemplo">Ver con datos de ejemplo</button></div>`;
@@ -602,6 +606,7 @@ function vCliente(id){
    <section class="card barra"><h2>Mensajes</h2><div class="bloque-msg" style="margin-top:12px"><div><label for="m-pl">Mensaje listo</label><select id="m-pl">${PLANTILLAS.map((p,i)=>`<option value="${i}">${p[0]}</option>`).join("")}</select></div><div><label class="sr" for="m-tx">Texto</label><textarea id="m-tx"></textarea></div>
     <div class="tools" style="margin:0"><a class="btn wsp" id="m-wa" href="#" target="_blank" rel="noopener">Abrir en WhatsApp</a><button class="btn claro" id="m-cp" type="button">Copiar</button></div></div></section>
    <section class="card barra"><div class="tools" style="justify-content:space-between;margin-bottom:8px"><h2>Diagnósticos</h2><button class="btn chico pri" data-a="nuevodiag" data-id="${c.id}">+ Diagnóstico</button></div><ul class="lista">${ds.map(d=>`<li><a class="fila" href="#diag/${d.id}"><div class="grow"><span class="ttl">${esc(d.sitio||"Diagnóstico")}</span><small>${fecha(d.fecha)} · ${cuenta(d,"urg")} urgentes, ${cuenta(d,"mes")} este mes</small></div>${etq(estadoGlobal(d))}</a></li>`).join("")||'<li class="vacio">Sin diagnósticos.</li>'}</ul></section>
+   <section class="card barra"><div class="tools" style="justify-content:space-between;margin-bottom:8px"><h2>Tableros</h2><button class="btn chico pri" data-a="nuevotab" data-id="${c.id}">+ Tablero</button></div><ul class="lista">${D.tableros.filter(t=>t.cid===id).map(t=>`<li><a class="fila" href="#tablero/${t.id}"><div class="grow"><span class="ttl">${esc(t.nombre)}</span><small>${fecha(t.fecha)} · ${contarTab(t)} elementos</small></div></a></li>`).join("")||'<li class="vacio">Sin tableros.</li>'}</ul></section>
    <section class="card barra"><div class="tools" style="justify-content:space-between;margin-bottom:8px"><h2>Presupuestos</h2><button class="btn chico pri" data-a="nuevopres" data-id="${c.id}">+ Presupuesto</button></div><ul class="lista">${ps.map(p=>`<li><a class="fila" href="#pres/${p.id}"><div class="grow"><span class="ttl">${p.num} · ${esc(p.titulo||"")}</span><small>${fecha(p.fecha)} · ${fmt(p.total||recomendada(p).precio)}</small></div><span class="etq ${p.estado==="aceptado"?"ok":p.estado==="enviado"?"az":""}">${EST_PRES[p.estado]}</span></a></li>`).join("")||'<li class="vacio">Sin presupuestos.</li>'}</ul></section>
    <section class="card barra"><div class="tools" style="justify-content:space-between;margin-bottom:8px"><h2>Cobros</h2><button class="btn chico pri" data-a="nuevocobro" data-id="${c.id}">+ Cobro</button></div><ul class="lista">${cs.sort((a,b)=>a.vence<b.vence?1:-1).map(x=>`<li class="fila"><div class="grow"><span class="ttl">${fmt(x.monto)} · ${esc(x.concepto)}</span><small>${x.pagado?"Cobrado el "+fecha(x.pagado)+" · "+esc(x.medio):"Vence el "+fecha(x.vence)}</small></div>${x.pagado?'<span class="etq ok">Cobrado</span>':`<button class="btn chico pri" data-a="cobrar" data-id="${x.id}">Cobrar</button>`}</li>`).join("")||'<li class="vacio">Sin cobros.</li>'}</ul></section></div>
   <div class="pila">
@@ -741,6 +746,34 @@ function vCobros(){
   V.querySelector("#fc").onchange=pintar;pintar();
 }
 
+/* ---- Tableros (editor sldeditor, MIT) ---- */
+let tabTimer=null,tabUlt="";
+const TAB_KEY="ole-editor";
+const contarTab=t=>{const e=(t.diagrama||{}).elements;return Array.isArray(e)?e.length:e?Object.keys(e).length:0};
+function vTableros(){
+  const l=D.tableros.slice().sort((a,b)=>a.fecha<b.fecha?1:-1);
+  V.innerHTML=`<div class="cab"><div><h1>Tableros</h1></div><button class="btn pri" data-a="nuevotab">+ Nuevo tablero</button></div>
+  <div class="tabla-w"><table class="t"><thead><tr><th>Tablero</th><th>Cliente</th><th>Modificado</th><th class="num">Elementos</th><th></th></tr></thead><tbody>${l.map(t=>`<tr><td><a href="#tablero/${t.id}">${esc(t.nombre)}</a></td><td>${t.cid?`<a href="#cliente/${t.cid}">${esc(nomCorto(cli(t.cid)))}</a>`:"—"}</td><td>${fecha(t.fecha)}</td><td class="num">${contarTab(t)}</td><td class="num"><a class="btn chico pri" href="#tablero/${t.id}">Abrir</a></td></tr>`).join("")||'<tr><td colspan="5"><div class="vacio">Todavía no diseñaste ningún tablero.</div></td></tr>'}</tbody></table></div>`;
+}
+function vTablero(id){
+  const t=D.tableros.find(x=>x.id===id);if(!t){location.hash="#tableros";return}
+  if(!API){V.innerHTML='<div class="vacio">El diseñador funciona abriendo el sistema con iniciar.bat.</div>';return}
+  try{
+    if(t.diagrama)localStorage.setItem(TAB_KEY,JSON.stringify({state:{diagram:t.diagrama,activeTool:"select",placeKind:null,lastPlaceKind:null},version:2}));else localStorage.removeItem(TAB_KEY);
+    localStorage.setItem("ole-onboarding-dismissed","1");
+  }catch(e){}
+  tabUlt=t.diagrama?JSON.stringify(t.diagrama):"";
+  V.innerHTML=`<div class="cab"><div><p><a href="#tableros">← Tableros</a></p><h1>${esc(t.nombre)}</h1></div><div class="tools" style="margin:0"><label class="sr" for="tb-n">Nombre</label><input id="tb-n" value="${esc(t.nombre)}"><label class="sr" for="tb-c">Cliente</label><select id="tb-c"><option value="">— Sin cliente —</option>${cliOpts(t.cid)}</select><button class="btn peligro chico" data-a="borrartab" data-id="${t.id}">Borrar</button></div></div>
+  <iframe class="tab-frame" src="tableros/index.html" title="Diseñador de tableros"></iframe>
+  <p class="calc" style="margin-top:8px">Editor sldeditor (licencia MIT). Símbolos de QElectroTech (licencia CC BY 3.0).</p>`;
+  V.querySelector("#tb-n").onchange=e=>{t.nombre=e.target.value.trim()||t.nombre;t.fecha=hoy();guardar();V.querySelector("h1").textContent=t.nombre};
+  V.querySelector("#tb-c").onchange=e=>{t.cid=e.target.value;guardar()};
+  tabTimer=setInterval(()=>{
+    if(ruta().r!=="tablero"){clearInterval(tabTimer);return}
+    try{const raw=localStorage.getItem(TAB_KEY);if(!raw)return;const d=JSON.parse(raw).state.diagram;if(!d)return;const j=JSON.stringify(d);if(j!==tabUlt){tabUlt=j;t.diagrama=d;t.fecha=hoy();guardar()}}catch(e){}
+  },1500);
+}
+
 /* ---- Trabajos ---- */
 function vTrabajos(){
   V.innerHTML=`<div class="cab"><div><h1>Trabajos y mantenimiento</h1></div><button class="btn pri" data-a="nuevotrab">+ Trabajo</button></div>
@@ -873,7 +906,12 @@ function acc(a,id){
   if(a==="nuevo"){abrirCliente();const cb=window.event&&window.event.target&&window.event.target.closest("[data-colab]");if(cb)fc.colab.value=cb.dataset.colab}
   else if(a==="editar")abrirCliente(cli(id));
   else if(a==="ejemplo"){ejemplo();render()}
-  else if(a==="borrar"){if(confirm("¿Borrar este cliente y todo lo que tiene (diagnósticos, presupuestos, cobros, trabajos)?")){["diag","pres","cobros","trab"].forEach(k=>D[k]=D[k].filter(x=>x.cid!==id));D.clientes=D.clientes.filter(c=>c.id!==id);guardar();location.hash="#clientes"}}
+  else if(a==="borrar"){if(confirm("¿Borrar este cliente y todo lo que tiene (diagnósticos, presupuestos, cobros, trabajos)?")){["diag","pres","cobros","trab","tableros"].forEach(k=>D[k]=D[k].filter(x=>x.cid!==id));D.clientes=D.clientes.filter(c=>c.id!==id);guardar();location.hash="#clientes"}}
+  else if(a==="nuevotab"){
+    pedir("Nuevo tablero",[{k:"nombre",l:"Nombre",w:1,ph:"Tablero general, sala de máquinas…"},{k:"cid",l:"Cliente",t:"select",o:[],v:id}],r=>{
+      const t={id:uid(),cid:r.cid,nombre:r.nombre.trim()||"Tablero sin nombre",fecha:h,diagrama:null};D.tableros.push(t);guardar();location.hash="#tablero/"+t.id},"Crear y abrir");
+    document.getElementById("g_cid").innerHTML='<option value="">— Sin cliente —</option>'+cliOpts(id)}
+  else if(a==="borrartab"){if(confirm("¿Borrar este tablero?")){D.tableros=D.tableros.filter(x=>x.id!==id);guardar();location.hash="#tableros"}}
   else if(a==="nuevogasto")pedirMov("gasto");
   else if(a==="nuevoingreso")pedirMov("ingreso");
   else if(a==="editarmov")pedirMov(D.movs.find(x=>x.id===id).tipo,D.movs.find(x=>x.id===id));
