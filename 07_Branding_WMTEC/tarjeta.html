@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<title>Tarjeta WM TEC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&display=swap" rel="stylesheet">
+<style>
+@page{size:90mm 50mm;margin:0}
+*{box-sizing:border-box}
+html,body{margin:0;background:#bdbeb8}
+.cara{width:90mm;height:50mm;margin:0 auto;display:block;overflow:hidden;page-break-after:always;break-after:page;background:#fff}
+.cara svg{display:block;width:90mm;height:50mm}
+text{font-family:"Archivo",system-ui,sans-serif}
+@media screen{.cara{margin:16px auto;box-shadow:0 8px 30px rgba(0,0,0,.35);width:900px;height:500px}.cara svg{width:900px;height:500px}}
+</style>
+</head>
+<body>
+
+<!-- FRENTE -->
+<section class="cara">
+<svg viewBox="0 0 1080 600" xmlns="http://www.w3.org/2000/svg" aria-label="Tarjeta, frente">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD54F"/><stop offset="1" stop-color="#F9A01B"/></linearGradient>
+    <symbol id="ic-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="4" fill="#232323"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z" fill="#232323"/></symbol>
+    <symbol id="ic-tel" viewBox="0 0 24 24"><path fill="#232323" d="M6.6 3h3l1.4 4.2-2 1.4a12 12 0 0 0 5.4 5.4l1.4-2L20 13.4v3A2.6 2.6 0 0 1 17.4 19C9.5 19 4 13.5 4 5.6A2.6 2.6 0 0 1 6.6 3z"/></symbol>
+    <symbol id="ic-mail" viewBox="0 0 24 24"><path fill="#232323" d="M3 6.5A1.5 1.5 0 0 1 4.5 5h15A1.5 1.5 0 0 1 21 6.5v11a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5zM5 8v.6l7 4.6 7-4.6V8l-7 4.6z"/></symbol>
+    <symbol id="ic-pin" viewBox="0 0 24 24"><path fill="#232323" d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></symbol>
+  </defs>
+  <rect width="1080" height="600" fill="#fff"/>
+  <!-- franjas en ángulo, mismo ángulo que las patas del logo -->
+  <g fill="none" stroke-linejoin="miter">
+    <path d="M582 -6 L736 300 L582 606" stroke="#FFC107" stroke-width="34"/>
+    <path d="M556 -6 L710 300 L556 606" stroke="#232323" stroke-width="16"/>
+    <path d="M530 -6 L684 300 L530 606" stroke="#FFC107" stroke-width="9"/>
+  </g>
+  <polygon points="0,0 520,0 674,300 520,600 0,600" fill="#232323"/>
+
+  <g transform="translate(72,92)"><circle cx="38" cy="38" r="38" fill="#FFC107"/><use href="#ic-user" x="16" y="16" width="44" height="44"/></g>
+  <text x="172" y="152" font-size="46" font-weight="500" fill="#fff">Walter Martin Meza</text>
+  <text x="172" y="204" font-size="33" font-weight="400" fill="#E3E4DF">Técnico Electromecánico</text>
+
+  <g transform="translate(72,236)"><circle cx="38" cy="38" r="38" fill="#FFC107"/><use href="#ic-tel" x="17" y="17" width="42" height="42"/></g>
+  <text x="172" y="298" font-size="46" font-weight="500" fill="#fff">+549 223 5313019</text>
+
+  <g transform="translate(72,350)"><circle cx="38" cy="38" r="38" fill="#FFC107"/><use href="#ic-mail" x="17" y="17" width="42" height="42"/></g>
+  <text x="172" y="396" font-size="34" font-weight="400" fill="#fff">@wmeza.tec</text>
+  <text x="172" y="440" font-size="34" font-weight="400" fill="#fff">wmeza977@gmail.com</text>
+
+  <g transform="translate(72,474)"><circle cx="38" cy="38" r="38" fill="#FFC107"/><use href="#ic-pin" x="17" y="17" width="42" height="42"/></g>
+  <text x="172" y="523" font-size="31" font-weight="400" fill="#fff">Mar del Plata y zona</text>
+  <text x="172" y="560" font-size="31" font-weight="400" fill="#E3E4DF">Argentina</text>
+
+  <!-- logo -->
+  <image href="../06_Landing_web/logo/wmtec-logo-claro.svg" x="792" y="150" width="236" height="172"/>
+  <text x="912" y="372" font-size="23" font-weight="600" fill="#232323" text-anchor="middle">Electromecánica industrial</text>
+</svg>
+</section>
+
+<!-- DORSO -->
+<section class="cara">
+<svg viewBox="0 0 1080 600" xmlns="http://www.w3.org/2000/svg" aria-label="Tarjeta, dorso">
+  <rect width="1080" height="600" fill="#232323"/>
+  <image href="../06_Landing_web/logo/wmtec-logo-oscuro.svg" x="390" y="108" width="300" height="219"/>
+  <text x="540" y="388" font-size="35" font-weight="500" fill="#fff" text-anchor="middle">Electromecánica industrial</text>
+  <line x1="16" y1="540" x2="330" y2="540" stroke="#FFC107" stroke-width="5"/>
+  <line x1="750" y1="540" x2="1064" y2="540" stroke="#FFC107" stroke-width="5"/>
+  <text x="540" y="553" font-size="38" font-weight="500" fill="#fff" text-anchor="middle">@wmeza.tec</text>
+</svg>
+</section>
+
+</body>
+</html>

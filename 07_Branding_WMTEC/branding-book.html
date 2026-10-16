@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<title>WM TEC · Branding book</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&display=swap" rel="stylesheet">
+<style>
+@page{size:297mm 210mm;margin:0}
+:root{
+  --carbon:#232323;--carbon2:#2e2e2e;--chapa:#E3E4DF;--papel:#F7F7F3;--tinta:#1F201D;--suave:#55574F;
+  --amarillo:#FFD54F;--amarillo2:#FFB300;--naranja:#F9A01B;--naranja2:#E07B00;
+  --degradado:linear-gradient(90deg,#ffc107,#f9a01b 55%,#e07b00);
+  --verde:#2F8A4C;--ambar:#D99A13;--rojo:#C23B2C;--wsp:#25D366;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#b9bab4;font-family:"Archivo",system-ui,sans-serif;color:var(--tinta);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pag{width:297mm;height:210mm;margin:0 auto;position:relative;overflow:hidden;background:var(--papel);break-after:page;page-break-after:always;padding:16mm 18mm}
+@media screen{.pag{margin:14px auto;box-shadow:0 8px 30px rgba(0,0,0,.35)}}
+h1,h2,h3{margin:0;font-weight:800;line-height:1;font-variation-settings:"wdth" 78;letter-spacing:-.01em}
+h1{font-size:64pt}h2{font-size:34pt}h3{font-size:15pt;font-variation-settings:"wdth" 90}
+p{margin:0 0 .6em;font-size:10.5pt;line-height:1.5;max-width:60ch}
+.num{position:absolute;top:12mm;right:18mm;font-size:9pt;font-weight:700;color:var(--suave);letter-spacing:.04em}
+.pie{position:absolute;left:18mm;right:18mm;bottom:9mm;display:flex;justify-content:space-between;font-size:8pt;color:var(--suave)}
+.oscura{background:var(--carbon);color:var(--papel)}.oscura p{color:#d6d7d0}.oscura .num,.oscura .pie{color:#a9aba2}
+.barra{height:3.2mm;background:var(--degradado);border-radius:9px;width:34mm;margin:5mm 0 8mm}
+.logo-xl{display:block}
+.cols{display:grid;gap:8mm}.c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:repeat(3,1fr)}.c4{grid-template-columns:repeat(4,1fr)}
+.tile{border-radius:5mm;padding:6mm;display:grid;place-items:center;position:relative}
+.tile small{position:absolute;left:5mm;bottom:3.5mm;font-size:8pt;font-weight:700;opacity:.8}
+.oscuro{background:var(--carbon)}.claro{background:#fff;border:.3mm solid #d6d7d0}.amar{background:#FFC107}
+.sw{border-radius:4mm;padding:5mm;min-height:36mm;display:flex;flex-direction:column;justify-content:flex-end;font-size:9pt;line-height:1.35}
+.sw b{font-size:11pt;display:block;font-variation-settings:"wdth" 90}
+.k{font-size:8pt;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--suave);margin-bottom:2mm}
+.oscura .k{color:#a9aba2}
+.mal{position:relative}.mal::after{content:"";position:absolute;right:4mm;top:4mm;width:7mm;height:7mm;border-radius:50%;background:var(--rojo);box-shadow:inset 0 0 0 1.2mm var(--rojo)}
+.mal i{position:absolute;right:5.4mm;top:5.2mm;z-index:2;color:#fff;font-style:normal;font-weight:800;font-size:9pt;line-height:1}
+.si{position:relative}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:6mm}
+.cita{border-left:1.6mm solid var(--naranja);padding:1mm 0 1mm 5mm;margin:0 0 5mm}
+.cita b{display:block;font-size:12pt;font-variation-settings:"wdth" 85}
+.cita span{font-size:9.5pt;color:var(--suave)}
+.no b{color:var(--rojo)}.no span{text-decoration:line-through;text-decoration-color:rgba(194,59,44,.6)}
+.btn-m{display:inline-flex;gap:2mm;align-items:center;padding:3mm 6mm;border-radius:999px;font-weight:700;font-size:10pt;box-shadow:1mm 1mm 2mm -.5mm rgba(0,0,0,.28),3.5mm 3.5mm 7mm -2mm rgba(0,0,0,.38)}
+.btn-w{background:linear-gradient(135deg,#3be37a,#1fb556);color:#0d2b17}.btn-g{background:linear-gradient(135deg,#4a4a4a,#2c2c2c);color:#fff}
+.sem{display:flex;gap:3mm;align-items:center;font-size:10pt;font-weight:700}.sem i{width:4.5mm;height:4.5mm;border-radius:50%;display:inline-block;margin-right:1.5mm;vertical-align:-1mm}
+.fac{display:flex;gap:2mm;height:30mm;align-items:flex-end}
+.fac span{display:block;width:12mm;background:linear-gradient(180deg,#FFD54F,#FFB300);clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
+</style>
+</head>
+<body>
+
+<!-- 1 · PORTADA -->
+<section class="pag oscura" style="display:grid;place-items:center">
+  <img class="logo-xl" src="../06_Landing_web/logo/wmtec-logo-oscuro.svg" alt="WM TEC" style="width:92mm">
+  <div style="position:absolute;left:18mm;bottom:16mm"><h2 style="font-size:30pt">Branding book</h2><div class="barra" style="margin:4mm 0 0"></div></div>
+  <div style="position:absolute;right:18mm;bottom:16mm;text-align:right;font-size:10pt;color:#a9aba2">Electromecánica industrial<br>Mar del Plata y zona · Versión 1.0 · Octubre 2026</div>
+</section>
+
+<!-- 2 · MARCA -->
+<section class="pag"><div class="num">01 · LA MARCA</div>
+  <h2>Quién es WM TEC</h2><div class="barra"></div>
+  <div class="cols c2" style="margin-top:4mm">
+    <div>
+      <p>WM TEC es el nombre de trabajo de <b>Walter Martín Meza</b>, técnico mecánico electricista de Mar del Plata, que hace mantenimiento eléctrico industrial y comercial desde 1997: frigoríficos, plantas de alimentos, metalúrgicas, hoteles, colegios, obras y consorcios.</p>
+      <p>También hace service y reparación de grupos electrógenos, industriales y domésticos.</p>
+      <h3 style="margin:7mm 0 3mm">Lo que la marca tiene que comunicar</h3>
+      <div class="cita"><b>Que la planta no pare.</b><span>Es la promesa de fondo. Todo lo demás la sostiene.</span></div>
+      <div class="cita"><b>Oficio de verdad.</b><span>Un técnico con trayectoria, que explica lo que encuentra y lo deja por escrito.</span></div>
+      <div class="cita"><b>Cercanía.</b><span>Una persona que atiende el teléfono, no una empresa anónima.</span></div>
+    </div>
+    <div class="tile oscuro" style="min-height:130mm;align-content:center;gap:8mm">
+      <img src="../06_Landing_web/logo/wmtec-isotipo.svg" alt="" style="width:100mm">
+      <p style="color:#d6d7d0;text-align:center;font-size:10pt;max-width:78mm;margin:0">La W y la M comparten un palo: el último de la W es el primero de la M. Las dos iniciales de Walter Meza, unidas en un solo trazo en zigzag, como una señal eléctrica.</p>
+    </div>
+  </div>
+  <div class="pie"><span>WM TEC · Branding book</span><span>2</span></div>
+</section>
+
+<!-- 3 · LOGO -->
+<section class="pag"><div class="num">02 · EL LOGO</div>
+  <h2>Versiones</h2><div class="barra"></div>
+  <div class="cols c3" style="margin-top:2mm">
+    <div class="tile oscuro" style="height:78mm"><img src="../06_Landing_web/logo/wmtec-logo-oscuro.svg" alt="" style="width:58mm"><small style="color:#fff">Principal · fondos oscuros</small></div>
+    <div class="tile claro" style="height:78mm"><img src="../06_Landing_web/logo/wmtec-logo-claro.svg" alt="" style="width:58mm"><small>Principal · fondos claros</small></div>
+    <div class="tile oscuro" style="height:78mm"><img src="../06_Landing_web/logo/wmtec-isotipo.svg" alt="" style="width:58mm"><small style="color:#fff">Isotipo (WM solo)</small></div>
+  </div>
+  <div class="cols c3" style="margin-top:8mm">
+    <div><div class="k">Cuándo usar cada una</div><p>La versión con TEC es la principal. Usá el isotipo solo cuando el espacio es chico: ícono de la pestaña, foto de perfil, sello, marca de agua.</p></div>
+    <div><div class="k">Archivos</div><p>wmtec-logo-oscuro.svg<br>wmtec-logo-claro.svg<br>wmtec-isotipo.svg<br>Formato vectorial: se puede agrandar sin perder calidad. El texto TEC está dibujado, no depende de ninguna fuente.</p></div>
+    <div><div class="k">Colores del logo</div><p>El WM va siempre en el degradado amarillo y naranja. Solo TEC cambia: blanco sobre fondo oscuro, carbón sobre fondo claro.</p></div>
+  </div>
+  <div class="pie"><span>WM TEC · Branding book</span><span>3</span></div>
+</section>
+
+<!-- 4 · ESPACIO Y TAMAÑO -->
+<section class="pag"><div class="num">02 · EL LOGO</div>
+  <h2>Espacio y tamaño</h2><div class="barra"></div>
+  <div class="cols c2" style="margin-top:2mm">
+    <div>
+      <div class="k">Área de respeto</div>
+      <div class="tile claro" style="height:80mm;padding:0">
+        <div style="position:relative;width:78mm;padding:10.5mm;outline:.4mm dashed var(--naranja2);outline-offset:0"><img src="../06_Landing_web/logo/wmtec-logo-claro.svg" alt="" style="width:100%;display:block"></div>
+      </div>
+      <p style="margin-top:4mm">Alrededor del logo queda siempre libre un margen igual a la altura de las letras de TEC. Nada se apoya dentro de ese margen: ni texto, ni bordes, ni otras imágenes.</p>
+    </div>
+    <div>
+      <div class="k">Tamaño mínimo</div>
+      <div class="tile claro" style="height:80mm;display:flex;gap:14mm;align-items:center;justify-content:center">
+        <div style="text-align:center"><img src="../06_Landing_web/logo/wmtec-logo-claro.svg" alt="" style="width:18mm;display:block;margin:0 auto 3mm"><span style="font-size:8pt;font-weight:700">Logo completo<br>18 mm / 70 px</span></div>
+        <div style="text-align:center"><img src="../06_Landing_web/logo/wmtec-isotipo.svg" alt="" style="width:10mm;display:block;margin:0 auto 3mm"><span style="font-size:8pt;font-weight:700">Isotipo<br>10 mm / 32 px</span></div>
+      </div>
+      <p style="margin-top:4mm">Por debajo de esas medidas las letras TEC se vuelven ilegibles. En ese caso se usa solo el isotipo.</p>
+    </div>
+  </div>
+  <div class="pie"><span>WM TEC · Branding book</span><span>4</span></div>
+</section>
+
+<!-- 5 · USOS INCORRECTOS -->
+<section class="pag"><div class="num">02 · EL LOGO</div>
+  <h2>Lo que no se hace</h2><div class="barra"></div>
+  <div class="cols c4" style="margin-top:2mm">
+    <div class="tile claro mal" style="height:52mm"><i>x</i><img src="../06_Landing_web/logo/wmtec-logo-claro.svg" alt="" style="width:34mm;transform:scaleX(1.55)"><small>No deformarlo</small></div>
+    <div class="tile claro mal" style="height:52mm"><i>x</i><img src="../06_Landing_web/logo/wmtec-logo-claro.svg" alt="" style="width:34mm;filter:hue-rotate(190deg) saturate(1.6)"><small>No cambiar los colores</small></div>
+    <div class="tile claro mal" style="height:52mm"><i>x</i><img src="../06_Landing_web/logo/wmtec-logo-claro.svg" alt="" style="width:34mm;transform:rotate(-14deg)"><small>No girarlo</small></div>
+    <div class="tile amar mal" style="height:52mm"><i>x</i><img src="../06_Landing_web/logo/wmtec-logo-claro.svg" alt="" style="width:34mm"><small>No sobre amarillo o naranja</small></div>
+  </div>
+  <div class="cols c4" style="margin-top:7mm">
+    <div class="tile claro mal" style="height:52mm"><i>x</i><img src="../06_Landing_web/logo/wmtec-logo-claro.svg" alt="" style="width:34mm;filter:drop-shadow(1.5mm 1.5mm 1.2mm rgba(0,0,0,.6))"><small>No agregarle sombras</small></div>
+    <div class="tile mal" style="height:52mm;background:linear-gradient(135deg,#4d6aa8,#c0527a)"><i>x</i><img src="../06_Landing_web/logo/wmtec-logo-oscuro.svg" alt="" style="width:34mm"><small style="color:#fff">No sobre fondos de colores ajenos</small></div>
+    <div class="tile claro mal" style="height:52mm"><i>x</i><div style="display:flex;align-items:center;gap:2mm"><img src="../06_Landing_web/logo/wmtec-isotipo.svg" alt="" style="width:20mm"><span style="font-family:Georgia,serif;font-size:19pt">WM Tec</span></div><small>No reescribir el nombre con otra letra</small></div>
+    <div class="tile claro mal" style="height:52mm"><i>x</i><img src="../06_Landing_web/logo/wmtec-logo-claro.svg" alt="" style="width:34mm;opacity:.28"><small>No bajarle el contraste</small></div>
+  </div>
+  <div class="pie"><span>WM TEC · Branding book</span><span>5</span></div>
+</section>
+
+<!-- 6 · COLOR -->
+<section class="pag"><div class="num">03 · COLOR</div>
+  <h2>Paleta</h2><div class="barra"></div>
+  <div class="cols" style="grid-template-columns:2fr 2fr 1.4fr 1.4fr 1.4fr;margin-top:2mm">
+    <div class="sw" style="background:var(--carbon);color:#fff;min-height:62mm"><b>Carbón</b>#232323<br>Fondo principal, texto sobre claro</div>
+    <div class="sw" style="background:linear-gradient(180deg,#FFD54F,#FFB300);min-height:62mm"><b>Amarillo</b>#FFD54F → #FFB300<br>Color de marca</div>
+    <div class="sw" style="background:linear-gradient(180deg,#F9A01B,#E07B00);color:#fff;min-height:62mm"><b>Naranja</b>#F9A01B → #E07B00<br>Acento</div>
+    <div class="sw" style="background:var(--chapa);min-height:62mm"><b>Chapa</b>#E3E4DF<br>Fondo de página</div>
+    <div class="sw" style="background:#fff;border:.3mm solid #d6d7d0;min-height:62mm"><b>Papel</b>#F7F7F3<br>Tarjetas y documentos</div>
+  </div>
+  <div class="cols c2" style="margin-top:8mm">
+    <div>
+      <div class="k">Funcionales</div>
+      <div class="cols c4" style="gap:4mm">
+        <div class="sw" style="background:var(--wsp);min-height:24mm;padding:3mm"><b>WhatsApp</b>#25D366</div>
+        <div class="sw" style="background:var(--verde);color:#fff;min-height:24mm;padding:3mm"><b>Bien</b>#2F8A4C</div>
+        <div class="sw" style="background:var(--ambar);min-height:24mm;padding:3mm"><b>Este mes</b>#D99A13</div>
+        <div class="sw" style="background:var(--rojo);color:#fff;min-height:24mm;padding:3mm"><b>Urgente</b>#C23B2C</div>
+      </div>
+    </div>
+    <div>
+      <div class="k">Texto</div>
+      <div class="cols c2" style="gap:4mm">
+        <div class="sw" style="background:#fff;border:.3mm solid #d6d7d0;min-height:24mm;padding:3mm"><b style="color:var(--tinta)">Tinta</b>#1F201D<br>Texto principal</div>
+        <div class="sw" style="background:#fff;border:.3mm solid #d6d7d0;min-height:24mm;padding:3mm"><b style="color:var(--suave)">Tinta suave</b>#55574F<br>Texto secundario</div>
+      </div>
+    </div>
+  </div>
+  <div class="cols c2" style="margin-top:7mm"><p><b>Regla de uso.</b> El amarillo y el naranja son los de marca; el carbón es el fondo. El verde de WhatsApp se usa solo para botones que abren WhatsApp. Los colores del semáforo (rojo, ámbar, verde) se usan solo en los informes de diagnóstico.</p><p><b>Proporción.</b> Carbón y neutros ocupan la mayor parte; el amarillo aparece en detalles y en el logo. Si todo es amarillo, nada destaca.</p></div>
+  <div class="pie"><span>WM TEC · Branding book</span><span>6</span></div>
+</section>
+
+<!-- 7 · TIPOGRAFIA -->
+<section class="pag"><div class="num">04 · TIPOGRAFÍA</div>
+  <h2>Archivo</h2><div class="barra"></div>
+  <div class="cols" style="grid-template-columns:1.3fr 1fr;margin-top:2mm">
+    <div>
+      <div style="font-size:72pt;line-height:.95;font-weight:800;font-variation-settings:'wdth' 70;letter-spacing:-.01em">Tu planta no puede parar.</div>
+      <div style="font-size:30pt;margin-top:6mm;font-weight:700;font-variation-settings:'wdth' 85;line-height:1.05">Primero, un diagnóstico</div>
+      <p style="font-size:13pt;margin-top:5mm;max-width:46ch">Reviso tableros, motores y protecciones antes de que fallen, y atiendo cuando algo ya falló.</p>
+    </div>
+    <div>
+      <div class="k">Una sola familia</div>
+      <p>Toda la marca usa <b>Archivo</b>, de Google Fonts (gratuita), con ancho variable.</p>
+      <table style="width:100%;border-collapse:collapse;font-size:9.5pt;margin-top:3mm">
+        <tr style="border-bottom:.3mm solid #d6d7d0"><td style="padding:2.2mm 0"><b>Títulos</b></td><td>ExtraBold 800, ancho 70 a 85</td></tr>
+        <tr style="border-bottom:.3mm solid #d6d7d0"><td style="padding:2.2mm 0"><b>Subtítulos</b></td><td>Bold 700, ancho 90</td></tr>
+        <tr style="border-bottom:.3mm solid #d6d7d0"><td style="padding:2.2mm 0"><b>Texto</b></td><td>Regular 400, ancho 100</td></tr>
+        <tr style="border-bottom:.3mm solid #d6d7d0"><td style="padding:2.2mm 0"><b>Botones</b></td><td>Bold 700</td></tr>
+        <tr><td style="padding:2.2mm 0"><b>Largo de línea</b></td><td>Hasta 65 caracteres</td></tr>
+      </table>
+      <p style="margin-top:5mm;font-size:9.5pt;color:var(--suave)">Si no se puede usar Archivo, el reemplazo es Arial o Helvetica en negrita para títulos y regular para texto.</p>
+    </div>
+  </div>
+  <div class="pie"><span>WM TEC · Branding book</span><span>7</span></div>
+</section>
+
+<!-- 8 · ELEMENTOS GRAFICOS -->
+<section class="pag"><div class="num">05 · ELEMENTOS</div>
+  <h2>Formas y detalles</h2><div class="barra"></div>
+  <div class="cols c3" style="margin-top:2mm">
+    <div>
+      <div class="k">El ángulo</div>
+      <div class="tile oscuro" style="height:44mm;overflow:hidden"><svg viewBox="0 0 160 60" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><g fill="none"><path d="M10 70 L60 -10" stroke="#FFC107" stroke-width="20"/><path d="M40 70 L90 -10" stroke="#fff" stroke-width="5"/><path d="M70 70 L120 -10" stroke="#F9A01B" stroke-width="10"/></g></svg></div>
+      <p style="margin-top:3mm">Las franjas y cortes siguen el ángulo de las patas del WM. Es el que se ve en la tarjeta y puede usarse en fondos y separadores.</p>
+    </div>
+    <div>
+      <div class="k">Redondeo</div>
+      <div class="tile claro" style="height:44mm;gap:5mm;display:flex;align-items:center;justify-content:center;flex-wrap:wrap">
+        <span class="btn-m btn-w">Pedir un diagnóstico</span><span class="btn-m btn-g">Llamar</span>
+      </div>
+      <p style="margin-top:3mm">Botones y campos en píldora (redondeo total). Tarjetas con 24 px de redondeo. Siempre los mismos valores.</p>
+    </div>
+    <div>
+      <div class="k">Semáforo</div>
+      <div class="tile claro" style="height:44mm;display:grid;gap:3mm;align-content:center;justify-items:start;padding-left:10mm">
+        <div class="sem"><i style="background:var(--rojo)"></i>Urgente: esta semana</div>
+        <div class="sem"><i style="background:var(--ambar)"></i>Este mes: corregir</div>
+        <div class="sem"><i style="background:var(--verde)"></i>Bien: mantener</div>
+      </div>
+      <p style="margin-top:3mm">El informe de diagnóstico se ordena con tres estados. Es el sello de la marca: algo que solo alguien del rubro pondría.</p>
+    </div>
+  </div>
+  <div class="cols c3" style="margin-top:6mm">
+    <div><div class="k">Barra de degradado</div><div style="height:4mm;border-radius:9px;background:var(--degradado);margin:3mm 0"></div><p>Franja amarillo a naranja bajo el encabezado y sobre las tarjetas principales.</p></div>
+    <div><div class="k">Fotos</div><p>Siempre reales: Walter trabajando, tableros, trabajos terminados. Nada de fotos de stock ni ilustraciones 3D genéricas.</p></div>
+    <div><div class="k">Íconos</div><p>De línea, mismo grosor y mismo tamaño. Un solo estilo en toda la pieza.</p></div>
+  </div>
+  <div class="pie"><span>WM TEC · Branding book</span><span>8</span></div>
+</section>
+
+<!-- 9 · VOZ -->
+<section class="pag"><div class="num">06 · VOZ</div>
+  <h2>Cómo habla WM TEC</h2><div class="barra"></div>
+  <div class="cols c2" style="margin-top:2mm">
+    <div>
+      <p>Habla como habla Walter: directo, concreto, en voseo rioplatense. Con palabras del oficio, no con frases de folleto. Explica lo que encuentra y lo que hay que hacer.</p>
+      <h3 style="margin:5mm 0 3mm">Se dice así</h3>
+      <div class="cita"><b>“Contame qué tenés y lo vemos.”</b><span>Cercano y sin vueltas.</span></div>
+      <div class="cita"><b>“Borne de alimentación con marcas de temperatura.”</b><span>Un hallazgo concreto, no una generalidad.</span></div>
+      <div class="cita"><b>“Si algo no se puede medir con lo que llevo ese día, el informe lo dice.”</b><span>Honestidad sobre lo que se sabe y lo que no.</span></div>
+    </div>
+    <div>
+      <h3 style="margin:0 0 3mm">No se dice así</h3>
+      <div class="cita no"><b>“Soluciones integrales para su empresa.”</b><span>Vacío: no dice nada.</span></div>
+      <div class="cita no"><b>“Líderes en excelencia energética.”</b><span>Promesa que no se puede comprobar.</span></div>
+      <div class="cita no"><b>“Garantía de cero fallas.”</b><span>Nadie puede prometerlo.</span></div>
+      <h3 style="margin:7mm 0 3mm">Reglas rápidas</h3>
+      <p>Frases cortas. Un dato concreto antes que un adjetivo. Teléfono y WhatsApp siempre a la vista. No se usan emojis ni mayúsculas sostenidas en las piezas.</p>
+    </div>
+  </div>
+  <div class="pie"><span>WM TEC · Branding book</span><span>9</span></div>
+</section>
+
+<!-- 10 · APLICACIONES -->
+<section class="pag"><div class="num">07 · APLICACIONES</div>
+  <h2>Tarjeta personal</h2><div class="barra"></div>
+  <div class="cols c2" style="margin-top:2mm">
+    <div><div class="k">Frente</div><img src="tarjeta-frente.png" alt="" style="width:100%;border-radius:2mm;box-shadow:0 2mm 6mm rgba(0,0,0,.3)"></div>
+    <div><div class="k">Dorso</div><img src="tarjeta-dorso.png" alt="" style="width:100%;border-radius:2mm;box-shadow:0 2mm 6mm rgba(0,0,0,.3)"></div>
+  </div>
+  <div class="cols c3" style="margin-top:8mm">
+    <div><div class="k">Medida</div><p>90 x 50 mm, doble faz. Archivo para imprenta: tarjeta-doble-faz.pdf</p></div>
+    <div><div class="k">Papel sugerido</div><p>Ilustración 300 g con laminado mate. El carbón queda más profundo que con brillante.</p></div>
+    <div><div class="k">Datos</div><p>Nombre, oficio, teléfono, Instagram y mail, zona de trabajo. Nada más: lo demás está en la web.</p></div>
+  </div>
+  <div class="pie"><span>WM TEC · Branding book</span><span>10</span></div>
+</section>
+
+<!-- 11 · APLICACIONES: DIGITAL -->
+<section class="pag"><div class="num">07 · APLICACIONES</div>
+  <h2>Web, redes y documentos</h2><div class="barra"></div>
+  <div class="cols" style="grid-template-columns:1.5fr 1fr 1fr;margin-top:2mm">
+    <div>
+      <div class="k">Encabezado de la web</div>
+      <div style="background:var(--carbon);border-radius:4mm;padding:4mm 6mm;display:flex;align-items:center;gap:5mm;position:relative;overflow:hidden;color:#d0d0d0;font-size:9pt;font-weight:600">
+        <img src="../06_Landing_web/logo/wmtec-logo-oscuro.svg" alt="" style="height:15mm"><span style="margin-right:auto;font-size:7pt;letter-spacing:.04em;text-transform:uppercase;color:#a9aba2;border-left:.5mm solid #4a4a4a;padding-left:3mm">Electromecánica<br>industrial</span><span>Servicios</span><span>Diagnóstico</span><span>Contacto</span><span class="btn-m btn-w" style="padding:2mm 4mm;font-size:8pt">WhatsApp</span>
+        <div style="position:absolute;left:0;right:0;bottom:0;height:1.4mm;background:var(--degradado)"></div>
+      </div>
+      <p style="margin-top:3mm">Fondo carbón, logo con TEC, franja de degradado abajo y un solo botón de acción en verde.</p>
+    </div>
+    <div>
+      <div class="k">Foto de perfil</div>
+      <div style="display:flex;gap:5mm;align-items:center">
+        <div style="width:30mm;height:30mm;border-radius:50%;background:var(--carbon);display:grid;place-items:center"><img src="../06_Landing_web/logo/wmtec-isotipo.svg" alt="" style="width:21mm"></div>
+        <div style="width:18mm;height:18mm;border-radius:50%;background:var(--carbon);display:grid;place-items:center"><img src="../06_Landing_web/logo/wmtec-isotipo.svg" alt="" style="width:12.5mm"></div>
+      </div>
+      <p style="margin-top:3mm">Instagram, Facebook y WhatsApp: isotipo sobre carbón, centrado.</p>
+    </div>
+    <div>
+      <div class="k">Informe y presupuesto</div>
+      <div style="background:#fff;border-radius:2mm;padding:3.5mm;box-shadow:0 1.5mm 5mm rgba(0,0,0,.25);border-top:1.2mm solid var(--naranja)">
+        <img src="../06_Landing_web/logo/wmtec-logo-claro.svg" alt="" style="height:11mm;display:block">
+        <div style="font-weight:800;font-size:10pt;margin:2mm 0 1.5mm;font-variation-settings:'wdth' 80">Informe de diagnóstico</div>
+        <div class="sem" style="font-size:7pt"><i style="background:var(--rojo);width:3mm;height:3mm"></i>1 <i style="background:var(--ambar);width:3mm;height:3mm"></i>6 <i style="background:var(--verde);width:3mm;height:3mm"></i>9</div>
+      </div>
+      <p style="margin-top:3mm">Logo arriba, título en peso 800, semáforo y barra de degradado.</p>
+    </div>
+  </div>
+  <div class="cols c3" style="margin-top:8mm">
+    <div><div class="k">Nombre y usuarios</div><p>Nombre de marca: <b>WM TEC</b>. Instagram: @wmeza.tec. Teléfono y WhatsApp: 223 531 3019.</p></div>
+    <div><div class="k">Cómo se escribe</div><p>WM TEC, con las dos letras en mayúscula y separado. No WMTec, WMTEC ni WM Tec.</p></div>
+    <div><div class="k">Pendiente</div><p>Dominio web definitivo, matrícula y datos de seguros para sumar a la franja de confianza.</p></div>
+  </div>
+  <div class="pie"><span>WM TEC · Branding book</span><span>11</span></div>
+</section>
+
+</body>
+</html>
