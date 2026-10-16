@@ -426,21 +426,21 @@
     };
     /* dA y dB: hacia dónde sale cada borne (-1 arriba, 1 abajo). Del mismo lado el cable hace una U. */
     const camino = (x1, x2, y1, y2, lane, dA, dB) => {
-      lane = +lane || 0; dA = dA == null ? 1 : dA; dB = dB == null ? -dA : dB; const st = 16; let pts;
+      lane = +lane || 0; dA = dA == null ? 1 : dA; dB = dB == null ? -dA : dB; const st = 20, ofs = (lane + 12) / 2; let pts;
       if (dA !== dB) {
         if (dA === -1) return camino(x2, x1, y2, y1, lane, dB, dA);
         if (Math.abs(x1 - x2) < .5 && y2 > y1) return `M${x1} ${y1}L${x2} ${y2}`;
-        if (y2 - y1 >= 2 * st) { const ym = y1 + (y2 - y1) / 2 + lane; pts = [[x1, y1], [x1, ym], [x2, ym], [x2, y2]]; }
-        else { const ya = y1 + st + lane, yb = y2 - st - lane, xs = Math.abs(x1 - x2) > 8 ? (x1 + x2) / 2 + lane * .4 : Math.max(x1, x2) + 16 + lane; pts = [[x1, y1], [x1, ya], [xs, ya], [xs, yb], [x2, yb], [x2, y2]]; }
+        if (y2 - y1 >= 2 * st) { const ym = Math.min(y2 - st, Math.max(y1 + st, y1 + (y2 - y1) / 2 + lane)); pts = [[x1, y1], [x1, ym], [x2, ym], [x2, y2]]; }
+        else { const ya = y1 + st + ofs, yb = y2 - st - ofs, xs = Math.abs(x1 - x2) > 8 ? (x1 + x2) / 2 + lane * .4 : Math.max(x1, x2) + 16 + lane; pts = [[x1, y1], [x1, ya], [xs, ya], [xs, yb], [x2, yb], [x2, y2]]; }
       } else {
-        const nivel = dA === -1 ? Math.min(y1, y2) - st - lane : Math.max(y1, y2) + st + lane;
+        const nivel = dA === -1 ? Math.min(y1, y2) - st - ofs : Math.max(y1, y2) + st + ofs;
         pts = [[x1, y1], [x1, nivel], [x2, nivel], [x2, y2]];
       }
       return redondo(pts, 6);
     };
     /* vista previa mientras se arrastra: sale del borne hacia su lado y llega al puntero con ángulos rectos */
     const caminoLibre = (x1, y1, d, x2, y2) => {
-      const st = 16, enLado = (y2 - y1) * d >= st, ym = enLado ? y1 + (y2 - y1) / 2 : y1 + d * st;
+      const st = 20, enLado = (y2 - y1) * d >= st, ym = enLado ? y1 + (y2 - y1) / 2 : y1 + d * st;
       return redondo(Math.abs(x1 - x2) < .5 && enLado ? [[x1, y1], [x2, y2]] : [[x1, y1], [x1, ym], [x2, ym], [x2, y2]], 6);
     };
     const cableSvg = (d, col, sel) => {
@@ -459,7 +459,7 @@
         for (let i = 0; i < f.mpf * 2; i++) s += `<rect x="${g.OX + MX + 3 + i * 9}" y="${cy - 2.2}" width="5" height="4.4" rx="2.2" fill="#8d8f88" opacity=".55"/>`;
         for (let i = 0; i <= f.mpf; i++) s += `<line x1="${g.OX + MX + i * M}" y1="${cy - H / 2 - 2}" x2="${g.OX + MX + i * M}" y2="${cy + H / 2 + 2}" stroke="#bdbeb8" stroke-width=".35" stroke-dasharray="1.2 2.4"/>`;
         const ocup = f.items.filter(o => enRiel(o) && o.f === r && o.k !== "reserva").reduce((a, o) => a + modOf(o), 0);
-        s += `<text x="${g.OX + MX}" y="${cy - H / 2 - 17}" font-size="6" fill="#55574f" font-family="Archivo,Arial,sans-serif" font-weight="700">Fila ${r + 1} · ${ocup}/${f.mpf} módulos</text>`;
+        s += `<text x="${g.OX + 12}" y="${cy - H / 2 - 40}" font-size="5.4" fill="#7a7c74" font-family="Archivo,Arial,sans-serif" font-weight="700">Fila ${r + 1} · ${ocup}/${f.mpf} módulos</text>`;
       }
       const TM = new Map(); f.items.forEach(o => terminales(o, g, f).forEach(tt => TM.set(tt.id, tt)));
       const hayCC = Object.values(sim.falla).includes("cc");
