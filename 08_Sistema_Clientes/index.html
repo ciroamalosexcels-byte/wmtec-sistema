@@ -41,11 +41,14 @@ html{scrollbar-color:var(--naranja) var(--carbon)}
 .ic{width:21px;height:21px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .lado .nav{position:relative;display:flex;align-items:center;gap:12px;padding:.6em .85em;border-radius:var(--r-boton);text-decoration:none;color:#d0d0d0;font-weight:600;border:0;background:none;width:100%;text-align:left;font-size:1rem;white-space:nowrap}
 .lado .nav:hover{background:rgba(255,255,255,.07);color:#fff}
-.lado a.nav.on{background:var(--degradado);color:var(--carbon)}
+.lado .nav.on{background:var(--degradado);color:var(--carbon)}
+.lado .mas{display:none;flex-direction:column;gap:4px}.lado .mas.abierto{display:flex}
+.lado .solo-cel{display:none}
+.lado .bmas[aria-expanded=true]:not(.on){background:rgba(255,255,255,.12);color:#fff}
 .lado .nav .t{overflow:hidden;text-overflow:ellipsis}
 .lado .cuenta{margin-left:auto;font-size:.78rem;background:rgba(255,255,255,.14);padding:0 .55em;border-radius:99px}
 .lado .cuenta.alerta{background:var(--rojo);color:#fff}
-.lado a.nav.on .cuenta{background:rgba(0,0,0,.18)}
+.lado .nav.on .cuenta{background:rgba(0,0,0,.18)}
 .lado .pie{margin-top:auto;display:grid;gap:6px;font-size:.8rem;color:#a9aba2;padding-top:10px}
 .guardado{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:14px;background:rgba(255,255,255,.07);line-height:1.25}
 .guardado i{flex:none;width:10px;height:10px;border-radius:50%;margin-top:4px;background:var(--gris)}
@@ -89,11 +92,20 @@ textarea{min-height:76px;resize:vertical}
 .card.barra{border-top:0;background-image:var(--degradado);background-size:100% 6px;background-repeat:no-repeat;padding-top:22px}
 .cols2{display:grid;grid-template-columns:1.3fr 1fr;gap:18px}
 .pila{display:grid;gap:18px;align-content:start}
+.resumen{display:flex;flex-wrap:wrap;gap:6px 22px;margin:0 0 16px;padding:12px 16px;background:#fff;border-radius:14px;font-weight:700;box-shadow:0 1px 0 #d9dbd4}
+.resumen .rojo{color:var(--rojo)}
+.pila[hidden]{display:none}
 .cifras{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin-bottom:20px}
 .cifra{background:var(--carbon);color:var(--papel);border-radius:var(--r-tarjeta);padding:14px 16px;text-decoration:none;display:block}
 .cifra b{display:block;font-size:1.95rem;line-height:1.05;font-weight:800;font-variation-settings:"wdth" 70;background:var(--degradado);-webkit-background-clip:text;background-clip:text;color:transparent}
 .cifra span{font-size:.84rem;color:#cfd1c8}
 .cifra.rojo b{background:none;color:#ff7a6b}
+.hoy-fila{display:flex;align-items:center;gap:12px;padding:10px 12px;background:#fff;border-radius:14px;box-shadow:0 1px 0 #d9dbd4;border-left:5px solid transparent}
+.hoy-fila.urg{border-left-color:var(--rojo)}
+.hoy-fila .grow{flex:1;min-width:0;text-decoration:none}.hoy-fila .ttl{display:block;font-weight:700}.hoy-fila small{display:block;color:var(--tinta-suave)}
+.hoy-fila .acc{display:flex;gap:6px;flex:none}.hoy-fila .acc .btn{min-height:44px;display:inline-flex;align-items:center;text-decoration:none}
+.n-hoy{display:inline-block;min-width:1.6em;padding:0 .5em;border-radius:99px;background:var(--carbon);color:#fff;font-size:.8rem;text-align:center;vertical-align:middle}
+.cifras.chicas{margin-bottom:18px}
 .lista{list-style:none;margin:0;padding:0;display:grid;gap:7px}
 .fila{display:flex;align-items:center;gap:12px;padding:9px 12px;background:#fff;border-radius:14px;text-decoration:none;box-shadow:0 1px 0 #d9dbd4}
 a.fila:hover{box-shadow:0 0 0 2px var(--naranja)}
@@ -217,11 +229,35 @@ dialog .acc{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-
 /* documentos imprimibles */
 .doc{background:#fff;max-width:840px;margin:0 auto;padding:34px 40px;border-radius:6px;box-shadow:0 10px 40px -20px rgba(0,0,0,.5);color:#222}
 .doc .enc{display:flex;justify-content:space-between;gap:20px;border-bottom:4px solid var(--naranja);padding-bottom:14px;margin-bottom:18px;align-items:flex-end}
-.doc .enc img{width:70px;display:inline-block;vertical-align:middle;margin-right:10px}
+.doc .enc-logo{display:inline-block;background:var(--carbon);border-radius:10px;padding:8px 14px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.doc .enc img{width:78px;display:block}
 .doc table{width:100%;border-collapse:collapse;margin:8px 0 16px;font-size:.92rem}
 .doc th,.doc td{text-align:left;padding:7px 8px;border-bottom:1px solid #e3e3df;vertical-align:top}
 .doc th{font-size:.76rem;text-transform:uppercase;letter-spacing:.04em;color:#666}
 .dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.ren{display:grid;grid-template-columns:1fr 150px auto;gap:10px;align-items:start;margin-top:12px}
+.ren textarea{min-height:64px}
+.tot-ed{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:16px;padding-top:14px;border-top:1px solid #d9dbd4}
+.tot-ed>div:first-child{width:140px}
+.tot-ed .res{display:grid;gap:4px;text-align:right;font-size:1rem}.tot-ed .res b{margin-left:.6em}
+.tot-ed .res .gr{font-size:1.5rem;font-weight:800}
+.doc.a4{page:a4;width:min(210mm,100%);min-height:297mm;max-width:none;padding:18mm 16mm 22mm;border-radius:0;position:relative;overflow:hidden}
+.a4-barra{position:absolute;left:0;right:0;top:0;height:7mm;background:#FFB300;-webkit-print-color-adjust:exact;print-color-adjust:exact}.a4-barra.pie{top:auto;bottom:0;height:5mm}
+.a4-cab{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-top:4mm}
+.a4-cab h1{font-size:2.3rem;letter-spacing:.01em;margin-bottom:14px}
+.a4-fn{display:flex;gap:36px}.a4-fn small,.a4-cli small{display:block;font-size:.72rem;letter-spacing:.06em;color:#666;font-weight:700}.a4-fn b{font-size:1.2rem}
+.a4-emisor{display:grid;gap:2px;font-size:.92rem;justify-items:start}.a4-emisor b{font-size:1rem}
+.a4-logo{background:var(--carbon);border-radius:10px;padding:10px 16px;margin-bottom:8px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.a4-logo img{display:block;width:88px}
+.a4-cli{margin:22px 0 18px;display:grid;gap:2px}.a4-cli b{font-size:1.05rem}.a4-cli span{color:#555}
+@page a4{size:A4;margin:0}
+.pd-datos{display:grid;grid-template-columns:2fr 1fr 1fr;gap:16px;margin-bottom:18px}
+.pd-datos small{display:block;color:#666;text-transform:uppercase;letter-spacing:.04em;font-size:.72rem}.pd-datos b{font-size:1.05rem}
+.doc .pd-t th{-webkit-print-color-adjust:exact;print-color-adjust:exact;background:var(--carbon);color:#fff;padding:9px 12px;font-size:.78rem;letter-spacing:.06em}.doc .pd-t td{padding:12px;font-size:1rem}
+.doc .pd-t .num,.pd-tot b{text-align:right;white-space:nowrap}
+.pd-nota{font-size:.92rem;color:#444}
+.pd-tot{margin:14px 0 0 auto;width:min(320px,100%);display:grid;gap:4px}
+.pd-tot div{display:flex;justify-content:space-between;gap:20px;padding:4px 12px}
+.pd-tot .gr{-webkit-print-color-adjust:exact;print-color-adjust:exact;background:var(--degradado);color:var(--carbon);border-radius:12px;font-size:1.3rem;font-weight:800;padding:10px 12px}
+.pd-cond{margin-top:26px;break-inside:avoid}.pd-cond h3{font-size:.95rem;margin-bottom:6px}.pd-cond ul{margin:0;padding-left:1.2em;font-size:.82rem;color:#555;display:grid;gap:3px}
 .firma{margin-top:44px;display:flex;gap:40px}
 .firma div{flex:1;border-top:1px solid #999;padding-top:6px;font-size:.85rem;color:#666}
 .aviso{font-size:.78rem;color:#777;margin-top:16px}
@@ -241,6 +277,26 @@ dialog .acc{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-
 .etp div b{display:block}
 .etp div{background:#f4f4f0;border-radius:10px;padding:9px 12px;font-size:.88rem;break-inside:avoid}
 
+.col{min-width:0}
+.barra-sup{position:sticky;top:0;z-index:15;display:flex;align-items:center;gap:12px;padding:14px clamp(16px,3vw,40px) 0;background:linear-gradient(var(--chapa) 75%,rgba(227,228,223,0))}
+.barra-sup[hidden]{display:none}
+.busca{position:relative;flex:1;max-width:560px}
+.busca .ic{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--tinta-suave);pointer-events:none}
+.busca input{width:100%;padding:.7em 1em .7em 2.7em;border:0;border-radius:var(--r-boton);background:#fff;box-shadow:var(--sombra-campo);font:inherit}
+.q-res{position:absolute;left:0;right:0;top:calc(100% + 6px);background:#fff;border-radius:18px;box-shadow:0 20px 50px -10px rgba(0,0,0,.35);padding:6px;max-height:60vh;overflow-y:auto;z-index:20}
+.q-res[hidden]{display:none}
+.q-res a{display:flex;align-items:baseline;gap:10px;padding:.6em .8em;border-radius:12px;text-decoration:none;min-height:44px}
+.q-res a:hover,.q-res a.sel{background:var(--chapa)}
+.q-res .tp{flex:none;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--tinta-suave);width:6.4em}
+.q-res .tx{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.q-res .tx small{font-weight:400;color:var(--tinta-suave);margin-left:.5em}
+.q-res .nada{padding:.8em;color:var(--tinta-suave)}
+.mas-crear{margin-left:auto;display:flex;align-items:center;gap:8px;border:0;border-radius:var(--r-boton);background:var(--degradado);color:var(--carbon);font-weight:800;padding:.65em 1.2em .65em 1em}
+.menu-crear{position:absolute;right:clamp(16px,3vw,40px);top:calc(100% + 6px);min-width:230px;background:var(--carbon);border-radius:18px;padding:8px;box-shadow:0 20px 50px -10px rgba(0,0,0,.6);z-index:30}
+.menu-crear[hidden],.mas-crear[hidden]{display:none}
+.menu-crear button{display:block;width:100%;text-align:left;padding:.7em .9em;min-height:44px;border:0;border-radius:12px;background:none;color:#e4e4de;font-weight:600;font-size:.95rem}
+.menu-crear button:hover{background:rgba(255,255,255,.1);color:#fff}
+.app>.col>main{padding-top:18px}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--carbon);color:#fff;padding:.7em 1.3em;border-radius:99px;font-weight:600;z-index:50;box-shadow:0 10px 30px rgba(0,0,0,.4)}
 .bloque-msg{display:grid;gap:8px}
 .bloque-msg textarea{min-height:120px;font-size:.92rem}
@@ -250,10 +306,25 @@ dialog .acc{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-
   .aging{grid-template-columns:1fr 1fr}.barra-h{grid-template-columns:1fr 2fr auto}
   .app{grid-template-columns:1fr}
   .app,.app.colapsado{--lado:1fr;grid-template-columns:minmax(0,1fr)}
-  .lado{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:10px}
-  .lado-top{min-height:0;padding:0 8px}.lado .logo .full{width:70px}.colapsar{display:none}
-  .lado .nav{width:auto;padding:.5em .7em}
-  .lado .pie{margin:0;display:flex}.lado .guardado{display:none}
+  .lado{position:fixed;left:0;right:0;bottom:0;top:auto;height:auto;flex-direction:row;align-items:stretch;gap:2px;padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:20;overflow:visible;box-shadow:0 -8px 24px rgba(0,0,0,.25)}
+  .lado-top,.lado .pie{display:none}
+  .lado>.nav{flex:1 1 0;min-width:0;flex-direction:column;justify-content:center;gap:3px;width:auto;padding:.45em .1em;min-height:54px;font-size:.72rem;text-align:center}
+  .lado>.nav .t{max-width:100%}
+  .lado .cuenta{position:absolute;top:2px;right:calc(50% - 22px);margin:0;font-size:.66rem;padding:0 .4em}
+  .colapsado .lado .nav .t{display:block}.colapsado .lado .cuenta{display:inline}
+  .colapsado .lado>.nav{padding:.45em .1em}
+  .lado .mas{position:fixed;left:8px;right:8px;bottom:calc(72px + env(safe-area-inset-bottom));background:var(--carbon);border-radius:18px;padding:8px;box-shadow:0 20px 50px -10px rgba(0,0,0,.6);z-index:25}
+  .lado .mas.abierto{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+  .lado .mas .nav{font-size:.95rem;min-height:48px;padding:.6em .8em}
+  .lado .solo-cel{display:flex}
+  .colapsado .lado .mas .nav{justify-content:flex-start;gap:12px}
+  main{padding-bottom:96px}
+  .barra-sup{padding:10px 12px 0}.busca{max-width:none}
+  .mas-crear{position:fixed;right:16px;bottom:calc(80px + env(safe-area-inset-bottom));width:56px;height:56px;padding:0;justify-content:center;border-radius:50%;box-shadow:0 10px 30px rgba(0,0,0,.4);z-index:22}
+  .mas-crear .t{display:none}.mas-crear .ic{width:26px;height:26px;stroke-width:2.4}
+  .menu-crear{position:fixed;right:16px;left:auto;top:auto;bottom:calc(146px + env(safe-area-inset-bottom))}
+  .hoy-fila{flex-wrap:wrap}.hoy-fila .acc{width:100%}.hoy-fila .acc .btn{flex:1;justify-content:center}
+  .ren{grid-template-columns:1fr}.pd-datos{grid-template-columns:1fr 1fr}
   .cols2{grid-template-columns:1fr}.item{grid-template-columns:1fr}
   .planes,.etp,.dc2{grid-template-columns:1fr}
   .kan{grid-template-columns:repeat(6,230px)}
@@ -277,6 +348,9 @@ dialog .acc{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-
 <symbol id="i-pres" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></symbol>
 <symbol id="i-cobro" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M14.7 9.4c-.4-.9-1.4-1.4-2.6-1.4-1.5 0-2.6.8-2.6 2s1.1 1.7 2.6 2 2.6.8 2.6 2-1.1 2-2.6 2c-1.2 0-2.2-.5-2.6-1.4M12 6v2M12 16v2"/></symbol>
 <symbol id="i-trab" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
+<symbol id="i-mas" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></symbol>
+<symbol id="i-lupa" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+<symbol id="i-mas2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
 <symbol id="i-fin" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></symbol>
 <symbol id="i-borrar" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></symbol>
 <symbol id="i-tab" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M8 7h8M8 11h3M13 11h3M8 15h3M13 15h3"/></symbol>
@@ -291,17 +365,21 @@ dialog .acc{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-
       <a class="logo" href="#panel" aria-label="WM TEC, inicio"><img class="full" src="../06_Landing_web/logo/wmtec-logo-oscuro.svg" alt="WM TEC"><img class="mini" src="../06_Landing_web/logo/wmtec-isotipo.svg" alt="WM TEC"></a>
       <button class="colapsar" id="b-col" type="button" aria-label="Contraer menú" aria-expanded="true" title="Contraer menú"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button>
     </div>
-    <a class="nav" href="#panel" data-r="panel" title="Panel"><svg class="ic" aria-hidden="true"><use href="#i-panel"/></svg><span class="t">Panel</span></a>
-    <a class="nav" href="#calendario" data-r="calendario" title="Calendario"><svg class="ic" aria-hidden="true"><use href="#i-cal"/></svg><span class="t">Calendario</span></a>
-    <a class="nav" href="#pipeline" data-r="pipeline" title="Embudo"><svg class="ic" aria-hidden="true"><use href="#i-embudo"/></svg><span class="t">Embudo</span><span class="cuenta" id="c-embudo"></span></a>
-    <a class="nav" href="#clientes" data-r="clientes" title="Cartera"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg><span class="t">Cartera</span><span class="cuenta" id="c-clientes"></span></a>
-    <a class="nav" href="#colaboradores" data-r="colaboradores" title="Colaboradores"><svg class="ic" aria-hidden="true"><use href="#i-colab"/></svg><span class="t">Colaboradores</span><span class="cuenta" id="c-colab"></span></a>
-    <a class="nav" href="#diagnosticos" data-r="diagnosticos" title="Diagnósticos"><svg class="ic" aria-hidden="true"><use href="#i-diag"/></svg><span class="t">Diagnósticos</span><span class="cuenta" id="c-diag"></span></a>
-    <a class="nav" href="#presupuestos" data-r="presupuestos" title="Presupuestos"><svg class="ic" aria-hidden="true"><use href="#i-pres"/></svg><span class="t">Presupuestos</span><span class="cuenta" id="c-pres"></span></a>
-    <a class="nav" href="#cobros" data-r="cobros" title="Cobros"><svg class="ic" aria-hidden="true"><use href="#i-cobro"/></svg><span class="t">Cobros</span><span class="cuenta" id="c-cobros"></span></a>
-    <a class="nav" href="#finanzas" data-r="finanzas" title="Finanzas"><svg class="ic" aria-hidden="true"><use href="#i-fin"/></svg><span class="t">Finanzas</span></a>
-    <a class="nav" href="#tableros" data-r="tableros" title="Tableros"><svg class="ic" aria-hidden="true"><use href="#i-tab"/></svg><span class="t">Tableros</span></a>
-    <a class="nav" href="#trabajos" data-r="trabajos" title="Trabajos"><svg class="ic" aria-hidden="true"><use href="#i-trab"/></svg><span class="t">Trabajos</span><span class="cuenta" id="c-trab"></span></a>
+<a class="nav" href="#panel" data-r="panel" title="Hoy"><svg class="ic" aria-hidden="true"><use href="#i-panel"/></svg><span class="t">Hoy</span></a>
+<a class="nav" href="#clientes" data-r="clientes" title="Clientes"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg><span class="t">Clientes</span><span class="cuenta" id="c-clientes"></span></a>
+<a class="nav" href="#trabajos" data-r="trabajos" title="Trabajos"><svg class="ic" aria-hidden="true"><use href="#i-trab"/></svg><span class="t">Trabajos</span><span class="cuenta" id="c-trab"></span></a>
+<a class="nav" href="#cobros" data-r="cobros" title="Cobros"><svg class="ic" aria-hidden="true"><use href="#i-cobro"/></svg><span class="t">Cobros</span><span class="cuenta" id="c-cobros"></span></a>
+<a class="nav" href="#calendario" data-r="calendario" title="Agenda"><svg class="ic" aria-hidden="true"><use href="#i-cal"/></svg><span class="t">Agenda</span></a>
+    <button class="nav bmas" id="b-mas" type="button" aria-expanded="false" aria-controls="mas" title="Más"><svg class="ic" aria-hidden="true"><use href="#i-mas"/></svg><span class="t">Más</span></button>
+    <div class="mas" id="mas">
+      <a class="nav" href="#pipeline" data-r="pipeline" title="Embudo"><svg class="ic" aria-hidden="true"><use href="#i-embudo"/></svg><span class="t">Embudo</span><span class="cuenta" id="c-embudo"></span></a>
+      <a class="nav" href="#presupuestos" data-r="presupuestos" title="Presupuestos"><svg class="ic" aria-hidden="true"><use href="#i-pres"/></svg><span class="t">Presupuestos</span><span class="cuenta" id="c-pres"></span></a>
+      <a class="nav" href="#diagnosticos" data-r="diagnosticos" title="Diagnósticos"><svg class="ic" aria-hidden="true"><use href="#i-diag"/></svg><span class="t">Diagnósticos</span><span class="cuenta" id="c-diag"></span></a>
+      <a class="nav" href="#finanzas" data-r="finanzas" title="Finanzas"><svg class="ic" aria-hidden="true"><use href="#i-fin"/></svg><span class="t">Finanzas</span></a>
+      <a class="nav" href="#tableros" data-r="tableros" title="Tableros"><svg class="ic" aria-hidden="true"><use href="#i-tab"/></svg><span class="t">Tableros</span></a>
+      <a class="nav" href="#colaboradores" data-r="colaboradores" title="Colaboradores"><svg class="ic" aria-hidden="true"><use href="#i-colab"/></svg><span class="t">Colaboradores</span><span class="cuenta" id="c-colab"></span></a>
+      <button class="nav cfg solo-cel" id="b-cfg2" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="menu-cfg" title="Configuración"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="t">Configuración</span></button>
+    </div>
     <div class="pie">
       <div class="guardado" id="guardado"><i></i><span>Cargando…</span></div>
       <button class="nav cfg" id="b-cfg" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="menu-cfg" title="Configuración"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><span class="t">Configuración</span></button>
@@ -315,7 +393,23 @@ dialog .acc{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-
     <button type="button" role="menuitem" id="b-ej"><svg class="ic" aria-hidden="true"><use href="#i-borrar"/></svg>Borrar datos de ejemplo</button>
     <input type="file" id="f-import" accept="application/json" class="sr">
   </div>
-  <main id="vista"></main>
+  <div class="col">
+    <div class="barra-sup no-print" id="barra-sup">
+      <div class="busca">
+        <svg class="ic" aria-hidden="true"><use href="#i-lupa"/></svg>
+        <input type="search" id="q-global" placeholder="Buscar cliente, presupuesto, trabajo o cobro" aria-label="Buscar" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="q-res">
+        <div class="q-res" id="q-res" role="listbox" hidden></div>
+      </div>
+      <button class="mas-crear" id="b-crear" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="menu-crear" aria-label="Crear"><svg class="ic" aria-hidden="true"><use href="#i-mas2"/></svg><span class="t">Crear</span></button>
+      <div class="menu-crear" id="menu-crear" role="menu" hidden>
+        <button type="button" role="menuitem" data-a="nuevo">Nuevo cliente</button>
+        <button type="button" role="menuitem" data-a="nuevotrab">Nuevo trabajo</button>
+        <button type="button" role="menuitem" data-a="nuevopres">Nuevo presupuesto</button>
+        <button type="button" role="menuitem" data-a="nuevocobro">Registrar cobro</button>
+      </div>
+    </div>
+    <main id="vista"></main>
+  </div>
 </div>
 
 <dialog id="dlg-cliente">
@@ -368,7 +462,7 @@ const PLANTILLAS=[
  ["Primer contacto","Hola {nombre}, soy Walter de {marca}. Vi tu consulta y quiero entender qué necesitás. ¿Tenés unos minutos para hablar hoy o mañana?"],
  ["Confirmar visita","Hola {nombre}, te confirmo la visita para el diagnóstico en {empresa} el {fecha}. Si cambia algo avisame así reprogramamos. Gracias."],
  ["Entrega del informe","Hola {nombre}, te paso el resultado del diagnóstico de {sitio}. Lo urgente está marcado en rojo. Cuando lo veas lo repasamos juntos y te explico cada punto."],
- ["Envío de presupuesto","Hola {nombre}, te mando el presupuesto {num} para {empresa}. Tiene tres opciones: la recomendada es la del medio. Es válido por 15 días. Cualquier duda lo charlamos."],
+ ["Envío de presupuesto","Hola {nombre}, te mando el presupuesto {num} para {empresa}. Es válido por 15 días. Cualquier duda lo charlamos."],
  ["Seguimiento de presupuesto","Hola {nombre}, ¿pudiste ver el presupuesto {num}? Si querés ajustamos el alcance o lo charlamos por teléfono."],
  ["Recordatorio de cobro","Hola {nombre}, te recuerdo que está pendiente el pago de {monto} (vencía el {vence}). Te paso los datos por acá si los necesitás. Gracias."],
  ["Recordatorio de mantenimiento","Hola {nombre}, se acerca la fecha del próximo mantenimiento en {empresa} ({fecha}). ¿Coordinamos el día?"],
@@ -420,6 +514,11 @@ const etq=e=>`<span class="etq ${e}">${{ok:"Bien",mes:"Este mes",urg:"Urgente",n
 const opts=(arr,sel,k)=>arr.map(x=>{const v=k?x.id:x,n=k?x.n:x;return `<option value="${esc(v)}"${v===sel?" selected":""}>${esc(n)}</option>`}).join("");
 
 /* Derivados */
+const COND_PRES="La presente cotización contempla únicamente mano de obra. Los materiales serán provistos por el cliente.\nLa tarea no contempla instalación de jabalina de puesta a tierra, desobstrucción de canalizaciones existentes, trabajos de albañilería, reparación de superficies ni accesos que requieran medios especiales.\nToda tarea adicional o modificación del alcance aquí detallado será cotizada por separado y requerirá aprobación previa.\nSe incluyen pruebas básicas de funcionamiento de las instalaciones realizadas.";
+const subPres=p=>(p.items||[]).reduce((a,r)=>a+num(r.m),0), totPres=p=>Math.round(subPres(p)*(1-num(p.desc)/100));
+const migrarPres=p=>{if(p.simple)return p;const o=(p.elegida!=null&&p.opciones&&p.opciones[p.elegida])||recomendada(p);
+  p.items=[{d:[p.titulo,o.desc].filter(Boolean).join(". "),m:p.total||o.precio||""}];p.desc=0;p.nota="";p.cond=COND_PRES;p.simple=true;guardar();return p};
+const montoPres=p=>p.simple?totPres(p):(p.total||num(recomendada(p).precio));
 const recomendada=p=>(p.opciones||[]).find(o=>o.reco)||(p.opciones||[])[0]||{precio:0};
 const precioEf=(o,p)=>Math.round(num(o.precio)*(1-num(p.descEf)/100));
 const cobrosDe=cid=>D.cobros.filter(c=>c.cid===cid);
@@ -442,7 +541,7 @@ function eventos(){
   D.clientes.forEach(c=>{const m=proxMant(c.id);if(m&&!m.agendado)ev.push({f:m.f,t:"man",x:"Mantenimiento a coordinar: "+nomCorto(c),h:"#cliente/"+c.id})});
   D.cobros.filter(pendiente).forEach(c=>ev.push({f:c.vence,t:"cob",x:"Cobro "+fmt(c.monto)+" – "+nomCorto(cli(c.cid)),h:"#cobros"}));
   D.fijos.filter(f=>!fijoPagado(f,mesHoy())).forEach(f=>ev.push({f:mesHoy()+"-"+pad(Math.min(28,Math.max(1,num(f.dia)||1))),t:"fij",x:"Pagar "+f.desc+" "+fmt(f.monto),h:"#finanzas"}));
-  D.pres.filter(p=>p.estado==="enviado").forEach(p=>ev.push({f:vencePres(p),t:"pre",x:"Vence presupuesto "+p.num+" – "+nomCorto(cli(p.cid)),h:"#pres/"+p.id}));
+  D.pres.filter(p=>p.estado==="enviado").forEach(p=>ev.push({f:vencePres(p),t:"pre",x:"Vence presupuesto "+p.num+" – "+nomCorto(cli(p.cid)),h:"#presdoc/"+p.id}));
   return ev.filter(e=>e.f).sort((a,b)=>a.f<b.f?-1:1)}
 const TIPOLBL={con:"Contacto",tra:"Trabajo",man:"Mantenimiento",cob:"Cobro",pre:"Presupuesto",fij:"Gasto fijo"};
 
@@ -521,12 +620,16 @@ function render(){
   clearInterval(tabTimer);
   const q=ruta(),mapa={tablero:"tableros",colab:"colaboradores",cliente:"clientes",diag:"diagnosticos",informe:"diagnosticos",pres:"presupuestos",presdoc:"presupuestos"};
   document.querySelectorAll(".lado a.nav").forEach(a=>a.classList.toggle("on",a.dataset.r===q.r||a.dataset.r===mapa[q.r]));
+  const enMas=!!document.querySelector(".mas a.nav.on"),bm=document.getElementById("b-mas"),mm=document.getElementById("mas");
+  bm.classList.toggle("on",enMas);
+  if(innerWidth>900&&(enMas||(()=>{try{return localStorage.getItem("wmtec_mas")!=="0"}catch(e){return true}})())){mm.classList.add("abierto");bm.setAttribute("aria-expanded","true")}
+  else if(innerWidth<=900){mm.classList.remove("abierto");bm.setAttribute("aria-expanded","false")}
   const set=(id,n,al)=>{const e=document.getElementById(id);e.textContent=n||"";e.classList.toggle("alerta",!!al&&!!n)};
   const h=hoy(),venc=D.cobros.filter(c=>pendiente(c)&&c.vence<h).length;
   set("c-clientes",D.clientes.length);set("c-colab",D.colabs.length);set("c-diag",D.diag.length);set("c-trab",D.trab.filter(t=>t.estado==="agendado").length);
   set("c-embudo",D.clientes.filter(c=>["nueva","visita","diag","presu"].includes(c.etapa)).length);
   set("c-pres",D.pres.filter(p=>["borrador","enviado"].includes(p.estado)).length);set("c-cobros",venc||D.cobros.filter(pendiente).length,venc);
-  V.classList.toggle("tablero", q.r === "tablero");
+  V.classList.toggle("tablero", q.r === "tablero");if(window.barraSup)barraSup(q.r);
   ({panel:vPanel,calendario:vCal,pipeline:vPipeline,clientes:vClientes,cliente:vCliente,colaboradores:vColabs,colab:vColab,diagnosticos:vDiagnosticos,diag:vDiag,informe:vInforme,presupuestos:vPresupuestos,pres:vPres,presdoc:vPresDoc,cobros:vCobros,finanzas:vFin,tableros:vTableros,tablero:vTablero,trabajos:vTrabajos}[q.r]||vPanel)(q.id);
   if(!["calendario"].includes(q.r))window.scrollTo(0,0);
 }
@@ -542,27 +645,34 @@ function agendaVisual(h){
 
 function vPanel(){
   const h=hoy(),act=D.clientes.filter(c=>!["ganado","perdido"].includes(c.etapa));
-  const venc=act.filter(c=>c.prox&&c.prox<=h);
-  const nuevas=D.clientes.filter(c=>c.etapa==="nueva").length;
   const abiertos=D.pres.filter(p=>["borrador","enviado"].includes(p.estado));
   const porCobrar=D.cobros.filter(pendiente),vencidos=porCobrar.filter(c=>c.vence<h);
   const mes=h.slice(0,7),cobMes=D.cobros.filter(c=>c.pagado&&c.pagado.slice(0,7)===mes).reduce((a,c)=>a+num(c.monto),0);
-  const mv=D.clientes.filter(c=>mantVencido(c.id)).length, urg=D.diag.filter(d=>estadoGlobal(d)==="urg").length;
-    V.innerHTML=`<div class="cab"><div><h1>Panel</h1><p>${fechaL(h)}</p></div><button class="btn pri" data-a="nuevo">+ Nuevo cliente</button></div>
+  const tel=(c,txt)=>{const u=c&&wa(c.tel,txt);return (u?`<a class="btn chico" href="${u}" target="_blank" rel="noopener">WhatsApp</a>`:"")+(c&&c.tel?`<a class="btn chico claro" href="tel:${esc(String(c.tel).replace(/[^\d+]/g,""))}">Llamar</a>`:"")};
+  const cuando=f=>{const n=difDias(f,h);return n<=0?"hoy":n===1?"ayer":"hace "+n+" días"};
+  const fila=(cls,t,sub,href,btns)=>`<li class="hoy-fila ${cls}"><a class="grow" href="${href}"><span class="ttl">${t}</span><small>${sub}</small></a><div class="acc">${btns}</div></li>`;
+  const L=[],visto=new Set();
+  vencidos.sort((a,b)=>a.vence<b.vence?-1:1).forEach(c=>{const cl=cli(c.cid);
+    L.push(fila("urg",`Cobrar ${fmt(c.monto)} a ${esc(nomCorto(cl))}`,`${esc(c.concepto)} · venció ${cuando(c.vence)}`,"#cliente/"+c.cid,`<button class="btn chico pri" data-a="cobrar" data-id="${c.id}">Cobrar</button><button class="btn chico" data-a="recordar" data-id="${c.id}">Recordar</button>`))});
+  D.trab.filter(t=>t.estado==="agendado"&&t.fecha<=h).sort((a,b)=>a.fecha<b.fecha?-1:1).forEach(t=>{const cl=cli(t.cid);
+    L.push(fila(t.fecha<h?"urg":"",`${t.fecha<h?"Trabajo atrasado":"Hoy"}: ${esc(t.tipo)} en ${esc(nomCorto(cl))}`,esc([t.sitio,t.fecha<h?"era "+fecha(t.fecha):""].filter(Boolean).join(" · "))||"&nbsp;","#cliente/"+t.cid,`<button class="btn chico pri" data-a="trabhecho" data-id="${t.id}">Marcar hecho</button>`))});
+  act.filter(c=>c.prox&&c.prox<=h).sort((a,b)=>a.prox<b.prox?-1:1).forEach(c=>{visto.add(c.id);
+    L.push(fila(c.prox<h?"urg":"",`Contactar a ${esc(nomCorto(c))}`,esc(c.proxm||"")+(c.prox<h?(c.proxm?" · ":"")+"debía ser "+cuando(c.prox):""),"#cliente/"+c.id,tel(c)||`<a class="btn chico" href="#cliente/${c.id}">Abrir</a>`))});
+  D.clientes.filter(c=>c.etapa==="nueva"&&!visto.has(c.id)).forEach(c=>{visto.add(c.id);
+    L.push(fila("",`Atender la consulta de ${esc(nomCorto(c))}`,esc([c.rubro,c.zona].filter(Boolean).join(" · "))||"Consulta nueva","#cliente/"+c.id,tel(c)||`<a class="btn chico" href="#cliente/${c.id}">Abrir</a>`))});
+  D.pres.filter(p=>p.estado==="enviado"&&difDias(p.fechaEnv||p.fecha,h)>=3).forEach(p=>{const cl=cli(p.cid);
+    L.push(fila("",`Presupuesto ${esc(p.num)} sin respuesta: ${esc(nomCorto(cl))}`,`enviado ${cuando(p.fechaEnv||p.fecha)} · vence ${fecha(vencePres(p))}`,"#presdoc/"+p.id,tel(cl,`Hola ${pn(cl)}, ¿pudiste ver el presupuesto ${p.num}?`)||`<a class="btn chico" href="#presdoc/${p.id}">Abrir</a>`))});
+  D.clientes.filter(c=>mantVencido(c.id)&&!visto.has(c.id)).forEach(c=>{
+    L.push(fila("",`Coordinar mantenimiento de ${esc(nomCorto(c))}`,"Pasó la fecha del próximo mantenimiento","#cliente/"+c.id,tel(c)||`<a class="btn chico" href="#cliente/${c.id}">Abrir</a>`))});
+  const cifras=[];
+  if(porCobrar.length)cifras.push(`<a class="cifra${vencidos.length?" rojo":""}" href="#cobros"><b>${fmt(porCobrar.reduce((a,c)=>a+num(c.monto),0))}</b><span>por cobrar${vencidos.length?" · "+vencidos.length+" vencido"+(vencidos.length>1?"s":""):""}</span></a>`);
+  if(abiertos.length)cifras.push(`<a class="cifra" href="#presupuestos"><b>${fmt(abiertos.reduce((a,p)=>a+montoPres(p),0))}</b><span>${abiertos.length} presupuesto${abiertos.length>1?"s":""} abierto${abiertos.length>1?"s":""}</span></a>`);
+  if(cobMes)cifras.push(`<a class="cifra" href="#finanzas"><b>${fmt(cobMes)}</b><span>cobrado este mes</span></a>`);
+  V.innerHTML=`<div class="cab"><div><h1>Hoy</h1><p>${fechaL(h)}</p></div></div>
   ${D.clientes.length?"":vacioInicial()}
-  <div class="cifras">
-   <a class="cifra${venc.length?" rojo":""}" href="#calendario"><b>${venc.length}</b><span>Contactos para hoy o vencidos</span></a>
-   <a class="cifra" href="#pipeline"><b>${nuevas}</b><span>Consultas nuevas sin atender</span></a>
-   <a class="cifra" href="#presupuestos"><b>${abiertos.length}</b><span>Presupuestos abiertos · ${fmt(abiertos.reduce((a,p)=>a+num(recomendada(p).precio),0))}</span></a>
-   <a class="cifra${vencidos.length?" rojo":""}" href="#cobros"><b>${fmt(porCobrar.reduce((a,c)=>a+num(c.monto),0))}</b><span>Por cobrar${vencidos.length?" · "+vencidos.length+" vencido"+(vencidos.length>1?"s":""):""}</span></a>
-   <a class="cifra" href="#finanzas"><b>${fmt(cobMes)}</b><span>Cobrado este mes</span></a>
-   <a class="cifra${mv?" rojo":""}" href="#clientes"><b>${mv}</b><span>Mantenimientos vencidos</span></a>
-   <a class="cifra${urg?" rojo":""}" href="#diagnosticos"><b>${urg}</b><span>Diagnósticos con puntos urgentes</span></a></div>
-  <section class="card barra" style="margin-bottom:18px"><div class="tools" style="justify-content:space-between;margin-bottom:0"><h2>Estas dos semanas</h2><span class="leyenda" style="margin:0">${Object.keys(TIPOLBL).map(k=>`<span><i class="pt ${k}"></i>${TIPOLBL[k]}</span>`).join("")}</span></div>${agendaVisual(h)}</section>
-  <div class="cols2"><section class="card barra"><h2>Cobros pendientes</h2><ul class="lista" style="margin-top:12px">
-   ${porCobrar.sort((a,b)=>a.vence<b.vence?-1:1).slice(0,5).map(c=>`<li><a class="fila" href="#cobros"><div class="grow"><span class="ttl">${fmt(c.monto)} · ${esc(nomCorto(cli(c.cid)))}</span><small>${esc(c.concepto)}</small></div><span class="${c.vence<h?"vence":""}">${fecha(c.vence)}</span></a></li>`).join("")||'<li class="vacio">No hay cobros pendientes.</li>'}</ul></section>
-  <section class="card barra"><h2>Diagnósticos recientes</h2><ul class="lista" style="margin-top:12px">
-   ${D.diag.slice().sort((a,b)=>a.fecha<b.fecha?1:-1).slice(0,4).map(d=>`<li><a class="fila" href="#diag/${d.id}"><div class="grow"><span class="ttl">${esc(d.sitio||"Diagnóstico")}</span><small>${esc(nomCorto(cli(d.cid)))} · ${fecha(d.fecha)}</small></div>${etq(estadoGlobal(d))}</a></li>`).join("")||'<li class="vacio">Todavía no hay diagnósticos.</li>'}</ul></section></div>`;
+  ${D.clientes.length?`<section class="card barra" style="margin-bottom:18px"><h2>Para hacer${L.length?` <span class="n-hoy">${L.length}</span>`:""}</h2><ul class="lista" style="margin-top:12px">${L.join("")||'<li class="vacio">Sin pendientes por hoy.</li>'}</ul></section>`:""}
+  ${cifras.length?`<div class="cifras chicas">${cifras.join("")}</div>`:""}
+  <section class="card barra"><div class="tools" style="justify-content:space-between;margin-bottom:0"><h2>Estas dos semanas</h2><span class="leyenda" style="margin:0">${Object.keys(TIPOLBL).map(k=>`<span><i class="pt ${k}"></i>${TIPOLBL[k]}</span>`).join("")}</span></div>${agendaVisual(h)}</section>`;
 }
 
 /* ---- Calendario ---- */
@@ -572,7 +682,7 @@ function vCal(){
   const prim=new Date(CAL.y,CAL.m,1),ini=(prim.getDay()+6)%7,dias=new Date(CAL.y,CAL.m+1,0).getDate(),celdas=[];
   for(let i=0;i<42;i++){const d=new Date(CAL.y,CAL.m,1-ini+i);celdas.push(d)}
   const sel=por[CAL.sel]||[];
-  V.innerHTML=`<div class="cab"><div><h1>Calendario</h1></div>
+  V.innerHTML=`<div class="cab"><div><h1>Agenda</h1></div>
    <div class="tools" style="margin:0"><button class="btn claro" data-cal="-1" aria-label="Mes anterior">←</button><b style="min-width:150px;text-align:center">${(m=>m.charAt(0).toUpperCase()+m.slice(1))(prim.toLocaleDateString("es-AR",{month:"long",year:"numeric"}))}</b><button class="btn claro" data-cal="1" aria-label="Mes siguiente">→</button><button class="btn claro" data-cal="0">Hoy</button></div></div>
    <div class="leyenda">${Object.keys(TIPOLBL).map(k=>`<span><i class="pt ${k}"></i>${TIPOLBL[k]}</span>`).join("")}</div>
    <div class="cols2"><div class="card"><div class="cal">${["lun","mar","mié","jue","vie","sáb","dom"].map(x=>`<div class="dn">${x}</div>`).join("")}
@@ -592,7 +702,7 @@ function mover(id,e){const c=cli(id);if(!c||c.etapa===e)return;log(c,"Etapa: "+e
 
 /* ---- Cartera ---- */
 function vClientes(){
-  V.innerHTML=`<div class="cab"><div><h1>Cartera de clientes</h1></div><button class="btn pri" data-a="nuevo">+ Nuevo cliente</button></div>
+  V.innerHTML=`<div class="cab"><div><h1>Clientes</h1></div><button class="btn pri" data-a="nuevo">+ Nuevo cliente</button></div>
   <div class="tools no-print"><input type="search" id="q" placeholder="Buscar nombre, empresa o teléfono" aria-label="Buscar"><select id="fe" aria-label="Filtrar"><option value="">Todos</option>${ETAPAS.map(e=>`<option value="${e.id}">${e.n}</option>`).join("")}<option value="_saldo">Con saldo pendiente</option><option value="_mant">Mantenimiento vencido</option>${D.colabs.map(k=>`<option value="k:${k.id}">Vino por ${esc(k.nombre)}</option>`).join("")}</select></div>
   <div class="tabla-w"><table class="t"><thead><tr><th>Cliente</th><th>Rubro</th><th>Vino por</th><th>Etapa</th><th>Último trabajo</th><th>Próximo mantenimiento</th><th class="num">Saldo</th><th class="num">Facturado</th></tr></thead><tbody id="lc"></tbody></table></div>`;
   const pintar=()=>{
@@ -606,29 +716,27 @@ function vClientes(){
 }
 
 /* ---- Ficha de cliente ---- */
+let CTAB={id:"",t:"trabajo"};
 function vCliente(id){
   const c=cli(id);if(!c){location.hash="#clientes";return}
   const ds=D.diag.filter(d=>d.cid===id).sort((a,b)=>a.fecha<b.fecha?1:-1), ps=D.pres.filter(p=>p.cid===id), cs=cobrosDe(id), ts=trabDe(id).sort((a,b)=>a.fecha<b.fecha?1:-1);
   const u=ultimoTrab(id),m=proxMant(id),h=hoy(),w=wa(c.tel);
-  V.innerHTML=`<div class="cab"><div><p><a href="#clientes">← Cartera</a></p><h1>${esc(nomCorto(c))}</h1><p>${esc([c.empresa&&c.nombre,c.rubro,c.zona].filter(Boolean).join(" · "))}</p></div>
-   <div class="tools" style="margin:0">${w?`<a class="btn wsp" href="${w}" target="_blank" rel="noopener">WhatsApp</a>`:""}${c.tel?`<a class="btn" href="tel:${esc(c.tel.replace(/[^\d+]/g,""))}">Llamar</a>`:""}<button class="btn claro" data-a="editar" data-id="${c.id}">Editar</button></div></div>
-  <div class="cifras"><div class="cifra"><b style="font-size:1.3rem">${u?fecha(u.fecha):"—"}</b><span>Último trabajo${u?": "+esc(u.tipo):""}</span></div>
-   <div class="cifra${m&&!m.agendado&&m.f<h?" rojo":""}"><b style="font-size:1.3rem">${m?fecha(m.f):"—"}</b><span>Próximo mantenimiento${m&&m.agendado?" (agendado)":""}</span></div>
-   <div class="cifra${cs.some(x=>pendiente(x)&&x.vence<h)?" rojo":""}"><b style="font-size:1.3rem">${fmt(saldo(id))}</b><span>Saldo pendiente</span></div>
-   <div class="cifra"><b style="font-size:1.3rem">${fmt(cobrado(id))}</b><span>Cobrado en total</span></div></div>
-  <div class="cols2"><div class="pila">
-   <section class="card barra"><h2>Seguimiento</h2><div class="grid" style="margin-top:12px"><div><label for="x-etapa">Etapa</label><select id="x-etapa">${opts(ETAPAS,c.etapa,1)}</select></div><div><label for="x-prox">Próximo contacto</label><input id="x-prox" type="date" value="${esc(c.prox||"")}"></div><div class="ancho"><label for="x-proxm">Motivo</label><input id="x-proxm" value="${esc(c.proxm||"")}"></div></div></section>
-   <section class="card barra"><h2>Mensajes</h2><div class="bloque-msg" style="margin-top:12px"><div><label for="m-pl">Mensaje listo</label><select id="m-pl">${PLANTILLAS.map((p,i)=>`<option value="${i}">${p[0]}</option>`).join("")}</select></div><div><label class="sr" for="m-tx">Texto</label><textarea id="m-tx"></textarea></div>
-    <div class="tools" style="margin:0"><a class="btn wsp" id="m-wa" href="#" target="_blank" rel="noopener">Abrir en WhatsApp</a><button class="btn claro" id="m-cp" type="button">Copiar</button></div></div></section>
-   <section class="card barra"><div class="tools" style="justify-content:space-between;margin-bottom:8px"><h2>Diagnósticos</h2><button class="btn chico pri" data-a="nuevodiag" data-id="${c.id}">+ Diagnóstico</button></div><ul class="lista">${ds.map(d=>`<li><a class="fila" href="#diag/${d.id}"><div class="grow"><span class="ttl">${esc(d.sitio||"Diagnóstico")}</span><small>${fecha(d.fecha)} · ${cuenta(d,"urg")} urgentes, ${cuenta(d,"mes")} este mes</small></div>${etq(estadoGlobal(d))}</a></li>`).join("")||'<li class="vacio">Sin diagnósticos.</li>'}</ul></section>
-   <section class="card barra"><div class="tools" style="justify-content:space-between;margin-bottom:8px"><h2>Tableros</h2><button class="btn chico pri" data-a="nuevotab" data-id="${c.id}">+ Tablero</button></div><ul class="lista">${D.tableros.filter(t=>t.cid===id).map(t=>`<li><a class="fila" href="#tablero/${t.id}"><div class="grow"><span class="ttl">${esc(t.nombre)}</span><small>${fecha(t.fecha)} · ${contarTab(t)} elementos</small></div></a></li>`).join("")||'<li class="vacio">Sin tableros.</li>'}</ul></section>
-   <section class="card barra"><div class="tools" style="justify-content:space-between;margin-bottom:8px"><h2>Presupuestos</h2><button class="btn chico pri" data-a="nuevopres" data-id="${c.id}">+ Presupuesto</button></div><ul class="lista">${ps.map(p=>`<li><a class="fila" href="#pres/${p.id}"><div class="grow"><span class="ttl">${p.num} · ${esc(p.titulo||"")}</span><small>${fecha(p.fecha)} · ${fmt(p.total||recomendada(p).precio)}</small></div><span class="etq ${p.estado==="aceptado"?"ok":p.estado==="enviado"?"az":""}">${EST_PRES[p.estado]}</span></a></li>`).join("")||'<li class="vacio">Sin presupuestos.</li>'}</ul></section>
-   <section class="card barra"><div class="tools" style="justify-content:space-between;margin-bottom:8px"><h2>Cobros</h2><button class="btn chico pri" data-a="nuevocobro" data-id="${c.id}">+ Cobro</button></div><ul class="lista">${cs.sort((a,b)=>a.vence<b.vence?1:-1).map(x=>`<li class="fila"><div class="grow"><span class="ttl">${fmt(x.monto)} · ${esc(x.concepto)}</span><small>${x.pagado?"Cobrado el "+fecha(x.pagado)+" · "+esc(x.medio):"Vence el "+fecha(x.vence)}</small></div>${x.pagado?'<span class="etq ok">Cobrado</span>':`<button class="btn chico pri" data-a="cobrar" data-id="${x.id}">Cobrar</button>`}</li>`).join("")||'<li class="vacio">Sin cobros.</li>'}</ul></section></div>
-  <div class="pila">
-   <section class="card barra"><h2>Datos</h2><p style="margin-top:10px">${[c.tel&&"<b>Tel:</b> "+esc(c.tel),c.mail&&"<b>Mail:</b> "+esc(c.mail),c.cuit&&"<b>CUIT:</b> "+esc(c.cuit),c.origen&&"<b>Llegó por:</b> "+esc(c.origen),colabDe(c)&&`<b>Vino por:</b> <a href="#colab/${c.colab}">${esc(colabN(c))}</a>`].filter(Boolean).join("<br>")}</p>${c.notas?`<p style="white-space:pre-wrap">${esc(c.notas)}</p>`:""}</section>
-   <section class="card barra"><div class="tools" style="justify-content:space-between;margin-bottom:8px"><h2>Trabajos y mantenimiento</h2><button class="btn chico pri" data-a="nuevotrab" data-id="${c.id}">+ Trabajo</button></div><ul class="lista">${ts.map(t=>`<li class="fila"><div class="grow"><span class="ttl">${t.ot?esc(t.ot)+" · ":""}${esc(t.tipo)}</span><small>${fecha(t.fecha)} · ${esc(t.sitio||"")}${t.desc?" · "+esc(t.desc):""}</small></div><span class="etq ${t.estado==="hecho"?"ok":"az"}">${t.estado==="hecho"?"Hecho":"Agendado"}</span></li>`).join("")||'<li class="vacio">Sin trabajos.</li>'}</ul></section>
-   <section class="card barra"><h2>Historial</h2><div style="display:flex;gap:8px;margin:12px 0"><label class="sr" for="x-nota">Nueva nota</label><input id="x-nota" placeholder="Anotar una llamada, visita, mensaje…"><button class="btn chico" id="x-add" type="button">Anotar</button></div><ul class="lista">${(c.hist||[]).map(x=>`<li class="fila"><small style="min-width:78px">${fecha(x.f)}</small><span class="grow">${esc(x.t)}</span></li>`).join("")}</ul></section>
-   <button class="btn peligro chico" data-a="borrar" data-id="${c.id}" style="justify-self:start">Borrar cliente</button></div></div>`;
+  if(CTAB.id!==id){CTAB.id=id;CTAB.t="trabajo"}
+  const sd=saldo(id),venc=cs.some(x=>pendiente(x)&&x.vence<h),vis=D.trab.filter(t=>t.cid===id&&t.estado==="agendado").sort((a,b)=>a.fecha<b.fecha?-1:1)[0],esp=ps.filter(p=>p.estado==="enviado").length,resumen=[];
+  if(sd>0)resumen.push(`<span class="${venc?"rojo":""}">Debe ${fmt(sd)}${venc?" (vencido)":""}</span>`);
+  if(vis)resumen.push(`<span>Próxima visita ${fecha(vis.fecha)}</span>`);
+  if(esp)resumen.push(`<span>${esp} presupuesto${esp>1?"s":""} esperando respuesta</span>`);
+  if(m&&!m.agendado&&m.f<h)resumen.push('<span class="rojo">Mantenimiento vencido</span>');
+  if(!resumen.length)resumen.push(`<span>${esc(etapaN(c.etapa))}</span>`);
+  V.innerHTML=`<div class="cab"><div><p><a href="#clientes">← Clientes</a></p><h1>${esc(nomCorto(c))}</h1><p>${esc([c.empresa&&c.nombre,c.rubro,c.zona].filter(Boolean).join(" · "))}</p></div>
+   <div class="tools" style="margin:0">${w?`<a class="btn wsp" href="${w}" target="_blank" rel="noopener">WhatsApp</a>`:""}${c.tel?`<a class="btn" href="tel:${esc(c.tel.replace(/[^\d+]/g,""))}">Llamar</a>`:""}<button class="btn pri" data-a="nuevotrab" data-id="${c.id}">+ Trabajo</button><button class="btn claro" data-a="editar" data-id="${c.id}">Editar</button></div></div>
+  <p class="resumen">${resumen.join("")}</p>
+  <div class="seg no-print" role="tablist" style="margin-bottom:16px">${[["trabajo","Trabajo"],["datos","Datos"],["seguim","Seguimiento"],["hist","Historial"]].map(t=>`<button role="tab" class="${CTAB.t===t[0]?"on":""}" data-ctab="${t[0]}">${t[1]}</button>`).join("")}</div>
+  <div class="pila" data-tp="trabajo"${CTAB.t==="trabajo"?"":" hidden"}><section class="card barra"><div class="tools" style="justify-content:space-between;margin-bottom:8px"><h2>Trabajos y mantenimiento</h2><button class="btn chico pri" data-a="nuevotrab" data-id="${c.id}">+ Trabajo</button></div><ul class="lista">${ts.map(t=>`<li class="fila"><div class="grow"><span class="ttl">${t.ot?esc(t.ot)+" · ":""}${esc(t.tipo)}</span><small>${fecha(t.fecha)} · ${esc(t.sitio||"")}${t.desc?" · "+esc(t.desc):""}</small></div><span class="etq ${t.estado==="hecho"?"ok":"az"}">${t.estado==="hecho"?"Hecho":"Agendado"}</span></li>`).join("")||'<li class="vacio">Sin trabajos.</li>'}</ul></section><section class="card barra"><div class="tools" style="justify-content:space-between;margin-bottom:8px"><h2>Presupuestos</h2><button class="btn chico pri" data-a="nuevopres" data-id="${c.id}">+ Presupuesto</button></div><ul class="lista">${ps.map(p=>`<li><a class="fila" href="#presdoc/${p.id}"><div class="grow"><span class="ttl">${p.num} · ${esc(p.titulo||"")}</span><small>${fecha(p.fecha)} · ${fmt(montoPres(p))}</small></div><span class="etq ${p.estado==="aceptado"?"ok":p.estado==="enviado"?"az":""}">${EST_PRES[p.estado]}</span></a></li>`).join("")||'<li class="vacio">Sin presupuestos.</li>'}</ul></section><section class="card barra"><div class="tools" style="justify-content:space-between;margin-bottom:8px"><h2>Cobros</h2><button class="btn chico pri" data-a="nuevocobro" data-id="${c.id}">+ Cobro</button></div><ul class="lista">${cs.sort((a,b)=>a.vence<b.vence?1:-1).map(x=>`<li class="fila"><div class="grow"><span class="ttl">${fmt(x.monto)} · ${esc(x.concepto)}</span><small>${x.pagado?"Cobrado el "+fecha(x.pagado)+" · "+esc(x.medio):"Vence el "+fecha(x.vence)}</small></div>${x.pagado?'<span class="etq ok">Cobrado</span>':`<button class="btn chico pri" data-a="cobrar" data-id="${x.id}">Cobrar</button>`}</li>`).join("")||'<li class="vacio">Sin cobros.</li>'}</ul></section><section class="card barra"><div class="tools" style="justify-content:space-between;margin-bottom:8px"><h2>Diagnósticos</h2><button class="btn chico pri" data-a="nuevodiag" data-id="${c.id}">+ Diagnóstico</button></div><ul class="lista">${ds.map(d=>`<li><a class="fila" href="#diag/${d.id}"><div class="grow"><span class="ttl">${esc(d.sitio||"Diagnóstico")}</span><small>${fecha(d.fecha)} · ${cuenta(d,"urg")} urgentes, ${cuenta(d,"mes")} este mes</small></div>${etq(estadoGlobal(d))}</a></li>`).join("")||'<li class="vacio">Sin diagnósticos.</li>'}</ul></section><section class="card barra"><div class="tools" style="justify-content:space-between;margin-bottom:8px"><h2>Tableros</h2><button class="btn chico pri" data-a="nuevotab" data-id="${c.id}">+ Tablero</button></div><ul class="lista">${D.tableros.filter(t=>t.cid===id).map(t=>`<li><a class="fila" href="#tablero/${t.id}"><div class="grow"><span class="ttl">${esc(t.nombre)}</span><small>${fecha(t.fecha)} · ${contarTab(t)} elementos</small></div></a></li>`).join("")||'<li class="vacio">Sin tableros.</li>'}</ul></section></div>
+  <div class="pila" data-tp="datos"${CTAB.t==="datos"?"":" hidden"}><section class="card barra"><h2>Datos</h2><p style="margin-top:10px">${[c.tel&&"<b>Tel:</b> "+esc(c.tel),c.mail&&"<b>Mail:</b> "+esc(c.mail),c.cuit&&"<b>CUIT:</b> "+esc(c.cuit),c.origen&&"<b>Llegó por:</b> "+esc(c.origen),colabDe(c)&&`<b>Vino por:</b> <a href="#colab/${c.colab}">${esc(colabN(c))}</a>`].filter(Boolean).join("<br>")}</p>${c.notas?`<p style="white-space:pre-wrap">${esc(c.notas)}</p>`:""}</section><button class="btn peligro chico" data-a="borrar" data-id="${c.id}" style="justify-self:start">Borrar cliente</button></div>
+  <div class="pila" data-tp="seguim"${CTAB.t==="seguim"?"":" hidden"}><section class="card barra"><h2>Seguimiento</h2><div class="grid" style="margin-top:12px"><div><label for="x-etapa">Etapa</label><select id="x-etapa">${opts(ETAPAS,c.etapa,1)}</select></div><div><label for="x-prox">Próximo contacto</label><input id="x-prox" type="date" value="${esc(c.prox||"")}"></div><div class="ancho"><label for="x-proxm">Motivo</label><input id="x-proxm" value="${esc(c.proxm||"")}"></div></div></section><section class="card barra"><h2>Mensajes</h2><div class="bloque-msg" style="margin-top:12px"><div><label for="m-pl">Mensaje listo</label><select id="m-pl">${PLANTILLAS.map((p,i)=>`<option value="${i}">${p[0]}</option>`).join("")}</select></div><div><label class="sr" for="m-tx">Texto</label><textarea id="m-tx"></textarea></div> <div class="tools" style="margin:0"><a class="btn wsp" id="m-wa" href="#" target="_blank" rel="noopener">Abrir en WhatsApp</a><button class="btn claro" id="m-cp" type="button">Copiar</button></div></div></section></div>
+  <div class="pila" data-tp="hist"${CTAB.t==="hist"?"":" hidden"}><section class="card barra"><h2>Historial</h2><div style="display:flex;gap:8px;margin:12px 0"><label class="sr" for="x-nota">Nueva nota</label><input id="x-nota" placeholder="Anotar una llamada, visita, mensaje…"><button class="btn chico" id="x-add" type="button">Anotar</button></div><ul class="lista">${(c.hist||[]).map(x=>`<li class="fila"><small style="min-width:78px">${fecha(x.f)}</small><span class="grow">${esc(x.t)}</span></li>`).join("")}</ul></section></div>`;
+  V.querySelectorAll("[data-ctab]").forEach(b=>b.onclick=()=>{CTAB.t=b.dataset.ctab;V.querySelectorAll("[data-ctab]").forEach(x=>x.classList.toggle("on",x===b));V.querySelectorAll("[data-tp]").forEach(x=>x.hidden=x.dataset.tp!==CTAB.t)});
   const sav=()=>{c.prox=V.querySelector("#x-prox").value;c.proxm=V.querySelector("#x-proxm").value;guardar()};
   V.querySelector("#x-etapa").onchange=e=>mover(c.id,e.target.value);V.querySelector("#x-prox").onchange=sav;V.querySelector("#x-proxm").onchange=sav;
   V.querySelector("#x-add").onclick=()=>{const i=V.querySelector("#x-nota"),t=i.value.trim();if(!t)return;log(c,t);guardar();render()};
@@ -701,21 +809,37 @@ function vInforme(id){
   V.querySelector("#i-print").onclick=()=>window.print();
   V.querySelector("#i-copy").onclick=()=>{(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>aviso("Resumen copiado"),()=>aviso("No se pudo copiar"))};
 }
-const encDoc=(t,f)=>`<div class="enc"><div><img src="../06_Landing_web/logo/wmtec-isotipo.svg" alt=""><div style="color:#666;font-size:.85rem;margin-top:4px">Mantenimiento eléctrico industrial · ${WALTER.zona}</div></div><div style="text-align:right"><h1>${t}</h1><div style="color:#666">${f}</div></div></div>`;
+const encDoc=(t,f)=>`<div class="enc"><div><span class="enc-logo"><img src="../06_Landing_web/logo/wmtec-logo-oscuro.svg" alt="WM TEC"></span><div style="color:#666;font-size:.85rem;margin-top:4px">Mantenimiento eléctrico industrial · ${WALTER.zona}</div></div><div style="text-align:right"><h1>${t}</h1><div style="color:#666">${f}</div></div></div>`;
 
 /* ---- Presupuestos ---- */
 function vPresupuestos(){
   V.innerHTML=`<div class="cab"><div><h1>Presupuestos</h1></div><button class="btn pri" data-a="nuevopres">+ Nuevo presupuesto</button></div>
-  <div class="tabla-w"><table class="t"><thead><tr><th>N°</th><th>Cliente</th><th>Trabajo</th><th>Fecha</th><th>Vence</th><th class="num">Monto</th><th>Estado</th></tr></thead><tbody>${D.pres.slice().sort((a,b)=>a.num<b.num?1:-1).map(p=>`<tr><td><a href="#pres/${p.id}">${p.num}</a></td><td>${esc(nomCorto(cli(p.cid)))}</td><td>${esc(p.titulo||"")}</td><td>${fecha(p.fecha)}</td><td class="${p.estado==="enviado"&&vencePres(p)<hoy()?"vence":""}">${p.estado==="enviado"?fecha(vencePres(p)):"—"}</td><td class="num">${fmt(p.total||recomendada(p).precio)}</td><td><span class="etq ${p.estado==="aceptado"?"ok":p.estado==="enviado"?"az":""}">${EST_PRES[p.estado]}</span></td></tr>`).join("")||`<tr><td colspan="7"><div class="vacio">Todavía no hay presupuestos. Creá uno desde la ficha de un cliente o desde un diagnóstico.</div></td></tr>`}</tbody></table></div>`;
+  <div class="tabla-w"><table class="t"><thead><tr><th>N°</th><th>Cliente</th><th>Trabajo</th><th>Fecha</th><th>Vence</th><th class="num">Monto</th><th>Estado</th></tr></thead><tbody>${D.pres.slice().sort((a,b)=>a.num<b.num?1:-1).map(p=>`<tr data-go="#presdoc/${p.id}" style="cursor:pointer"><td><a href="#presdoc/${p.id}">${p.num}</a></td><td>${esc(nomCorto(cli(p.cid)))}</td><td>${esc(p.titulo||"")}</td><td>${fecha(p.fecha)}</td><td class="${p.estado==="enviado"&&vencePres(p)<hoy()?"vence":""}">${p.estado==="enviado"?fecha(vencePres(p)):"—"}</td><td class="num">${fmt(montoPres(p))}</td><td><span class="etq ${p.estado==="aceptado"?"ok":p.estado==="enviado"?"az":""}">${EST_PRES[p.estado]}</span></td></tr>`).join("")||`<tr><td colspan="7"><div class="vacio">Todavía no hay presupuestos. Creá uno desde la ficha de un cliente o desde un diagnóstico.</div></td></tr>`}</tbody></table></div>`;
 }
 function nuevoPres(cid,diagId){
-  const p={id:uid(),num:PREF+"-"+String(D.cfg.prox).padStart(3,"0"),cid:cid||(D.clientes[0]&&D.clientes[0].id)||"",fecha:hoy(),validez:15,estado:"borrador",titulo:"",objetivo:"",incluye:"",etapas:"Etapa 1 | \nEtapa 2 | \nEtapa 3 | ",
-   opciones:[{nombre:"Esencial",desc:"",precio:"",reco:false},{nombre:"Completo",desc:"",precio:"",reco:true},{nombre:"Premium",desc:"",precio:"",reco:false}],descEf:8,pago:"50 % para iniciar y 50 % al finalizar el trabajo",plazo:"",noIncluye:"Materiales no detallados\nTrabajos fuera de lo relevado"};
+  const p={id:uid(),simple:true,num:PREF+"-"+String(D.cfg.prox).padStart(3,"0"),cid:cid||(D.clientes[0]&&D.clientes[0].id)||"",fecha:hoy(),validez:15,estado:"borrador",titulo:"",items:[{d:"",m:""}],desc:0,nota:"",cond:COND_PRES};
   const d=diagId&&dia(diagId);
-  if(d){p.cid=d.cid;p.titulo="Corrección y mantenimiento – "+(d.sitio||"");const l=[];CHECK.forEach(g=>g.it.forEach(it=>{const v=d.items[it[0]];if(v&&(v.e==="urg"||v.e==="mes")&&v.a)l.push(v.a)}));p.incluye=l.join("\n");p.objetivo=d.concl||"";p.did=d.id}
+  if(d){p.cid=d.cid;p.titulo=d.sitio||"";const l=[];CHECK.forEach(g=>g.it.forEach(it=>{const v=d.items[it[0]];if(v&&(v.e==="urg"||v.e==="mes")&&v.a)l.push({d:v.a,m:""})}));if(l.length)p.items=l;p.did=d.id}
   D.cfg.prox++;D.pres.push(p);guardar();location.hash="#pres/"+p.id}
+function vPresS(p){
+  const c=cli(p.cid),f=n=>fmt(n);
+  V.innerHTML=`<div class="cab"><div><p><a href="#presupuestos">← Presupuestos</a></p><h1>Presupuesto ${p.num}</h1><p>${esc(nom(c))}</p></div><div class="tools" style="margin:0"><a class="btn pri" href="#presdoc/${p.id}">Ver documento</a>${p.estado==="borrador"?`<button class="btn claro" data-a="pres-enviar" data-id="${p.id}">Marcar como enviado</button>`:""}${p.estado==="enviado"?`<button class="btn wsp" data-a="pres-aceptar" data-id="${p.id}">Aceptado</button><button class="btn peligro chico" data-a="pres-rechazar" data-id="${p.id}">Rechazado</button>`:""}<button class="btn peligro chico" data-a="borrarpres" data-id="${p.id}">Borrar</button></div></div>
+  <section class="card barra"><div class="grid"><div><label for="p-cid">Cliente</label><select id="p-cid" data-p="cid">${D.clientes.map(x=>`<option value="${x.id}"${x.id===p.cid?" selected":""}>${esc(nom(x))}</option>`).join("")}</select></div><div><label for="p-fecha">Fecha</label><input id="p-fecha" type="date" data-p="fecha" value="${esc(p.fecha)}"></div><div><label for="p-est">Estado</label><select id="p-est" data-p="estado">${Object.keys(EST_PRES).map(k=>`<option value="${k}"${k===p.estado?" selected":""}>${EST_PRES[k]}</option>`).join("")}</select></div></div></section>
+  <section class="card barra" style="margin-top:18px"><h2>Qué se hace y cuánto sale</h2><div class="rens">${p.items.map((r,i)=>`<div class="ren"><textarea data-ri="${i}" data-rk="d" aria-label="Descripción" placeholder="Por instalación de…">${esc(r.d)}</textarea><div class="monto"><label class="sr" for="m${i}">Importe</label><input id="m${i}" data-ri="${i}" data-rk="m" inputmode="numeric" placeholder="$" value="${esc(r.m)}"></div>${p.items.length>1?`<button class="btn chico peligro" data-a="pres-delren" data-id="${p.id}" data-i="${i}" aria-label="Quitar renglón">Quitar</button>`:""}</div>`).join("")}</div>
+   <div class="tools" style="margin-top:12px"><button class="btn chico claro" data-a="pres-addren" data-id="${p.id}">+ Agregar renglón</button></div>
+   <div class="tot-ed"><div><label for="p-desc">Descuento (%)</label><input id="p-desc" data-p="desc" inputmode="numeric" value="${esc(p.desc||0)}"></div><div class="res"><span>Subtotal <b id="t-sub"></b></span><span id="t-dd">Descuento <b id="t-desc"></b></span><span class="gr">Total <b id="t-tot"></b></span></div></div></section>
+  <section class="card barra" style="margin-top:18px"><h2>Nota</h2><textarea data-p="nota" aria-label="Nota" placeholder="Opcional. Ej.: no incluye reparación de cables">${esc(p.nota||"")}</textarea></section>
+  <section class="card barra" style="margin-top:18px"><h2>Condiciones</h2><textarea data-p="cond" aria-label="Condiciones" style="min-height:150px">${esc(p.cond||"")}</textarea><div class="grid" style="margin-top:12px"><div><label for="p-val">Validez (días)</label><input id="p-val" data-p="validez" inputmode="numeric" value="${esc(p.validez)}"></div></div></section>
+  <div class="sticky no-print"><a class="btn pri" href="#presdoc/${p.id}">Guardar y ver documento</a></div>`;
+  const tot=()=>{const g=n=>document.getElementById(n);g("t-sub").textContent=fmt(subPres(p));g("t-dd").hidden=!num(p.desc);g("t-desc").textContent="- "+fmt(subPres(p)-totPres(p));g("t-tot").textContent=fmt(totPres(p))};tot();
+  V.oninput=e=>{const t=e.target;if(ruta().r!=="pres")return;
+    if(t.dataset.p)p[t.dataset.p]=t.value;else if(t.dataset.ri!==undefined)p.items[t.dataset.ri][t.dataset.rk]=t.value;
+    p.total=totPres(p);guardar();tot()};
+  V.onchange=e=>{if(e.target.dataset.p==="cid"||e.target.dataset.p==="estado")render()};
+}
 function vPres(id){
   const p=pre(id);if(!p){location.hash="#presupuestos";return}
+  migrarPres(p);return vPresS(p);
   const c=cli(p.cid),ed=p.estado==="borrador";
   V.innerHTML=`<div class="cab"><div><p><a href="#presupuestos">← Presupuestos</a></p><h1>Presupuesto ${p.num}</h1><p>${esc(nom(c))}</p></div><div class="tools" style="margin:0"><a class="btn pri" href="#presdoc/${p.id}">Ver documento</a>${p.estado==="borrador"?`<button class="btn claro" data-a="pres-enviar" data-id="${p.id}">Marcar como enviado</button>`:""}${p.estado==="enviado"?`<button class="btn wsp" data-a="pres-aceptar" data-id="${p.id}">Aceptado</button><button class="btn peligro chico" data-a="pres-rechazar" data-id="${p.id}">Rechazado</button>`:""}<button class="btn peligro chico" data-a="borrarpres" data-id="${p.id}">Borrar</button></div></div>
   <section class="card barra"><div class="grid"><div><label for="p-cid">Cliente</label><select id="p-cid" data-p="cid">${D.clientes.map(x=>`<option value="${x.id}"${x.id===p.cid?" selected":""}>${esc(nom(x))}</option>`).join("")}</select></div><div><label for="p-fecha">Fecha</label><input id="p-fecha" type="date" data-p="fecha" value="${esc(p.fecha)}"></div><div><label for="p-val">Validez (días)</label><input id="p-val" data-p="validez" inputmode="numeric" value="${esc(p.validez)}"></div><div><label for="p-est">Estado</label><select id="p-est" data-p="estado">${Object.keys(EST_PRES).map(k=>`<option value="${k}"${k===p.estado?" selected":""}>${EST_PRES[k]}</option>`).join("")}</select></div>
@@ -732,12 +856,30 @@ function vPres(id){
     guardar();ef()};
   V.onchange=e=>{if(e.target.dataset.p==="cid"||e.target.dataset.p==="estado")render()};
 }
+function vPresDocS(p){
+  const c=cli(p.cid),lin=s=>String(s||"").split("\n").map(x=>x.trim()).filter(Boolean),sub=subPres(p),tot=totPres(p);
+  const v=num(p.validez)||15,vl={15:"quince (15)",10:"diez (10)",20:"veinte (20)",30:"treinta (30)"}[v]||String(v);
+  const cond=lin(p.cond).concat("Validez de la presente cotización: "+vl+" días corridos a partir de su fecha de emisión.");
+  const w=c?wa(c.tel,`Hola ${pn(c)}, te mando el presupuesto ${p.num}. Cualquier duda lo charlamos.`):"";
+  V.innerHTML=`<div class="cab no-print"><div><p><a href="#presupuestos">← Presupuestos</a></p></div><div class="tools" style="margin:0"><button class="btn pri" id="i-print" type="button">Imprimir / guardar PDF</button>${w?`<a class="btn wsp" href="${w}" target="_blank" rel="noopener">Abrir WhatsApp</a>`:""}<a class="btn claro" href="#pres/${p.id}">Editar</a>${p.estado==="borrador"?`<button class="btn claro" data-a="pres-enviar" data-id="${p.id}">Marcar como enviado</button>`:""}${p.estado==="enviado"?`<button class="btn claro" data-a="pres-aceptar" data-id="${p.id}">Aceptado</button><button class="btn peligro chico" data-a="pres-rechazar" data-id="${p.id}">Rechazado</button>`:""}</div></div>
+  <article class="doc a4"><div class="a4-barra"></div>
+   <div class="a4-cab"><div><h1>PRESUPUESTO</h1><div class="a4-fn"><div><small>FECHA</small><b>${fecha(p.fecha)}</b></div><div><small>N°</small><b>${esc(p.num)}</b></div></div></div>
+    <div class="a4-emisor"><div class="a4-logo"><img src="../06_Landing_web/logo/wmtec-logo-oscuro.svg" alt="WM TEC"></div><b>Walter Martin Meza</b><span>Pringles 2565</span><span>${WALTER.tel}</span><span>${WALTER.ig}</span></div></div>
+   <div class="a4-cli"><small>CLIENTE</small><b>${esc(nom(c))}</b>${p.titulo?`<span>${esc(p.titulo)}</span>`:""}</div>
+   <table class="pd-t"><thead><tr><th>DESCRIPCIÓN</th><th class="num">IMPORTE</th></tr></thead><tbody>${p.items.filter(r=>r.d||num(r.m)).map(r=>`<tr><td>${esc(r.d).replace(/\n/g,"<br>")}</td><td class="num">${num(r.m)?fmt(num(r.m)):""}</td></tr>`).join("")}</tbody></table>
+   ${p.nota?`<p class="pd-nota"><b>Nota:</b> ${esc(p.nota)}</p>`:""}
+   <div class="pd-tot"><div><span>Subtotal</span><b>${fmt(sub)}</b></div><div><span>Descuento</span><b>${num(p.desc)} %</b></div><div class="gr"><span>Total</span><b>${fmt(tot)}</b></div></div>
+   <div class="pd-cond"><h3>CONDICIONES</h3><ul>${cond.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+   <div class="a4-barra pie"></div></article>`;
+  V.querySelector("#i-print").onclick=()=>window.print();
+}
 function vPresDoc(id){
   const p=pre(id);if(!p){location.hash="#presupuestos";return}
+  migrarPres(p);return vPresDocS(p);
   const c=cli(p.cid),lin=s=>String(s||"").split("\n").map(x=>x.trim()).filter(Boolean);
   const inc=lin(p.incluye),et=lin(p.etapas).map(x=>x.split("|").map(y=>y.trim())),no=lin(p.noIncluye);
   const w=c?wa(c.tel,`Hola ${pn(c)}, te mando el presupuesto ${p.num}. Cualquier duda lo charlamos.`):"";
-  V.innerHTML=`<div class="cab no-print"><div><p><a href="#pres/${p.id}">← Volver al presupuesto</a></p></div><div class="tools" style="margin:0"><button class="btn pri" id="i-print" type="button">Imprimir / guardar PDF</button>${w?`<a class="btn wsp" href="${w}" target="_blank" rel="noopener">Abrir WhatsApp</a>`:""}</div></div>
+  V.innerHTML=`<div class="cab no-print"><div><p><a href="#presupuestos">← Presupuestos</a></p></div><div class="tools" style="margin:0"><button class="btn pri" id="i-print" type="button">Imprimir / guardar PDF</button>${w?`<a class="btn wsp" href="${w}" target="_blank" rel="noopener">Abrir WhatsApp</a>`:""}<a class="btn claro" href="#pres/${p.id}">Editar</a>${p.estado==="borrador"?`<button class="btn claro" data-a="pres-enviar" data-id="${p.id}">Marcar como enviado</button>`:""}${p.estado==="enviado"?`<button class="btn claro" data-a="pres-aceptar" data-id="${p.id}">Aceptado</button><button class="btn peligro chico" data-a="pres-rechazar" data-id="${p.id}">Rechazado</button>`:""}</div></div>
   <article class="doc">${encDoc("Presupuesto",p.num)}
   <table><tr><th>Para</th><td>${esc(nom(c))}</td><th>Fecha</th><td>${fecha(p.fecha)}</td></tr><tr><th>Trabajo</th><td>${esc(p.titulo||"—")}</td><th>Válido hasta</th><td>${fecha(vencePres(p))} (${esc(p.validez)} días)</td></tr></table>
   ${p.objetivo?`<div class="sec"><h2><b>01</b> El objetivo</h2><p>${esc(p.objetivo)}</p></div>`:""}
@@ -921,7 +1063,7 @@ function conClientes(titulo,cid,campos,ok,okTxt){
   if(!D.clientes.length){aviso("Primero cargá un cliente");return}
   pedir(titulo,[{k:"cid",l:"Cliente",t:"select",o:[],v:cid}].concat(campos),ok,okTxt);
   const s=document.getElementById("g_cid");s.innerHTML=cliOpts(cid||D.clientes[0].id)}
-document.addEventListener("click",e=>{
+document.addEventListener("click",e=>{const g=e.target.closest("[data-go]");if(g&&!e.target.closest("a,button")){location.hash=g.dataset.go;return}
   const b=e.target.closest("[data-a]");if(b&&b.tagName!=="INPUT"){acc(b.dataset.a,b.dataset.id)}
   const cb=e.target.closest("[data-cal]");if(cb){const n=+cb.dataset.cal;if(n===0){const t=new Date();CAL={y:t.getFullYear(),m:t.getMonth(),sel:hoy()}}else{let m=CAL.m+n,y=CAL.y;if(m<0){m=11;y--}if(m>11){m=0;y++}CAL.m=m;CAL.y=y}vCal()}
   const dd=e.target.closest("[data-dia]");if(dd){CAL.sel=dd.dataset.dia;vCal()}});
@@ -961,13 +1103,22 @@ function acc(a,id){
     conClientes("Nuevo diagnóstico",id,[{k:"sitio",l:"Instalación / tablero",w:1,ph:"Tablero general, sala de máquinas…"},{k:"fecha",l:"Fecha",t:"date",v:h},{k:"base",l:"Empezar con",t:"select",o:["Lista en blanco","Datos de muestra (para probar)"],v:"Lista en blanco"}],r=>{
       const m=r.base.startsWith("Datos")?diagMuestra():{carga:"",items:{},med:{},concl:""};
       const d={id:uid(),cid:r.cid,fecha:r.fecha,sitio:r.sitio,carga:m.carga,resp:"",items:m.items,med:m.med,concl:m.concl};
-      D.diag.push(d);log(cli(r.cid),"Diagnóstico iniciado"+(r.sitio?": "+r.sitio:""));guardar();location.hash="#diag/"+d.id},"Crear y abrir")}
+      D.diag.push(d);log(cli(r.cid),"Diagnóstico iniciado"+(r.sitio?": "+r.sitio:""));{const cc=cli(r.cid);if(["nueva","visita"].includes(cc.etapa)){log(cc,"Etapa: "+etapaN(cc.etapa)+" → "+etapaN("diag"));cc.etapa="diag"}}guardar();location.hash="#diag/"+d.id},"Crear y abrir")}
   else if(a==="borrardiag"){if(confirm("¿Borrar este diagnóstico?")){const d=dia(id);D.diag=D.diag.filter(x=>x.id!==id);guardar();location.hash="#cliente/"+d.cid}}
   else if(a==="nuevopres"){if(!D.clientes.length){aviso("Primero cargá un cliente");return}nuevoPres(id)}
   else if(a==="pres-desde-diag"){nuevoPres(null,id)}
   else if(a==="borrarpres"){if(confirm("¿Borrar este presupuesto?")){D.pres=D.pres.filter(x=>x.id!==id);D.cobros=D.cobros.filter(x=>x.pid!==id);guardar();location.hash="#presupuestos"}}
   else if(a==="pres-enviar"){const p=pre(id);p.estado="enviado";p.fechaEnv=h;const c=cli(p.cid);log(c,"Presupuesto "+p.num+" enviado");if(["nueva","visita","diag"].includes(c.etapa))c.etapa="presu";c.prox=addDias(h,3);c.proxm="Preguntar si vio el presupuesto "+p.num;guardar();render()}
   else if(a==="pres-rechazar"){const p=pre(id);p.estado="rechazado";const c=cli(p.cid);log(c,"Presupuesto "+p.num+" rechazado");guardar();render()}
+  else if(a==="pres-addren"){const p=pre(id);p.items.push({d:"",m:""});guardar();render()}
+  else if(a==="pres-delren"){const p=pre(id);p.items.splice(+(window.event.target.closest("[data-i]").dataset.i),1);p.total=totPres(p);guardar();render()}
+  else if(a==="pres-aceptar"&&pre(id).simple){const p=pre(id),tot=totPres(p);
+    pedir("Presupuesto "+p.num+" aceptado – "+fmt(tot),[{k:"pago",l:"Cómo se cobra",t:"select",o:["50 % de anticipo y 50 % al terminar","Un solo pago al terminar"],v:"50 % de anticipo y 50 % al terminar"},{k:"f",l:"Fecha de aceptación",t:"date",v:h},{k:"sd",l:"Vence el saldo",t:"date",v:addDias(h,30)}],r=>{
+      const dos=r.pago.startsWith("50"),a=dos?Math.round(tot/2):0;
+      p.estado="aceptado";p.total=tot;p.fechaAcep=r.f;D.cobros=D.cobros.filter(c=>c.pid!==p.id);
+      if(dos)D.cobros.push({id:uid(),cid:p.cid,pid:p.id,concepto:"Anticipo 50 % – "+p.num,monto:a,vence:r.f,pagado:"",medio:"",comp:""});
+      D.cobros.push({id:uid(),cid:p.cid,pid:p.id,concepto:(dos?"Saldo 50 % – ":"Pago – ")+p.num,monto:tot-a,vence:r.sd,pagado:"",medio:"",comp:""});
+      const c=cli(p.cid);c.etapa="ganado";c.prox="";c.proxm="";log(c,"Presupuesto "+p.num+" aceptado ("+fmt(tot)+"). Se generaron los cobros.");guardar();aviso("Se generaron los cobros");location.hash="#cobros"},"Aceptar y generar cobros")}
   else if(a==="pres-aceptar"){const p=pre(id);
     pedir("Presupuesto "+p.num+" aceptado",[{k:"op",l:"Opción elegida",t:"select",o:p.opciones.filter(o=>num(o.precio)).map(o=>o.nombre+" – "+fmt(num(o.precio))),v:recomendada(p).nombre+" – "+fmt(num(recomendada(p).precio))},{k:"medio",l:"Forma de pago",t:"select",o:["Efectivo o transferencia (con descuento)","Otro medio (precio normal)"],v:""},{k:"f",l:"Fecha de aceptación",t:"date",v:h},{k:"sd",l:"Vence el saldo",t:"date",v:addDias(h,30)}],r=>{
       const op=p.opciones.filter(o=>num(o.precio)).find(o=>(o.nombre+" – "+fmt(num(o.precio)))===r.op)||recomendada(p);
@@ -985,7 +1136,7 @@ function acc(a,id){
   else if(a==="recordar"){const c=D.cobros.find(x=>x.id===id),cl=cli(c.cid),u=wa(cl.tel,PLANTILLAS[5][1].replace("{nombre}",pn(cl)).replace("{monto}",fmt(c.monto)).replace("{vence}",fecha(c.vence)));if(!u){aviso("Falta el teléfono");return}log(cl,"Recordatorio de cobro enviado por WhatsApp");guardar();window.open(u,"_blank","noopener")}
   else if(a==="nuevotrab"){
     conClientes("Nuevo trabajo",id,[{k:"tipo",l:"Tipo",t:"select",o:TIPOS_TRAB,v:TIPOS_TRAB[1]},{k:"fecha",l:"Fecha",t:"date",v:CAL&&ruta().r==="calendario"?CAL.sel:h},{k:"estado",l:"Estado",t:"select",o:["agendado","hecho"],v:"agendado"},{k:"horas",l:"Horas"},{k:"sitio",l:"Dónde",w:1},{k:"desc",l:"Qué se hace / se hizo",t:"area",w:1},{k:"prox",l:"Próximo mantenimiento (si corresponde)",t:"date"}],r=>{
-      D.trab.push({id:uid(),ot:ot3(),cid:r.cid,fecha:r.fecha,tipo:r.tipo,sitio:r.sitio,desc:r.desc,horas:r.horas,estado:r.estado,prox:r.prox});log(cli(r.cid),(r.estado==="hecho"?"Trabajo realizado: ":"Trabajo agendado: ")+r.tipo+" ("+fecha(r.fecha)+")");guardar();render()})}
+      D.trab.push({id:uid(),ot:ot3(),cid:r.cid,fecha:r.fecha,tipo:r.tipo,sitio:r.sitio,desc:r.desc,horas:r.horas,estado:r.estado,prox:r.prox});log(cli(r.cid),(r.estado==="hecho"?"Trabajo realizado: ":"Trabajo agendado: ")+r.tipo+" ("+fecha(r.fecha)+")");{const cc=cli(r.cid);if(r.estado==="agendado"&&cc.etapa==="nueva"){cc.etapa="visita";log(cc,"Etapa: "+etapaN("nueva")+" → "+etapaN("visita"))}}guardar();render()})}
   else if(a==="trabhecho"){const t=D.trab.find(x=>x.id===id);
     pedir("Trabajo terminado",[{k:"horas",l:"Horas",v:t.horas},{k:"prox",l:"Próximo mantenimiento",t:"date",v:addDias(t.fecha,90)},{k:"obs",l:"Qué se hizo",t:"area",w:1,v:t.desc}],r=>{t.estado="hecho";t.horas=r.horas;t.prox=r.prox;t.desc=r.obs;log(cli(t.cid),"Trabajo realizado: "+t.tipo);guardar();render()},"Marcar hecho")}
   else if(a==="borrartrab"){if(confirm("¿Borrar este trabajo?")){D.trab=D.trab.filter(x=>x.id!==id);guardar();render()}}
@@ -1014,16 +1165,54 @@ function iniciar(){
   const poner=c=>{app.classList.toggle("colapsado",c);btn.setAttribute("aria-expanded",String(!c));btn.title=btn.ariaLabel=c?"Expandir menú":"Contraer menú"};
   try{poner(localStorage.getItem(KL)==="1")}catch(e){}
   btn.onclick=()=>{const c=!app.classList.contains("colapsado");poner(c);try{localStorage.setItem(KL,c?"1":"0")}catch(e){}};
-  const cfg=document.getElementById("b-cfg"),menu=document.getElementById("menu-cfg");
-  const cerrar=()=>{menu.hidden=true;cfg.setAttribute("aria-expanded","false")};
-  cfg.onclick=e=>{e.stopPropagation();if(!menu.hidden){cerrar();return}
-    menu.hidden=false;cfg.setAttribute("aria-expanded","true");
-    const r=cfg.getBoundingClientRect(),w=menu.offsetWidth;
+  const bm=document.getElementById("b-mas"),mm=document.getElementById("mas");
+  const abrirMas=a=>{mm.classList.toggle("abierto",a);bm.setAttribute("aria-expanded",String(a))};
+  bm.onclick=e=>{e.stopPropagation();const a=!mm.classList.contains("abierto");abrirMas(a);try{if(innerWidth>900)localStorage.setItem("wmtec_mas",a?"1":"0")}catch(x){}};
+  mm.addEventListener("click",e=>{if(innerWidth<=900&&e.target.closest("a.nav"))abrirMas(false)});
+  const cfgs=[document.getElementById("b-cfg"),document.getElementById("b-cfg2")],menu=document.getElementById("menu-cfg");
+  let cfg=cfgs[0];
+  const cerrar=()=>{menu.hidden=true;cfgs.forEach(b=>b.setAttribute("aria-expanded","false"))};
+  cfgs.forEach(b=>b.onclick=e=>{e.stopPropagation();cfg=b;if(!menu.hidden){cerrar();return}
+    menu.hidden=false;b.setAttribute("aria-expanded","true");
+    const r=b.getBoundingClientRect(),w=menu.offsetWidth;
     menu.style.left=Math.max(8,Math.min(r.right+8,innerWidth-w-8))+"px";
-    menu.style.bottom=Math.max(8,innerHeight-r.bottom)+"px";menu.style.top="auto"};
-  document.addEventListener("click",e=>{if(!menu.hidden&&!menu.contains(e.target))cerrar()});
+    menu.style.bottom=Math.max(8,innerHeight-r.bottom)+"px";menu.style.top="auto"});
+  document.addEventListener("click",e=>{if(!menu.hidden&&!menu.contains(e.target))cerrar();if(innerWidth<=900&&!mm.contains(e.target))abrirMas(false)});
   document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!menu.hidden){cerrar();cfg.focus()}});
   menu.addEventListener("click",e=>{if(e.target.closest("button"))cerrar()});
+})();
+/* Buscador global y botón Crear */
+(function(){
+  const bar=document.getElementById("barra-sup"),q=document.getElementById("q-global"),res=document.getElementById("q-res");
+  const bc=document.getElementById("b-crear"),mc=document.getElementById("menu-crear");
+  const n=x=>String(x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+  let items=[],sel=-1;
+  const indice=()=>{const o=[];
+    D.clientes.forEach(c=>o.push({t:"Cliente",x:nom(c),s:[c.tel,c.rubro,c.zona].filter(Boolean).join(" · "),h:"#cliente/"+c.id,k:n([c.empresa,c.nombre,c.tel,c.rubro,c.zona,c.dir].join(" "))}));
+    D.pres.forEach(p=>{const c=cli(p.cid);o.push({t:"Presupuesto",x:p.num+" · "+nomCorto(c),s:p.estado||"",h:"#presdoc/"+p.id,k:n(p.num+" "+nom(c))})});
+    D.trab.forEach(t=>{const c=cli(t.cid);o.push({t:"Trabajo",x:(t.ot?t.ot+" · ":"")+t.tipo,s:nomCorto(c)+(t.sitio?" · "+t.sitio:""),h:"#cliente/"+t.cid,k:n([t.ot,t.tipo,t.sitio,t.desc,nom(c)].join(" "))})});
+    D.cobros.forEach(c=>{const cl=cli(c.cid);o.push({t:"Cobro",x:c.concepto,s:nomCorto(cl),h:"#cliente/"+c.cid,k:n(c.concepto+" "+nom(cl))})});
+    D.diag.forEach(d=>{const c=cli(d.cid);o.push({t:"Diagnóstico",x:d.sitio||"Diagnóstico",s:nomCorto(c),h:"#diag/"+d.id,k:n(d.sitio+" "+nom(c))})});
+    return o};
+  const cerrarRes=()=>{res.hidden=true;q.setAttribute("aria-expanded","false");sel=-1};
+  const pintar=()=>{res.innerHTML=items.length?items.map((r,i)=>`<a href="${r.h}" role="option" class="${i===sel?"sel":""}"><span class="tp">${r.t}</span><span class="tx">${esc(r.x)}${r.s?`<small>${esc(r.s)}</small>`:""}</span></a>`).join(""):'<div class="nada">Sin resultados</div>';res.hidden=false;q.setAttribute("aria-expanded","true")};
+  q.addEventListener("input",()=>{const t=n(q.value).trim();if(!t){cerrarRes();return}
+    const ps=t.split(/\s+/);items=indice().filter(r=>ps.every(p=>r.k.includes(p))).slice(0,8);sel=items.length?0:-1;pintar()});
+  q.addEventListener("keydown",e=>{
+    if(e.key==="ArrowDown"||e.key==="ArrowUp"){if(!items.length)return;e.preventDefault();sel=(sel+(e.key==="ArrowDown"?1:-1)+items.length)%items.length;pintar()}
+    else if(e.key==="Enter"&&items[sel]){location.hash=items[sel].h;q.value="";q.blur();cerrarRes()}
+    else if(e.key==="Escape"){q.value="";cerrarRes();q.blur()}});
+  res.addEventListener("click",e=>{if(e.target.closest("a")){q.value="";cerrarRes()}});
+  document.addEventListener("keydown",e=>{if(e.key==="/"&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName)&&!bar.hidden){e.preventDefault();q.focus()}});
+  const cerrarMc=()=>{mc.hidden=true;bc.setAttribute("aria-expanded","false")};
+  bc.onclick=e=>{e.stopPropagation();if(!mc.hidden){cerrarMc();return}
+    const r=ruta(),cid=r.r==="cliente"?r.id:"";
+    mc.querySelectorAll("[data-a]").forEach(b=>{if(b.dataset.a!=="nuevo"){if(cid)b.dataset.id=cid;else delete b.dataset.id}});
+    mc.hidden=false;bc.setAttribute("aria-expanded","true")};
+  mc.addEventListener("click",()=>cerrarMc());
+  document.addEventListener("click",e=>{if(!mc.hidden&&!mc.contains(e.target))cerrarMc();if(!res.hidden&&!res.contains(e.target)&&e.target!==q)cerrarRes()});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!mc.hidden){cerrarMc();bc.focus()}});
+  window.barraSup=r=>{bar.hidden=bc.hidden=(r==="tablero");cerrarMc();cerrarRes()};
 })();
 iniciar();
 </script>
