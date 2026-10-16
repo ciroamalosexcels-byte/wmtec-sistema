@@ -275,8 +275,8 @@
   .fr-dev{cursor:grab}.fr-dev.sel>rect:first-child{stroke:#f9a01b;stroke-width:1.6}.fr-sim .fr-dev,.fr-sim .fr-carga{cursor:pointer}
   .fr-term{cursor:crosshair}.fr-term circle{transition:r .1s}.fr-term:hover circle{r:4.6}
   .fr-cable{fill:none;stroke:#3b3b3b;stroke-width:2.2;stroke-linecap:round}.fr-cable.sel{stroke:#f9a01b;stroke-width:3}
-  .fr-flujo{fill:none;stroke:#fff;stroke-opacity:.9;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:5 6;animation:fr-flow .55s linear infinite}
-  .fr-flujo.alto{stroke:#ffd54f;stroke-width:2;animation-duration:.3s}.fr-flujo.cc{stroke:#ff3b30;stroke-width:3.4;stroke-opacity:1;animation-duration:.12s}
+  .fr-flujo{fill:none;stroke:#fff;stroke-opacity:.9;stroke-width:1;stroke-linecap:round;stroke-dasharray:5 6;animation:fr-flow .55s linear infinite}
+  .fr-flujo.alto{stroke:#ffd54f;stroke-width:1.4;animation-duration:.3s}.fr-flujo.cc{stroke:#ff3b30;stroke-width:2.2;stroke-opacity:1;animation-duration:.12s}
   @keyframes fr-flow{to{stroke-dashoffset:-11}}
   .fr-giro{animation:fr-spin .5s linear infinite}@keyframes fr-spin{to{transform:rotate(360deg)}}
   .fr-chispa{animation:fr-chispa .18s steps(2) infinite}@keyframes fr-chispa{50%{opacity:.25}}
@@ -424,7 +424,7 @@
     };
     /* dA y dB: hacia dónde sale cada borne (-1 arriba, 1 abajo). Del mismo lado el cable hace una U. */
     const camino = (x1, x2, y1, y2, lane, dA, dB) => {
-      lane = +lane || 0; dA = dA == null ? 1 : dA; dB = dB == null ? -dA : dB; const st = 12; let pts;
+      lane = +lane || 0; dA = dA == null ? 1 : dA; dB = dB == null ? -dA : dB; const st = 16; let pts;
       if (dA !== dB) {
         if (dA === -1) return camino(x2, x1, y2, y1, lane, dB, dA);
         if (Math.abs(x1 - x2) < .5 && y2 > y1) return `M${x1} ${y1}L${x2} ${y2}`;
@@ -436,10 +436,15 @@
       }
       return redondo(pts, 6);
     };
+    /* vista previa mientras se arrastra: sale del borne hacia su lado y llega al puntero con ángulos rectos */
+    const caminoLibre = (x1, y1, d, x2, y2) => {
+      const st = 16, enLado = (y2 - y1) * d >= st, ym = enLado ? y1 + (y2 - y1) / 2 : y1 + d * st;
+      return redondo(Math.abs(x1 - x2) < .5 && enLado ? [[x1, y1], [x2, y2]] : [[x1, y1], [x1, ym], [x2, ym], [x2, y2]], 6);
+    };
     const cableSvg = (d, col, sel) => {
       const c = COLORES[col] || COLORES.gris;
-      return (sel ? `<path d="${d}" fill="none" stroke="#f9a01b" stroke-width="8.4" stroke-linejoin="round" opacity=".55"/>` : "") + `<path d="${d}" fill="none" stroke="#1d1d1d" stroke-width="5.6" stroke-linejoin="round" stroke-linecap="round"/>` +
-        (c[1] === "bi" ? `<path d="${d}" fill="none" stroke="#2f8a4c" stroke-width="4" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#f0c419" stroke-width="4" stroke-dasharray="5 5" stroke-linejoin="round"/>` : `<path d="${d}" fill="none" stroke="${c[1]}" stroke-width="4" stroke-linejoin="round" stroke-linecap="butt"/>`);
+      return (sel ? `<path d="${d}" fill="none" stroke="#f9a01b" stroke-width="6.4" stroke-linejoin="round" opacity=".55"/>` : "") + `<path d="${d}" fill="none" stroke="#1d1d1d" stroke-width="3.6" stroke-linejoin="round" stroke-linecap="round"/>` +
+        (c[1] === "bi" ? `<path d="${d}" fill="none" stroke="#2f8a4c" stroke-width="2.5" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#f0c419" stroke-width="2.5" stroke-dasharray="4 4" stroke-linejoin="round"/>` : `<path d="${d}" fill="none" stroke="${c[1]}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="butt"/>`);
     };
         function pintar() {
       const g = G(f); R = modo === "sim" ? evaluar(f, sim) : null;
@@ -458,7 +463,7 @@
       const hayCC = Object.values(sim.falla).includes("cc");
       f.cables.forEach(c => {
         const a = TM.get(c.a), b = TM.get(c.b); if (!a || !b) return;
-        const T = (a.tipo === "X" ? b.tipo : a.tipo) || "L1", lane = ({ L1: -9, L2: -4.5, L3: 0, N: 4.5, PE: 9, X: 0 })[T] || 0, d = camino(a.x, b.x, a.y, b.y, lane, a.lado === "t" ? -1 : 1, b.lado === "t" ? -1 : 1), cs = R && R.cable.get(c.id);
+        const T = (a.tipo === "X" ? b.tipo : a.tipo) || "L1", lane = ({ L1: -12, L2: -6, L3: 0, N: 6, PE: 12, X: 0 })[T] || 0, d = camino(a.x, b.x, a.y, b.y, lane, a.lado === "t" ? -1 : 1, b.lado === "t" ? -1 : 1), cs = R && R.cable.get(c.id);
         s += cableSvg(d, c.color || COLOR_AUTO[T] || "gris", c.id === selC) + `<path d="${d}" fill="none" stroke="transparent" stroke-width="9" data-cable="${c.id}" style="cursor:pointer"/>`;
         if (sim.flash && sim.t < sim.flash.hasta && sim.flash.ids.includes(c.id)) s += `<path class="fr-flujo cc" d="${d}"/>`;
         else if (cs && cs.vivo && (cs.I > 0 || T === "N" || T === "PE" ? cs.I > 0 : true)) s += `<path class="fr-flujo${hayCC && cs.I >= ISC * .5 ? " cc" : cs.I > 16 ? " alto" : ""}" d="${d}"/>`;
@@ -478,7 +483,7 @@
         const ly = tt.lado === "t" && CLS[o.k] !== "src" && CLS[o.k] !== "load" ? tt.y - 5.4 : (tt.lado === "b" && CLS[o.k] !== "src" ? tt.y + 8.4 : (CLS[o.k] === "src" ? tt.y - 5.6 : tt.y + 8));
         s += `<g class="fr-term" data-term="${tt.id}"><circle cx="${tt.x}" cy="${tt.y}" r="${activo ? 4.8 : 3.4}" fill="${ac}" stroke="${en ? "#ffb300" : "#232323"}" stroke-width="${en ? 1.8 : .9}"/>${usado ? `<circle cx="${tt.x}" cy="${tt.y}" r="1.2" fill="#fff"/>` : ""}` + (tt.tipo !== "X" ? `<text x="${tt.x}" y="${ly}" font-size="3.8" text-anchor="middle" font-family="Archivo,Arial,sans-serif" font-weight="700" fill="#55574f">${tt.tipo}</text>` : "") + `</g>`;
       }));
-      s += `<path id="fr-prev" d="" fill="none" stroke="#f9a01b" stroke-width="2" stroke-dasharray="4 3"/>`;
+      s += `<path id="fr-prev" d="" fill="none" stroke="#f9a01b" stroke-width="1.2" stroke-dasharray="3 2.4" stroke-linejoin="round"/>`;
       if (!f.items.some(o => CLS[o.k] === "src")) s += `<text x="${g.W / 2}" y="${TOP / 2 + 4}" text-anchor="middle" font-size="7" fill="#9a9b95" font-family="Archivo,Arial,sans-serif" font-weight="700">Sumá la acometida (bajada de línea) desde el panel</text>`;
       svg.innerHTML = s; svg._TM = TM;
     }
@@ -715,7 +720,7 @@
     });
     svg.addEventListener("pointermove", e => {
       if (marco) { const p = aPunto(e.clientX, e.clientY); marco.x1 = p.x; marco.y1 = p.y; dibujarMarco(); return; }
-      if (previa) { const prev = svg.querySelector("#fr-prev"), a = svg._TM && svg._TM.get(previa); if (prev && a) { const p = aPunto(e.clientX, e.clientY); prev.setAttribute("d", camino(a.x, p.x, a.y, p.y, 0, a.lado === "t" ? -1 : 1, a.lado === "t" ? 1 : -1)); } return; }
+      if (previa) { const prev = svg.querySelector("#fr-prev"), a = svg._TM && svg._TM.get(previa); if (prev && a) { const p = aPunto(e.clientX, e.clientY); prev.setAttribute("d", caminoLibre(a.x, a.y, a.lado === "t" ? -1 : 1, p.x, p.y)); } return; }
       if (!arrastre) return;
       const p = aPunto(e.clientX, e.clientY), m = modOf(arrastre.it), c = celda(p, m, arrastre.off), base = arrastre.grupo.find(q => q.it === arrastre.it) || { f: arrastre.it.f, x: arrastre.it.x };
       const dF = c.f - base.f, dX = c.x - base.x, ids = new Set(arrastre.grupo.map(q => q.it.id));
